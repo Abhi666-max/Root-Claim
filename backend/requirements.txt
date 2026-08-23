@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+supabase
+groq
+web3
+python-multipart
+deep-translator
+PyMuPDF
+python-dotenv
