@@ -5,8 +5,11 @@ export default async function Page() {
   const cookieStore = await cookies()
   const supabase = await createClient()
 
-  // Note: users may need to create the 'todos' table or change this to match their DB
-  const { data: todos, error } = await supabase.from('todos').select()
+  // Instead of querying a non-existent 'todos' table, we will just check if the client initialized
+  // and handle any initial query errors gracefully (since tables aren't built yet).
+  const { error } = await supabase.from('users').select('id').limit(1)
+  
+  const isTableMissingError = error && error.message.includes('Could not find the table')
 
   return (
     <main className="min-h-screen p-8 md:p-24 flex flex-col items-center justify-center relative">
@@ -22,32 +25,24 @@ export default async function Page() {
         </p>
 
         <div className="bg-black/50 p-6 rounded-xl border border-spidey-red/20 text-left">
-          {error ? (
+          {error && !isTableMissingError ? (
             <div className="text-red-400">
               <p className="font-bold text-spidey-red">Connection Error:</p>
               <p className="text-sm mt-2">{error.message}</p>
-              <p className="text-xs text-gray-500 mt-4">*Make sure you have a 'todos' table in your Supabase project.*</p>
             </div>
           ) : (
             <div>
-              <p className="font-bold text-spidey-blue mb-4">Connected Successfully! ✅</p>
-              {todos && todos.length > 0 ? (
-                <ul className="space-y-2">
-                  {todos.map((todo) => (
-                    <li key={todo.id} className="text-sm bg-spidey-blue/10 p-2 rounded border border-spidey-blue/20">
-                      {todo.name}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-sm text-gray-400 italic">No todos found in the database. The connection is working, but the table is empty!</p>
-              )}
+              <p className="font-bold text-spidey-blue mb-4 text-glow-blue">Connected Successfully! 🕸️✅</p>
+              <p className="text-sm text-gray-400 italic">
+                The database is reachable. Schema cache is ready. <br/><br/>
+                Next step: Initialize the `users`, `ip_documents`, and `blockchain_vault` tables.
+              </p>
             </div>
           )}
         </div>
         
         <button className="mt-10 px-8 py-3 bg-gradient-to-r from-spidey-red to-red-700 hover:from-red-500 hover:to-spidey-red text-white font-bold rounded shadow-[0_0_15px_rgba(255,0,60,0.6)] transition-all uppercase tracking-widest text-sm">
-          Initialize System
+          Initialize Database Schema
         </button>
       </div>
     </main>
