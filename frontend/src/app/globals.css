@@ -1,15 +1,16 @@
 @import "tailwindcss";
 
 @theme {
-  --color-spidey-bg: #050a1f;
-  --color-spidey-red: #ff003c;
-  --color-spidey-blue: #00d2ff;
-  --color-spidey-text: #e0e0e0;
+  --color-spidey-bg: #f8f9fa;
+  --color-spidey-red: #e23636;
+  --color-spidey-blue: #0059bf;
+  --color-spidey-text: #1a1a1a;
+  --color-spidey-border: #e2e8f0;
 }
 
 :root {
-  --background: #050a1f;
-  --foreground: #e0e0e0;
+  --background: #f8f9fa;
+  --foreground: #1a1a1a;
 }
 
 body {
@@ -19,18 +20,18 @@ body {
   overflow-x: hidden;
 }
 
-/* Hexagonal web pattern background */
+/* Hexagonal web pattern background - Light Mode */
 .bg-spidey-web {
   background-image: 
-    linear-gradient(30deg, #ff003c 12%, transparent 12.5%, transparent 87%, #ff003c 87.5%, #ff003c),
-    linear-gradient(150deg, #ff003c 12%, transparent 12.5%, transparent 87%, #ff003c 87.5%, #ff003c),
-    linear-gradient(30deg, #ff003c 12%, transparent 12.5%, transparent 87%, #ff003c 87.5%, #ff003c),
-    linear-gradient(150deg, #ff003c 12%, transparent 12.5%, transparent 87%, #ff003c 87.5%, #ff003c),
-    linear-gradient(60deg, #050a1f 25%, transparent 25.5%, transparent 75%, #050a1f 75%, #050a1f),
-    linear-gradient(60deg, #050a1f 25%, transparent 25.5%, transparent 75%, #050a1f 75%, #050a1f);
+    linear-gradient(30deg, #e23636 12%, transparent 12.5%, transparent 87%, #e23636 87.5%, #e23636),
+    linear-gradient(150deg, #e23636 12%, transparent 12.5%, transparent 87%, #e23636 87.5%, #e23636),
+    linear-gradient(30deg, #e23636 12%, transparent 12.5%, transparent 87%, #e23636 87.5%, #e23636),
+    linear-gradient(150deg, #e23636 12%, transparent 12.5%, transparent 87%, #e23636 87.5%, #e23636),
+    linear-gradient(60deg, #f8f9fa 25%, transparent 25.5%, transparent 75%, #f8f9fa 75%, #f8f9fa),
+    linear-gradient(60deg, #f8f9fa 25%, transparent 25.5%, transparent 75%, #f8f9fa 75%, #f8f9fa);
   background-size: 80px 140px;
   background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
-  opacity: 0.05;
+  opacity: 0.03; /* Very subtle for light mode */
   position: fixed;
   top: 0;
   left: 0;
@@ -40,10 +41,10 @@ body {
   pointer-events: none;
 }
 
-/* Glowing text effects */
+/* Glowing text effects - Adapted for light mode */
 .text-glow-red {
-  text-shadow: 0 0 10px rgba(255, 0, 60, 0.8), 0 0 20px rgba(255, 0, 60, 0.4);
+  text-shadow: 0 0 10px rgba(226, 54, 54, 0.4);
 }
 .text-glow-blue {
-  text-shadow: 0 0 10px rgba(0, 210, 255, 0.8), 0 0 20px rgba(0, 210, 255, 0.4);
+  text-shadow: 0 0 10px rgba(0, 89, 191, 0.4);
 }
