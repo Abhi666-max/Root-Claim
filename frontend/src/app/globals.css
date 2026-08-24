@@ -1,142 +1,97 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-cyber-text: #111827;
-  --color-cyber-gray: #4b5563;
-  --color-cyber-cyan: #00f0ff;
-  --color-cyber-pink: #ff00a0;
-  --color-cyber-bg: #f8fafc;
+  --color-gov-ivory: #fdfbf7;
+  --color-gov-blue: #003366;
+  --color-gov-gold: #c5a059;
+  --color-gov-text: #1a1a1a;
+  --color-gov-light: #f3efe6;
 }
 
 :root {
-  --background: #f8fafc;
-  --foreground: #111827;
+  --background: #fdfbf7;
+  --foreground: #1a1a1a;
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', -apple-system, sans-serif;
+  font-family: 'Lora', serif;
   overflow-x: hidden;
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Glassmorphism Cyber-Light Panels */
-.cyber-glass {
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05);
+h1, h2, h3, h4, h5, h6, .font-cinzel {
+  font-family: 'Cinzel', serif;
 }
 
-.cyber-glass-card {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.02),
-    0 2px 4px -1px rgba(0, 0, 0, 0.02),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
-  border-radius: 24px;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-
-.cyber-glass-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 
-    0 20px 25px -5px rgba(0, 0, 0, 0.05),
-    0 10px 10px -5px rgba(0, 0, 0, 0.02),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
-  border-color: rgba(0, 240, 255, 0.4);
-}
-
-/* Cyber Button */
-.cyber-btn {
-  background: #111827;
-  color: #ffffff;
-  border-radius: 9999px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  transition: all 0.3s ease;
-  border: 1px solid transparent;
-  box-shadow: 0 4px 14px 0 rgba(17, 24, 39, 0.25);
+/* Subtle Watermark Pattern */
+.bg-mandala {
   position: relative;
-  overflow: hidden;
 }
 
-.cyber-btn::after {
+.bg-mandala::before {
   content: '';
   position: absolute;
-  top: 0; left: -100%; width: 100%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  transition: all 0.5s ease;
-}
-
-.cyber-btn:hover::after {
-  left: 100%;
-}
-
-.cyber-btn:hover {
-  box-shadow: 0 6px 20px rgba(0, 240, 255, 0.4);
-  background: #000000;
-}
-
-/* Cyber Background Orbs */
-.orb-container {
-  position: fixed;
   inset: 0;
+  background-image: radial-gradient(circle at 50% 50%, rgba(197, 160, 89, 0.05) 0%, transparent 60%);
+  background-size: 600px 600px;
+  background-position: center;
+  background-repeat: no-repeat;
   z-index: -1;
-  overflow: hidden;
-  background-color: #f8fafc;
+  pointer-events: none;
 }
 
-.orb {
-  position: absolute;
-  filter: blur(120px);
-  opacity: 0.4;
-  border-radius: 50%;
-  animation: orbFloat 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+/* Flat Elegance Components */
+.gov-btn {
+  background-color: var(--color-gov-blue);
+  color: white;
+  border: 1px solid var(--color-gov-blue);
+  padding: 12px 24px;
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
 }
 
-.orb-cyan {
-  background: #00f0ff;
-  width: 700px;
-  height: 700px;
-  top: -10%;
-  left: -10%;
-  animation-delay: 0s;
+.gov-btn:hover {
+  background-color: white;
+  color: var(--color-gov-blue);
 }
 
-.orb-pink {
-  background: #ff00a0;
-  width: 800px;
-  height: 800px;
-  bottom: -20%;
-  right: -10%;
-  animation-delay: -5s;
+.gov-btn-outline {
+  background-color: transparent;
+  color: var(--color-gov-blue);
+  border: 1px solid var(--color-gov-blue);
+  padding: 12px 24px;
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
 }
 
-.orb-purple {
-  background: #b500ff;
-  width: 500px;
-  height: 500px;
-  top: 40%;
-  left: 40%;
-  animation-delay: -10s;
+.gov-btn-outline:hover {
+  background-color: var(--color-gov-light);
 }
 
-@keyframes orbFloat {
-  0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-  33% { transform: translate(100px, -150px) scale(1.1) rotate(120deg); }
-  66% { transform: translate(-50px, 100px) scale(0.9) rotate(240deg); }
-  100% { transform: translate(0, 0) scale(1) rotate(360deg); }
+.gov-card {
+  background-color: white;
+  border: 1px solid var(--color-gov-light);
+  padding: 32px;
+  transition: border-color 0.3s ease;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  letter-spacing: -0.03em;
+.gov-card:hover {
+  border-color: var(--color-gov-gold);
+}
+
+/* Very subtle horizontal lines for separation, replacing drop shadows */
+.gov-divider {
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(90deg, transparent, var(--color-gov-gold), transparent);
+  opacity: 0.3;
 }
