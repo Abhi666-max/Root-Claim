@@ -17,7 +17,7 @@ export default function AdminLogin() {
           <p className="text-sm text-gray-500 italic">Ministry of Ayush Officials Only.</p>
         </div>
 
-        <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); window.location.href='/dashboard'; }}>
+        <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); window.location.href='/admin-dashboard'; }}>
           <div>
             <label className="block text-xs font-cinzel font-bold uppercase tracking-widest text-gov-blue mb-2">Government ID / Email</label>
             <input 

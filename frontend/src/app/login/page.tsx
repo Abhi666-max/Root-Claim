@@ -17,7 +17,7 @@ export default function CitizenLogin() {
           <p className="text-sm text-gray-500 italic">Login to submit traditional knowledge claims.</p>
         </div>
 
-        <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); window.location.href='/dashboard'; }}>
+        <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); window.location.href='/citizen-dashboard'; }}>
           <div>
             <label className="block text-xs font-cinzel font-bold uppercase tracking-widest text-gov-blue mb-2">Aadhaar Number / Mobile</label>
             <input 
