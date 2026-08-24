@@ -2,158 +2,133 @@
 
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Lock, Database, Radar, LogOut, Command } from 'lucide-react'
+import { Search, Shield, Database, Activity, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('chat')
 
-  const navItems = [
-    { id: 'chat', label: 'Intelligence', icon: Command },
-    { id: 'scanner', label: 'Radar Scan', icon: Search },
-    { id: 'vault', label: 'Secure Vault', icon: Lock },
-    { id: 'radar', label: 'Global Monitor', icon: Radar },
+  const modules = [
+    { id: 'chat', label: 'RAG Intelligence', num: '01', icon: Database },
+    { id: 'scanner', label: 'Collision Radar', num: '02', icon: Search },
+    { id: 'vault', label: 'Immutable Vault', num: '03', icon: Shield },
+    { id: 'radar', label: 'Global Monitor', num: '04', icon: Activity },
   ]
 
   return (
-    <div className="flex h-screen w-full bg-apple-bg text-apple-text overflow-hidden relative font-sans">
-      {/* Animated Pastel Blobs */}
-      <div className="blob-container">
-        <div className="blob blob-1" style={{opacity: 0.3}}></div>
-        <div className="blob blob-2" style={{opacity: 0.3}}></div>
-        <div className="blob blob-3" style={{opacity: 0.3}}></div>
-      </div>
+    <div className="min-h-screen w-full bg-aww-bg text-aww-charcoal relative font-sans selection:bg-aww-sage selection:text-aww-charcoal">
+      <div className="noise-overlay"></div>
 
-      {/* Elegant Sidebar */}
-      <motion.aside 
-        initial={{ x: -300 }}
-        animate={{ x: 0 }}
-        transition={{ type: "spring", stiffness: 100, damping: 20 }}
-        className="w-72 vision-glass border-y-0 border-l-0 z-10 flex flex-col m-4 rounded-3xl"
-      >
-        <div className="p-8 pb-4">
-          <h1 className="text-2xl font-bold tracking-tight text-apple-text flex items-center gap-2">
-            <ShieldIcon /> Root-Claim
-          </h1>
-          <p className="text-xs text-apple-gray font-medium tracking-wide mt-2">WORKSPACE V2.0</p>
-        </div>
+      <div className="max-w-[1600px] mx-auto min-h-screen flex flex-col md:flex-row relative z-10">
+        
+        {/* Editorial Sidebar / Index */}
+        <aside className="w-full md:w-[400px] border-r border-aww-charcoal/20 flex flex-col justify-between py-12 px-8">
+          <div>
+            <Link href="/" className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-aww-charcoal/50 hover:text-aww-charcoal transition-colors mb-16">
+              <ArrowLeft size={14} /> Return
+            </Link>
+            
+            <h1 className="text-4xl font-serif italic mb-2">Workspace.</h1>
+            <p className="text-sm font-light text-aww-charcoal/60 mb-16">IP-SAKTI Analysis Interface</p>
 
-        <nav className="flex-1 p-4 space-y-1 mt-2">
-          {navItems.map((item) => {
-            const Icon = item.icon
-            const isActive = activeTab === item.id
-            return (
-              <button
-                key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-300 ${
-                  isActive 
-                  ? 'bg-white shadow-sm text-blue-600 font-semibold' 
-                  : 'hover:bg-white/40 text-apple-gray hover:text-apple-text font-medium'
-                }`}
-              >
-                <Icon size={18} className={isActive ? 'text-blue-600' : ''} />
-                <span className="text-sm tracking-tight">{item.label}</span>
-              </button>
-            )
-          })}
-        </nav>
-
-        <div className="p-4">
-          <Link href="/">
-            <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/50 hover:bg-white text-apple-gray hover:text-red-500 rounded-2xl transition-all font-medium text-sm">
-              <LogOut size={16} />
-              <span>Sign Out</span>
-            </button>
-          </Link>
-        </div>
-      </motion.aside>
-
-      {/* Main Content Area */}
-      <main className="flex-1 relative z-10 flex flex-col p-4 pl-0">
-        <div className="flex-1 vision-glass-card flex flex-col overflow-hidden">
-          
-          {/* Header */}
-          <header className="h-20 border-b border-white/40 flex items-center px-8 justify-between">
-            <h2 className="text-lg font-bold tracking-tight text-apple-text">
-              {navItems.find(i => i.id === activeTab)?.label}
-            </h2>
-            <div className="flex items-center gap-2 bg-green-50 px-3 py-1.5 rounded-full border border-green-100 shadow-sm">
-              <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></div>
-              <span className="text-xs font-semibold text-green-700">Online</span>
-            </div>
-          </header>
-
-          {/* Dynamic Workspace */}
-          <div className="flex-1 p-8 overflow-y-auto bg-white/30">
-            <AnimatePresence mode="wait">
-              {activeTab === 'chat' && (
-                <motion.div 
-                  key="chat"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3 }}
-                  className="h-full flex flex-col bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
-                >
-                  <div className="flex-1 p-8 space-y-6 overflow-y-auto">
-                    <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center shrink-0 shadow-md text-white">
-                        <Command size={18} />
-                      </div>
-                      <div className="bg-gray-50 border border-gray-100 p-5 rounded-2xl rounded-tl-none max-w-[80%]">
-                        <p className="text-sm leading-relaxed text-apple-text font-medium">
-                          Welcome to your Intelligence workspace. I am IP-SAKTI, securely connected to the global vector database. How may I assist you with your patent analysis today?
-                        </p>
-                      </div>
+            <nav className="flex flex-col gap-8">
+              {modules.map((item) => {
+                const isActive = activeTab === item.id
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveTab(item.id)}
+                    className="text-left group"
+                  >
+                    <div className="flex items-baseline gap-4">
+                      <span className={`text-xs font-bold transition-colors ${isActive ? 'text-aww-terra' : 'text-aww-charcoal/30'}`}>
+                        {item.num}
+                      </span>
+                      <span className={`text-2xl font-serif transition-colors ${isActive ? 'italic' : 'text-aww-charcoal/70 group-hover:text-aww-charcoal'}`}>
+                        {item.label}
+                      </span>
                     </div>
-                  </div>
-                  
-                  <div className="p-4 border-t border-gray-100 bg-gray-50/50">
-                    <div className="relative flex items-center">
-                      <input 
-                        type="text" 
-                        placeholder="Message IP-SAKTI..." 
-                        className="w-full bg-white border border-gray-200 rounded-full py-3.5 pl-6 pr-32 text-apple-text focus:outline-none focus:border-blue-300 focus:ring-4 focus:ring-blue-50 transition-all text-sm shadow-sm"
-                      />
-                      <button className="absolute right-1.5 apple-button px-6 py-2.5 text-sm">
-                        Send
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {activeTab !== 'chat' && (
-                <motion.div 
-                  key="other"
-                  initial={{ opacity: 0, scale: 0.98 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="h-full flex flex-col items-center justify-center text-center bg-white rounded-2xl border border-gray-100 shadow-sm"
-                >
-                  <div className="w-20 h-20 rounded-full bg-gray-50 flex items-center justify-center mb-6 text-gray-300">
-                    <Lock size={32} />
-                  </div>
-                  <h3 className="text-2xl font-bold tracking-tight text-apple-text mb-2">Module Secured</h3>
-                  <p className="text-apple-gray max-w-md font-medium text-sm">
-                    This module requires authentication. Please verify your credentials to access this intelligence tier.
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  </button>
+                )
+              })}
+            </nav>
           </div>
 
-        </div>
-      </main>
-    </div>
-  )
-}
+          <div className="mt-16 pt-8 border-t border-aww-charcoal/20 flex items-center gap-4">
+            <div className="w-2 h-2 rounded-full bg-aww-sage animate-pulse"></div>
+            <span className="text-xs uppercase tracking-widest text-aww-charcoal/60">System Synced</span>
+          </div>
+        </aside>
 
-function ShieldIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M9 12L11 14L15 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
+        {/* Editorial Main Workspace */}
+        <main className="flex-1 flex flex-col">
+          <AnimatePresence mode="wait">
+            {activeTab === 'chat' && (
+              <motion.div 
+                key="chat"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                className="flex-1 flex flex-col h-screen"
+              >
+                {/* Minimal Header */}
+                <header className="h-32 border-b border-aww-charcoal/20 flex items-end pb-8 px-12">
+                  <h2 className="text-5xl font-serif">RAG <span className="italic text-aww-sage">Intelligence</span></h2>
+                </header>
+
+                {/* Chat Flow */}
+                <div className="flex-1 overflow-y-auto px-12 py-12 space-y-12">
+                  <div className="flex items-start gap-8 max-w-3xl">
+                    <div className="w-12 h-12 shrink-0 border border-aww-charcoal/20 rounded-full flex items-center justify-center bg-aww-bg">
+                      <Database size={18} className="text-aww-charcoal/60" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold uppercase tracking-widest mb-4 text-aww-charcoal/50">IP-SAKTI Engine</p>
+                      <p className="text-xl font-serif leading-relaxed text-aww-charcoal">
+                        Greetings. I am connected to the Ayurvedic Vector Database. Please provide your query regarding traditional formulations or patent validations.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Input Area */}
+                <div className="p-12 border-t border-aww-charcoal/20 bg-aww-bg">
+                  <div className="relative max-w-4xl mx-auto flex items-end">
+                    <textarea 
+                      placeholder="Enter your directive here..." 
+                      className="w-full bg-transparent border-b border-aww-charcoal/30 pb-4 text-lg font-serif focus:outline-none focus:border-aww-terra transition-colors resize-none overflow-hidden h-12"
+                      rows={1}
+                    ></textarea>
+                    <button className="ml-8 pb-4 text-sm font-bold uppercase tracking-widest text-aww-terra editorial-link shrink-0">
+                      Submit
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab !== 'chat' && (
+              <motion.div 
+                key="other"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="flex-1 flex flex-col items-center justify-center h-screen text-center px-12"
+              >
+                <div className="mb-12">
+                  <Shield size={64} strokeWidth={1} className="text-aww-charcoal/20" />
+                </div>
+                <h3 className="text-5xl font-serif italic mb-6">Restricted Archive.</h3>
+                <p className="text-lg text-aww-charcoal/60 max-w-xl font-light leading-relaxed">
+                  Authentication is required to access this specialized module. Please verify your legal credentials with the system administrator.
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </main>
+
+      </div>
+    </div>
   )
 }

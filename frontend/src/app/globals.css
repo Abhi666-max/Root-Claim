@@ -1,112 +1,84 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,800;1,400;1,600&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-apple-text: #1d1d1f;
-  --color-apple-gray: #86868b;
-  --color-apple-blue: #0066cc;
-  --color-apple-bg: #fbfbfd;
+  --color-aww-bg: #f9f8f6;
+  --color-aww-charcoal: #1c1c1c;
+  --color-aww-sage: #a3b18a;
+  --color-aww-terra: #e07a5f;
+  --color-aww-sand: #e6e2d8;
 }
 
 :root {
-  --background: #fbfbfd;
-  --foreground: #1d1d1f;
+  --background: #f9f8f6;
+  --foreground: #1c1c1c;
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Inter', sans-serif;
   overflow-x: hidden;
   margin: 0;
   padding: 0;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* VisionOS Glass Panels */
-.vision-glass {
-  background: rgba(255, 255, 255, 0.45);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+h1, h2, h3, h4, h5, h6, .font-serif {
+  font-family: 'Playfair Display', serif;
 }
 
-.vision-glass-card {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
-  border-radius: 24px;
+/* Custom Selection */
+::selection {
+  background-color: #a3b18a;
+  color: #1c1c1c;
 }
 
-/* Animated Pastel Blobs Background */
-.blob-container {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  overflow: hidden;
-  background-color: #fbfbfd;
+/* Editorial Underlines */
+.editorial-link {
+  position: relative;
+  text-decoration: none;
+  display: inline-block;
 }
 
-.blob {
+.editorial-link::after {
+  content: '';
   position: absolute;
-  filter: blur(100px);
-  opacity: 0.6;
-  animation: float 20s infinite alternate ease-in-out;
+  width: 100%;
+  transform: scaleX(0);
+  height: 1px;
+  bottom: 0;
+  left: 0;
+  background-color: currentColor;
+  transform-origin: bottom right;
+  transition: transform 0.4s cubic-bezier(0.86, 0, 0.07, 1);
 }
 
-.blob-1 {
-  background: #ffb6ff;
-  width: 600px;
-  height: 600px;
-  top: -10%;
-  left: -10%;
-  border-radius: 50%;
-  animation-delay: 0s;
+.editorial-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
 }
 
-.blob-2 {
-  background: #b6e2ff;
-  width: 700px;
-  height: 700px;
-  bottom: -20%;
-  right: -10%;
-  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
-  animation-delay: -5s;
+/* Large overlap text effect */
+.overlap-text {
+  mix-blend-mode: difference;
+  color: #f9f8f6;
 }
 
-.blob-3 {
-  background: #ffd8b6;
-  width: 500px;
-  height: 500px;
-  top: 40%;
-  left: 30%;
-  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-  animation-delay: -10s;
+/* Noise Texture Overlay */
+.noise-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.25;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
-@keyframes float {
-  0% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(50px, -50px) scale(1.1); }
-  66% { transform: translate(-30px, 40px) scale(0.9); }
-  100% { transform: translate(0, 0) scale(1); }
-}
-
-/* Clean UI adjustments */
-h1, h2, h3, h4, h5, h6 {
-  letter-spacing: -0.02em;
-}
-
-.apple-button {
-  background: #1d1d1f;
-  color: white;
-  border-radius: 980px;
-  font-weight: 600;
-  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-.apple-button:hover {
-  background: #424245;
-  transform: scale(1.02);
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
 }
