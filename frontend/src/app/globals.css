@@ -1,50 +1,45 @@
 @import "tailwindcss";
 
 @theme {
-  --color-spidey-bg: #f8f9fa;
-  --color-spidey-red: #e23636;
-  --color-spidey-blue: #0059bf;
-  --color-spidey-text: #1a1a1a;
-  --color-spidey-border: #e2e8f0;
+  --color-plasma-red: #ff2a5f;
+  --color-plasma-purple: #9d00ff;
+  --color-plasma-blue: #00d2ff;
+  --color-glass-border: rgba(255, 255, 255, 0.1);
+  --color-glass-bg: rgba(10, 10, 15, 0.4);
 }
 
 :root {
-  --background: #f8f9fa;
-  --foreground: #1a1a1a;
+  --background: #000000;
+  --foreground: #ffffff;
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Outfit', system-ui, sans-serif;
   overflow-x: hidden;
+  margin: 0;
+  padding: 0;
 }
 
-/* Hexagonal web pattern background - Light Mode */
-.bg-spidey-web {
-  background-image: 
-    linear-gradient(30deg, #e23636 12%, transparent 12.5%, transparent 87%, #e23636 87.5%, #e23636),
-    linear-gradient(150deg, #e23636 12%, transparent 12.5%, transparent 87%, #e23636 87.5%, #e23636),
-    linear-gradient(30deg, #e23636 12%, transparent 12.5%, transparent 87%, #e23636 87.5%, #e23636),
-    linear-gradient(150deg, #e23636 12%, transparent 12.5%, transparent 87%, #e23636 87.5%, #e23636),
-    linear-gradient(60deg, #f8f9fa 25%, transparent 25.5%, transparent 75%, #f8f9fa 75%, #f8f9fa),
-    linear-gradient(60deg, #f8f9fa 25%, transparent 25.5%, transparent 75%, #f8f9fa 75%, #f8f9fa);
-  background-size: 80px 140px;
-  background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
-  opacity: 0.03; /* Very subtle for light mode */
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: -1;
-  pointer-events: none;
+/* Glassmorphism Utilities */
+.glass-panel {
+  background: var(--color-glass-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--color-glass-border);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
-/* Glowing text effects - Adapted for light mode */
-.text-glow-red {
-  text-shadow: 0 0 10px rgba(226, 54, 54, 0.4);
+.glass-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
-.text-glow-blue {
-  text-shadow: 0 0 10px rgba(0, 89, 191, 0.4);
+
+/* Glowing Text */
+.text-glow-plasma {
+  text-shadow: 0 0 20px rgba(255, 42, 95, 0.6), 0 0 40px rgba(157, 0, 255, 0.4);
 }
