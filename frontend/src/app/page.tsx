@@ -2,126 +2,125 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
-import { ShieldCheck, ArrowRight, Zap, Database, Search } from 'lucide-react'
+import { ShieldAlert, ArrowRight, Zap, Target, Crosshair } from 'lucide-react'
 import Link from 'next/link'
-import PlasmaBackground from '@/components/PlasmaBackground'
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen text-white font-sans relative overflow-x-hidden selection:bg-plasma-red selection:text-white">
-      {/* 3D Interactive Plasma Background */}
-      <PlasmaBackground />
+    <div className="min-h-screen text-iqoo-white font-sans relative overflow-hidden selection:bg-iqoo-orange selection:text-white">
+      {/* Aggressive Carbon Fiber Background */}
+      <div className="bg-carbon"></div>
+      
+      {/* Decorative Diagonal Slashes */}
+      <div className="slash-accent top-20 -left-10"></div>
+      <div className="slash-accent bottom-40 -right-20"></div>
 
-      {/* Navbar - Glassmorphism */}
-      <header className="sticky top-0 z-50 glass-panel border-b-0 border-white/10">
+      {/* Extreme Header */}
+      <header className="sticky top-0 z-50 bg-black/80 backdrop-blur-sm border-b-2 border-iqoo-orange/40">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <ShieldCheck size={32} className="text-plasma-red" />
-            <h1 className="text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-plasma-red to-plasma-purple uppercase italic">
-              Root-Claim
+            <ShieldAlert size={36} className="text-iqoo-orange" />
+            <h1 className="text-3xl font-black tracking-widest text-white uppercase font-sans">
+              ROOT<span className="text-iqoo-orange">-</span>CLAIM
             </h1>
           </div>
           
-          <nav className="hidden md:flex items-center gap-8 font-semibold text-sm tracking-wider text-gray-300 uppercase">
-            <a href="#features" className="hover:text-white hover:text-glow-plasma transition-all">Features</a>
-            <a href="#about" className="hover:text-white hover:text-glow-plasma transition-all">About</a>
-            <a href="#contact" className="hover:text-white hover:text-glow-plasma transition-all">Contact</a>
+          <nav className="hidden md:flex items-center gap-10 font-bold text-sm tracking-[0.2em] text-gray-400 uppercase">
+            <a href="#features" className="hover:text-iqoo-yellow glitch-hover transition-colors">Armory</a>
+            <a href="#about" className="hover:text-iqoo-yellow glitch-hover transition-colors">Specs</a>
+            <a href="#contact" className="hover:text-iqoo-yellow glitch-hover transition-colors">Comms</a>
           </nav>
 
           <Link href="/dashboard">
-            <button className="bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md text-white px-8 py-2.5 rounded-full font-bold uppercase tracking-widest text-sm transition-all hover:shadow-[0_0_30px_rgba(255,42,95,0.4)] flex items-center gap-2 group">
-              Initialize <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            <button className="bg-transparent border-2 border-iqoo-orange text-iqoo-orange hover:bg-iqoo-orange hover:text-black px-8 py-2 font-black uppercase tracking-[0.2em] text-sm transition-all shadow-[0_0_15px_rgba(255,69,0,0.3)] hover:shadow-[0_0_25px_rgba(255,69,0,0.8)] flex items-center gap-3 glitch-hover">
+              Deploy <ArrowRight size={18} />
             </button>
           </Link>
         </div>
       </header>
 
-      {/* Hero Section */}
+      {/* Adrenaline Hero Section */}
       <main className="relative z-10 pt-32 pb-20 px-6 max-w-7xl mx-auto flex flex-col items-center text-center">
         <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="inline-flex items-center gap-2 glass-panel px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest mb-8 border-plasma-red/30"
+          initial={{ opacity: 0, scale: 1.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: "spring", stiffness: 200, damping: 15 }}
+          className="inline-flex items-center gap-3 bg-iqoo-orange/10 border border-iqoo-orange px-6 py-2 text-xs font-bold uppercase tracking-[0.3em] mb-8 font-mono-tech"
         >
-          <Zap size={14} className="text-plasma-red animate-pulse" /> 
-          <span className="text-gray-200">System v2.0 Online</span>
+          <Zap size={16} className="text-iqoo-yellow animate-pulse" /> 
+          <span className="text-iqoo-orange">System Overclocked</span>
         </motion.div>
 
         <motion.h2 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
-          className="text-6xl md:text-8xl font-black tracking-tighter mb-6 uppercase leading-[0.9] text-glow-plasma"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="text-6xl md:text-8xl font-black tracking-tighter mb-4 uppercase leading-[0.9] text-white"
         >
-          Protect Your <br/>
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-500">
-            Intellectual Property
+          Absolute <br/>
+          <span className="text-iqoo-orange text-glow-orange font-black">
+            Protection
           </span>
         </motion.h2>
 
         <motion.p 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-xl text-gray-400 max-w-2xl mb-12 font-medium"
+          transition={{ duration: 0.4, delay: 0.2 }}
+          className="text-xl text-gray-400 max-w-2xl mb-12 font-bold tracking-wide font-mono-tech"
         >
-          The ultimate Enterprise IP Analytics & Management Suite. Powered by RAG AI, Blockchain Vaults, and Real-Time Patent Radars.
+          // THE APEX ENTERPRISE IP MANAGEMENT SUITE // HIGH-OCTANE RAG AI // BLOCKCHAIN SECURED //
         </motion.p>
 
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="flex flex-col sm:flex-row gap-6"
+          transition={{ duration: 0.4, delay: 0.3 }}
+          className="flex flex-col sm:flex-row gap-6 w-full sm:w-auto"
         >
-          <Link href="/dashboard">
-            <button className="w-full sm:w-auto bg-gradient-to-r from-plasma-red to-plasma-purple hover:from-plasma-purple hover:to-plasma-red text-white px-12 py-5 rounded-full font-black uppercase tracking-widest text-sm transition-all shadow-[0_0_40px_rgba(255,42,95,0.6)] hover:scale-105 flex items-center justify-center gap-3">
-              Enter System <ArrowRight size={18} />
+          <Link href="/dashboard" className="w-full sm:w-auto">
+            <button className="w-full bg-iqoo-orange hover:bg-orange-600 text-black px-14 py-5 font-black uppercase tracking-[0.2em] text-lg transition-all shadow-[0_0_30px_rgba(255,69,0,0.6)] hover:shadow-[0_0_50px_rgba(255,69,0,1)] flex items-center justify-center gap-3 glitch-hover border border-iqoo-orange">
+              Engage System <Target size={22} />
             </button>
           </Link>
         </motion.div>
 
-        {/* Feature Cards - Glassmorphism */}
+        {/* Tactical UI Panels */}
         <div id="features" className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-40 w-full text-left">
           {[
-            { title: "RAG AI Assistant", icon: Database, color: "text-plasma-blue" },
-            { title: "Collision Scanner", icon: Search, color: "text-plasma-red" },
-            { title: "Blockchain Vault", icon: ShieldCheck, color: "text-plasma-purple" }
+            { title: "RAG Intel Core", icon: Target, desc: "Sub-millisecond retrieval powered by vector overclocking." },
+            { title: "Collision Radar", icon: Crosshair, desc: "Aggressive scanning to eliminate IP infringement instantly." },
+            { title: "Blockchain Armor", icon: ShieldAlert, desc: "Immutable cryptographic locking on the Polygon network." }
           ].map((feature, idx) => (
             <motion.div 
               key={idx}
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 + (idx * 0.1) }}
-              className="glass-card p-8 rounded-3xl hover:-translate-y-2 transition-transform duration-500 group"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.4 + (idx * 0.1) }}
+              className="iqoo-panel p-8 hover:-translate-y-2 transition-transform duration-200 group cursor-crosshair"
             >
-              <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                <feature.icon size={28} className={feature.color} />
+              <div className="w-16 h-16 bg-black border border-iqoo-orange/40 flex items-center justify-center mb-6 group-hover:border-iqoo-orange group-hover:shadow-[0_0_15px_rgba(255,69,0,0.5)] transition-all">
+                <feature.icon size={32} className="text-iqoo-orange" />
               </div>
-              <h3 className="text-xl font-black mb-3 tracking-wide">{feature.title}</h3>
-              <p className="text-gray-400 font-medium text-sm leading-relaxed">
-                Experience ultra-fast processing and secure data management tailored specifically for Ayurvedic and traditional intellectual property.
+              <h3 className="text-2xl font-black mb-3 tracking-widest uppercase text-white group-hover:text-iqoo-yellow transition-colors">{feature.title}</h3>
+              <p className="text-gray-400 font-bold font-mono-tech text-sm leading-relaxed tracking-wider">
+                &gt; {feature.desc}
               </p>
             </motion.div>
           ))}
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="mt-20 border-t border-white/10 glass-panel relative z-10">
-        <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2">
-            <ShieldCheck size={24} className="text-plasma-red" />
-            <span className="font-black italic text-lg tracking-tighter">ROOT-CLAIM</span>
+      {/* Industrial Footer */}
+      <footer className="mt-20 border-t-2 border-iqoo-orange/40 bg-black relative z-10">
+        <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-3">
+            <ShieldAlert size={20} className="text-iqoo-orange" />
+            <span className="font-black tracking-widest text-lg uppercase">ROOT-CLAIM // 2026</span>
           </div>
           
-          <div className="text-gray-500 text-sm font-medium">
-            &copy; {new Date().getFullYear()} Root-Claim Enterprise. All rights reserved.
-          </div>
-          
-          <div className="text-gray-500 text-xs tracking-widest uppercase">
-            Developed by <span className="font-bold text-gray-300">Abhijeet Kangane</span>
+          <div className="text-gray-500 font-mono-tech text-xs tracking-[0.2em] uppercase">
+            Developed By: <span className="text-iqoo-white font-bold">Abhijeet Kangane</span>
           </div>
         </div>
       </footer>
