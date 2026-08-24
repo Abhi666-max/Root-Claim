@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -11,21 +11,21 @@
 
 :root {
   --background: #fdfbf7;
-  --foreground: #1a1a1a;
+  --foreground: #111827;
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: 'Lora', serif;
+  font-family: 'Inter', sans-serif;
   overflow-x: hidden;
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, h4, h5, h6, .font-cinzel {
-  font-family: 'Cinzel', serif;
+h1, h2, h3, h4, h5, h6, .font-serif-official {
+  font-family: 'Noto Serif', serif;
 }
 
 /* Subtle Watermark Pattern */
