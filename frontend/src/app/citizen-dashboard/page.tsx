@@ -1,99 +1,313 @@
-import React from 'react'
-import { FileText, Search, ShieldCheck, Activity, Download, ChevronRight, CheckCircle, Clock } from 'lucide-react'
+"use client"
+
+import React, { useState } from 'react'
+import { 
+  ShieldCheck, User, Search, Activity, Download, 
+  ChevronRight, CheckCircle, Clock, Home, FileText, 
+  AlertTriangle, UploadCloud, FileSignature, 
+  Sparkles, ShieldAlert, Cpu
+} from 'lucide-react'
+import Link from 'next/link'
 
 export default function CitizenDashboard() {
+  const [activeTab, setActiveTab] = useState('overview')
+
   return (
-    <div className="min-h-screen bg-gov-ivory text-gov-text font-sans">
+    <div className="min-h-screen bg-gray-50 text-gov-text font-sans flex">
       
-      {/* HEADER */}
-      <header className="bg-gov-blue text-white px-8 h-16 flex items-center justify-between shadow-md">
-        <div className="flex items-center gap-3">
-          <ShieldCheck size={24} className="text-gov-gold" />
-          <h1 className="font-serif-official font-bold tracking-widest uppercase text-sm">
-            Citizen Portal
-          </h1>
+      {/* SIDEBAR NAVIGATION */}
+      <aside className="w-64 bg-gov-blue text-white flex flex-col fixed h-full z-20 shadow-xl">
+        <div className="h-20 flex items-center gap-3 px-6 border-b border-white/10 bg-gov-blue">
+          <ShieldCheck size={32} className="text-gov-gold" />
+          <div>
+            <h1 className="font-serif-official font-bold tracking-widest uppercase text-sm">Root-Claim</h1>
+            <p className="text-[8px] uppercase tracking-widest text-gov-gold">Citizen Portal</p>
+          </div>
         </div>
-        <div className="flex items-center gap-4 text-xs font-bold tracking-widest uppercase">
-          <span className="text-gov-gold">Welcome, Citizen</span>
-          <button className="hover:text-gov-gold transition-colors border-l border-white/20 pl-4">Logout</button>
-        </div>
-      </header>
 
-      <main className="max-w-7xl mx-auto px-8 py-12">
+        <nav className="flex-1 py-8 flex flex-col gap-2 px-4">
+          <button 
+            onClick={() => setActiveTab('overview')}
+            className={`flex items-center gap-3 px-4 py-3 rounded text-xs font-bold uppercase tracking-widest transition-colors ${activeTab === 'overview' ? 'bg-gov-gold text-white shadow-md' : 'text-gray-300 hover:bg-white/5 hover:text-white'}`}
+          >
+            <Home size={16} /> Overview
+          </button>
+          <button 
+            onClick={() => setActiveTab('submit')}
+            className={`flex items-center gap-3 px-4 py-3 rounded text-xs font-bold uppercase tracking-widest transition-colors ${activeTab === 'submit' ? 'bg-gov-gold text-white shadow-md' : 'text-gray-300 hover:bg-white/5 hover:text-white'}`}
+          >
+            <FileText size={16} /> Submit Knowledge
+          </button>
+          <button 
+            onClick={() => setActiveTab('vault')}
+            className={`flex items-center gap-3 px-4 py-3 rounded text-xs font-bold uppercase tracking-widest transition-colors ${activeTab === 'vault' ? 'bg-gov-gold text-white shadow-md' : 'text-gray-300 hover:bg-white/5 hover:text-white'}`}
+          >
+            <ShieldCheck size={16} /> My Digital Vault
+          </button>
+          <button 
+            onClick={() => setActiveTab('whistleblower')}
+            className={`flex items-center gap-3 px-4 py-3 rounded text-xs font-bold uppercase tracking-widest transition-colors ${activeTab === 'whistleblower' ? 'bg-red-600 text-white shadow-md' : 'text-red-400 hover:bg-red-500/10 hover:text-red-300'}`}
+          >
+            <ShieldAlert size={16} /> Report Bio-Piracy
+          </button>
+        </nav>
+
+        <div className="p-4 border-t border-white/10">
+          <div className="bg-white/5 p-4 rounded mb-4">
+            <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1 font-bold">Logged in as</p>
+            <p className="text-sm font-bold text-white flex items-center gap-2"><User size={14}/> UID-992-881</p>
+          </div>
+          <Link href="/">
+            <button className="w-full text-left flex items-center gap-3 px-4 py-2 text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors">
+              Logout &rarr;
+            </button>
+          </Link>
+        </div>
+      </aside>
+
+      {/* MAIN CONTENT AREA */}
+      <main className="flex-1 ml-64 flex flex-col min-h-screen">
         
-        {/* WELCOME SECTION */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-serif-official font-bold text-gov-blue mb-2">My Digital Vault</h2>
-          <p className="text-gray-600">Submit and track your traditional knowledge claims.</p>
-        </div>
-
-        {/* QUICK ACTIONS GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-16">
-          {[
-            { title: "Submit New Claim", icon: FileText, color: "text-gov-blue", bg: "bg-white", border: "border-gov-blue" },
-            { title: "Search Registry", icon: Search, color: "text-gov-gold", bg: "bg-white", border: "border-gov-light" },
-            { title: "Report Piracy", icon: Activity, color: "text-red-700", bg: "bg-white", border: "border-gov-light" },
-            { title: "Download Certificate", icon: Download, color: "text-green-700", bg: "bg-white", border: "border-gov-light" }
-          ].map((action, i) => (
-            <div key={i} className={`p-6 border ${action.border} ${action.bg} shadow-sm hover:shadow-md transition-shadow cursor-pointer group flex flex-col h-full`}>
-              <action.icon size={28} className={`${action.color} mb-4 group-hover:scale-110 transition-transform`} />
-              <h3 className="font-serif-official font-bold text-gov-blue mb-2 flex-1">{action.title}</h3>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-gov-blue flex items-center gap-1">Action <ChevronRight size={12}/></span>
+        {/* Top Header */}
+        <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-10 sticky top-0 z-10 shadow-sm">
+          <h2 className="text-xl font-serif-official font-bold text-gov-blue">
+            {activeTab === 'overview' && 'Dashboard Overview'}
+            {activeTab === 'submit' && 'Submit Traditional Knowledge'}
+            {activeTab === 'vault' && 'My Secure Digital Vault'}
+            {activeTab === 'whistleblower' && 'Whistleblower: Report Bio-Piracy'}
+          </h2>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest bg-green-50 text-green-700 px-3 py-1.5 rounded-full border border-green-200">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Network: Secure
             </div>
-          ))}
-        </div>
-
-        {/* MY CLAIMS TABLE */}
-        <div className="bg-white border border-gov-light shadow-sm">
-          <div className="bg-gov-light px-6 py-4 border-b border-gov-light flex justify-between items-center">
-            <h3 className="font-serif-official font-bold text-gov-blue text-lg">Submitted Claims</h3>
           </div>
-          <div className="p-0 overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-gov-light text-xs uppercase tracking-widest font-bold text-gray-500 bg-gray-50">
-                  <th className="p-4 pl-6">Claim ID</th>
-                  <th className="p-4">Title</th>
-                  <th className="p-4">Submission Date</th>
-                  <th className="p-4">Status</th>
-                  <th className="p-4 pr-6 text-right">Blockchain Tx</th>
-                </tr>
-              </thead>
-              <tbody className="text-sm">
+        </header>
+
+        {/* Dynamic Content Body */}
+        <div className="p-10 flex-1 bg-gray-50">
+          
+          {/* ====================================================== */}
+          {/* TAB: OVERVIEW */}
+          {/* ====================================================== */}
+          {activeTab === 'overview' && (
+            <div className="max-w-6xl">
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <div className="bg-white p-6 border-t-4 border-gov-blue shadow-sm">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Total Claims Submitted</p>
+                  <h3 className="text-4xl font-serif-official font-bold text-gov-blue">02</h3>
+                </div>
+                <div className="bg-white p-6 border-t-4 border-green-600 shadow-sm">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Blockchain Verified</p>
+                  <h3 className="text-4xl font-serif-official font-bold text-green-700">01</h3>
+                </div>
+                <div className="bg-white p-6 border-t-4 border-red-600 shadow-sm">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Piracy Reports Filed</p>
+                  <h3 className="text-4xl font-serif-official font-bold text-red-700">00</h3>
+                </div>
+              </div>
+
+              <div className="bg-white border border-gray-200 shadow-sm p-8 mb-10">
+                <h3 className="font-serif-official font-bold text-xl text-gov-blue mb-6 border-b border-gray-100 pb-4">Quick Actions</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div 
+                    onClick={() => setActiveTab('submit')}
+                    className="group border border-gray-200 p-6 hover:border-gov-gold cursor-pointer transition-colors bg-gray-50 flex items-start gap-4"
+                  >
+                    <div className="bg-gov-blue text-gov-gold p-3 rounded group-hover:scale-110 transition-transform">
+                      <Sparkles size={24} />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gov-blue mb-1">AI-Assisted Submission</h4>
+                      <p className="text-xs text-gray-500 mb-3 leading-relaxed">Draft your claim in simple language and let our AI format it into an official botanical/medical claim.</p>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-gov-gold flex items-center gap-1 group-hover:text-gov-blue">Start Draft <ChevronRight size={12}/></span>
+                    </div>
+                  </div>
+                  
+                  <div 
+                    onClick={() => setActiveTab('vault')}
+                    className="group border border-gray-200 p-6 hover:border-gov-gold cursor-pointer transition-colors bg-gray-50 flex items-start gap-4"
+                  >
+                    <div className="bg-gov-blue text-gov-gold p-3 rounded group-hover:scale-110 transition-transform">
+                      <FileSignature size={24} />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gov-blue mb-1">Download Certificates</h4>
+                      <p className="text-xs text-gray-500 mb-3 leading-relaxed">Download official government certificates with QR codes for your blockchain-verified claims.</p>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-gov-gold flex items-center gap-1 group-hover:text-gov-blue">View Vault <ChevronRight size={12}/></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          )}
+
+          {/* ====================================================== */}
+          {/* TAB: SUBMIT KNOWLEDGE (Smart Draft + Pre-Check) */}
+          {/* ====================================================== */}
+          {activeTab === 'submit' && (
+            <div className="max-w-4xl">
+              <div className="bg-white border border-gray-200 shadow-sm p-8">
                 
-                {/* Pending Claim */}
-                <tr className="border-b border-gov-light hover:bg-gray-50 transition-colors">
-                  <td className="p-4 pl-6 font-mono text-xs text-gray-500">TK-2026-9081</td>
-                  <td className="p-4 font-bold text-gov-blue">Turmeric Wound Healing Formulation</td>
-                  <td className="p-4 text-gray-600">22 Aug 2026</td>
-                  <td className="p-4">
-                    <span className="inline-flex items-center gap-1.5 bg-yellow-50 text-yellow-700 border border-yellow-200 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
-                      <Clock size={12} /> Pending Review
-                    </span>
-                  </td>
-                  <td className="p-4 pr-6 text-right text-gray-400 font-mono text-xs">-</td>
-                </tr>
+                <div className="mb-8 border-b border-gray-100 pb-6">
+                  <h3 className="font-serif-official font-bold text-2xl text-gov-blue mb-2 flex items-center gap-3">
+                    <Sparkles className="text-gov-gold" /> Step 1: AI Smart Draft
+                  </h3>
+                  <p className="text-sm text-gray-500">Describe the traditional knowledge in your own words. Our AI will automatically structure it to match international IP and botanical standards.</p>
+                </div>
 
-                {/* Verified Claim */}
-                <tr className="border-b border-gov-light hover:bg-gray-50 transition-colors">
-                  <td className="p-4 pl-6 font-mono text-xs text-gray-500">TK-2026-1142</td>
-                  <td className="p-4 font-bold text-gov-blue">Neem Anti-Bacterial Extract</td>
-                  <td className="p-4 text-gray-600">10 Jan 2026</td>
-                  <td className="p-4">
-                    <span className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 border border-green-200 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
-                      <CheckCircle size={12} /> Blockchain Locked
-                    </span>
-                  </td>
-                  <td className="p-4 pr-6 text-right">
-                    <a href="#" className="font-mono text-xs text-gov-blue hover:text-gov-gold underline decoration-gov-light underline-offset-4">0x7a8...9f2b</a>
-                  </td>
-                </tr>
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-gov-blue mb-2">Claim Title</label>
+                    <input type="text" className="w-full border border-gray-300 p-3 focus:outline-none focus:border-gov-gold text-sm" placeholder="e.g., Turmeric Paste for Wound Healing" />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-gov-blue mb-2">Your Raw Description (Hinglish/English)</label>
+                    <textarea 
+                      className="w-full border border-gray-300 p-3 focus:outline-none focus:border-gov-gold text-sm h-32" 
+                      placeholder="Haldi aur neem ko mix karke lagane se infection nahi hota aur ghaav jaldi bharta hai..."
+                    ></textarea>
+                  </div>
 
-              </tbody>
-            </table>
-          </div>
+                  {/* Multi-Media Upload */}
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-gov-blue mb-2">Upload Historical Proof (Manuscripts, Images, PDFs)</label>
+                    <div className="border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center hover:bg-gray-100 transition-colors cursor-pointer">
+                      <UploadCloud className="mx-auto text-gray-400 mb-3" size={32} />
+                      <p className="text-sm text-gray-500 font-bold mb-1">Click to upload or drag & drop</p>
+                      <p className="text-xs text-gray-400">AI OCR will extract text automatically (JPG, PNG, PDF)</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 pt-4 border-t border-gray-100">
+                    <button className="flex-1 bg-gov-blue text-white py-4 text-xs font-bold tracking-widest uppercase hover:bg-[#081729] transition-colors flex justify-center items-center gap-2 shadow-md">
+                      <Sparkles size={16} className="text-gov-gold" /> Enhance with AI
+                    </button>
+                    <button className="flex-1 bg-white border border-gov-blue text-gov-blue py-4 text-xs font-bold tracking-widest uppercase hover:bg-gov-blue hover:text-white transition-colors flex justify-center items-center gap-2 shadow-sm">
+                      <Cpu size={16} /> Run Patent Pre-Check
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          )}
+
+          {/* ====================================================== */}
+          {/* TAB: MY DIGITAL VAULT (Timeline & Certificates) */}
+          {/* ====================================================== */}
+          {activeTab === 'vault' && (
+            <div className="max-w-6xl">
+              <div className="bg-white border border-gray-200 shadow-sm">
+                <div className="bg-gray-900 px-6 py-5 border-b border-gray-800 flex justify-between items-center">
+                  <h3 className="font-serif-official font-bold text-white text-lg flex items-center gap-2">
+                    <ShieldCheck size={20} className="text-gov-gold"/> My Secured Claims
+                  </h3>
+                </div>
+                
+                <div className="p-0 overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-gray-200 text-[10px] uppercase tracking-widest font-bold text-gray-500 bg-gray-50">
+                        <th className="p-5 pl-8">Claim ID & Title</th>
+                        <th className="p-5">Timeline Status</th>
+                        <th className="p-5">Ministry Remarks</th>
+                        <th className="p-5 pr-8 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-sm">
+                      
+                      {/* Verified Claim */}
+                      <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                        <td className="p-5 pl-8">
+                          <p className="font-mono text-xs text-gray-500 mb-1">TK-2026-1142</p>
+                          <p className="font-bold text-gov-blue">Neem Anti-Bacterial Extract</p>
+                        </td>
+                        <td className="p-5">
+                          <span className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 border border-green-200 px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider">
+                            <CheckCircle size={12} /> Blockchain Anchored
+                          </span>
+                        </td>
+                        <td className="p-5">
+                          <p className="text-xs text-gray-600 line-clamp-2 italic">"Verified against ancient Ayurvedic texts. No prior patents found. Cleared for IP lock."</p>
+                        </td>
+                        <td className="p-5 pr-8 text-right">
+                          <button className="bg-gov-gold text-white px-4 py-2 text-[10px] font-bold tracking-widest uppercase hover:bg-[#9a7b3b] transition-colors flex items-center gap-2 ml-auto shadow-sm">
+                            <Download size={14} /> Official Certificate
+                          </button>
+                        </td>
+                      </tr>
+
+                      {/* Pending Claim */}
+                      <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                        <td className="p-5 pl-8">
+                          <p className="font-mono text-xs text-gray-500 mb-1">TK-2026-9081</p>
+                          <p className="font-bold text-gov-blue">Turmeric Wound Healing Paste</p>
+                        </td>
+                        <td className="p-5">
+                          <span className="inline-flex items-center gap-1.5 bg-yellow-50 text-yellow-700 border border-yellow-200 px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider">
+                            <Clock size={12} /> Pending Ministry Review
+                          </span>
+                        </td>
+                        <td className="p-5">
+                          <p className="text-xs text-gray-400">Awaiting official verification.</p>
+                        </td>
+                        <td className="p-5 pr-8 text-right">
+                          <button disabled className="bg-gray-100 text-gray-400 border border-gray-200 px-4 py-2 text-[10px] font-bold tracking-widest uppercase cursor-not-allowed ml-auto">
+                            Processing...
+                          </button>
+                        </td>
+                      </tr>
+
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ====================================================== */}
+          {/* TAB: WHISTLEBLOWER (Report Piracy) */}
+          {/* ====================================================== */}
+          {activeTab === 'whistleblower' && (
+            <div className="max-w-4xl">
+              <div className="bg-white border-t-4 border-red-600 shadow-sm p-8">
+                
+                <div className="mb-8 border-b border-gray-100 pb-6">
+                  <h3 className="font-serif-official font-bold text-2xl text-red-700 mb-2 flex items-center gap-3">
+                    <ShieldAlert /> Report Bio-Piracy
+                  </h3>
+                  <p className="text-sm text-gray-600">If you have found a foreign entity or corporation attempting to patent or illegally sell traditional Indian medicine, report it here. The Ministry will investigate using the Collision Radar.</p>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-gov-blue mb-2">Foreign Patent Number / Product URL</label>
+                    <input type="text" className="w-full border border-gray-300 p-3 focus:outline-none focus:border-red-500 text-sm" placeholder="e.g., US Patent #5,401,504 or www.example.com/product" />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-gov-blue mb-2">Why is this Bio-Piracy? (Provide context)</label>
+                    <textarea 
+                      className="w-full border border-gray-300 p-3 focus:outline-none focus:border-red-500 text-sm h-32" 
+                      placeholder="This formulation has been used in India for centuries as documented in..."
+                    ></textarea>
+                  </div>
+
+                  <div className="pt-4 border-t border-gray-100">
+                    <button className="w-full bg-red-600 text-white py-4 text-xs font-bold tracking-widest uppercase hover:bg-red-700 transition-colors shadow-md flex justify-center items-center gap-2">
+                      <AlertTriangle size={16} /> Submit Red-Flag Report to Ministry
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          )}
+
         </div>
-
       </main>
     </div>
   )
