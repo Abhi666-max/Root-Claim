@@ -2,125 +2,130 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
-import { ShieldAlert, ArrowRight, Zap, Target, Crosshair } from 'lucide-react'
+import { ShieldCheck, ArrowRight, Database, Search, Lock } from 'lucide-react'
 import Link from 'next/link'
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen text-iqoo-white font-sans relative overflow-hidden selection:bg-iqoo-orange selection:text-white">
-      {/* Aggressive Carbon Fiber Background */}
-      <div className="bg-carbon"></div>
-      
-      {/* Decorative Diagonal Slashes */}
-      <div className="slash-accent top-20 -left-10"></div>
-      <div className="slash-accent bottom-40 -right-20"></div>
+    <div className="min-h-screen text-apple-text font-sans relative overflow-x-hidden">
+      {/* Animated Pastel Blobs */}
+      <div className="blob-container">
+        <div className="blob blob-1"></div>
+        <div className="blob blob-2"></div>
+        <div className="blob blob-3"></div>
+      </div>
 
-      {/* Extreme Header */}
-      <header className="sticky top-0 z-50 bg-black/80 backdrop-blur-sm border-b-2 border-iqoo-orange/40">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <ShieldAlert size={36} className="text-iqoo-orange" />
-            <h1 className="text-3xl font-black tracking-widest text-white uppercase font-sans">
-              ROOT<span className="text-iqoo-orange">-</span>CLAIM
-            </h1>
-          </div>
-          
-          <nav className="hidden md:flex items-center gap-10 font-bold text-sm tracking-[0.2em] text-gray-400 uppercase">
-            <a href="#features" className="hover:text-iqoo-yellow glitch-hover transition-colors">Armory</a>
-            <a href="#about" className="hover:text-iqoo-yellow glitch-hover transition-colors">Specs</a>
-            <a href="#contact" className="hover:text-iqoo-yellow glitch-hover transition-colors">Comms</a>
-          </nav>
-
-          <Link href="/dashboard">
-            <button className="bg-transparent border-2 border-iqoo-orange text-iqoo-orange hover:bg-iqoo-orange hover:text-black px-8 py-2 font-black uppercase tracking-[0.2em] text-sm transition-all shadow-[0_0_15px_rgba(255,69,0,0.3)] hover:shadow-[0_0_25px_rgba(255,69,0,0.8)] flex items-center gap-3 glitch-hover">
-              Deploy <ArrowRight size={18} />
-            </button>
-          </Link>
+      {/* Glass Navbar */}
+      <header className="sticky top-4 z-50 mx-4 md:mx-auto max-w-7xl vision-glass rounded-full px-6 h-16 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <ShieldCheck size={24} className="text-apple-text" />
+          <h1 className="text-xl font-bold tracking-tight text-apple-text">
+            Root-Claim
+          </h1>
         </div>
+        
+        <nav className="hidden md:flex items-center gap-8 font-medium text-sm text-apple-gray">
+          <a href="#features" className="hover:text-apple-text transition-colors">Features</a>
+          <a href="#technology" className="hover:text-apple-text transition-colors">Technology</a>
+          <a href="#about" className="hover:text-apple-text transition-colors">About</a>
+        </nav>
+
+        <Link href="/dashboard">
+          <button className="apple-button px-5 py-2 text-sm flex items-center gap-2">
+            Open Dashboard <ArrowRight size={14} />
+          </button>
+        </Link>
       </header>
 
-      {/* Adrenaline Hero Section */}
-      <main className="relative z-10 pt-32 pb-20 px-6 max-w-7xl mx-auto flex flex-col items-center text-center">
+      {/* Ethereal Hero Section */}
+      <main className="relative z-10 pt-32 pb-20 px-6 max-w-5xl mx-auto flex flex-col items-center text-center">
         <motion.div 
-          initial={{ opacity: 0, scale: 1.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ type: "spring", stiffness: 200, damping: 15 }}
-          className="inline-flex items-center gap-3 bg-iqoo-orange/10 border border-iqoo-orange px-6 py-2 text-xs font-bold uppercase tracking-[0.3em] mb-8 font-mono-tech"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="inline-flex items-center gap-2 bg-white/40 border border-white/60 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide mb-8 text-apple-gray shadow-sm"
         >
-          <Zap size={16} className="text-iqoo-yellow animate-pulse" /> 
-          <span className="text-iqoo-orange">System Overclocked</span>
+          <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+          IP-SAKTI Intelligence Active
         </motion.div>
 
         <motion.h2 
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-          className="text-6xl md:text-8xl font-black tracking-tighter mb-4 uppercase leading-[0.9] text-white"
+          transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
+          className="text-6xl md:text-8xl font-black tracking-tight mb-6 text-apple-text leading-[1.05]"
         >
-          Absolute <br/>
-          <span className="text-iqoo-orange text-glow-orange font-black">
-            Protection
+          Absolute clarity. <br/>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+            Ultimate protection.
           </span>
         </motion.h2>
 
         <motion.p 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
-          className="text-xl text-gray-400 max-w-2xl mb-12 font-bold tracking-wide font-mono-tech"
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="text-xl text-apple-gray max-w-2xl mb-12 font-medium leading-relaxed"
         >
-          // THE APEX ENTERPRISE IP MANAGEMENT SUITE // HIGH-OCTANE RAG AI // BLOCKCHAIN SECURED //
+          The enterprise Intellectual Property suite designed for the future. Effortlessly secure, analyze, and manage traditional knowledge with ultra-fast RAG AI and cryptographic vaults.
         </motion.p>
 
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.3 }}
-          className="flex flex-col sm:flex-row gap-6 w-full sm:w-auto"
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="flex flex-col sm:flex-row gap-4"
         >
-          <Link href="/dashboard" className="w-full sm:w-auto">
-            <button className="w-full bg-iqoo-orange hover:bg-orange-600 text-black px-14 py-5 font-black uppercase tracking-[0.2em] text-lg transition-all shadow-[0_0_30px_rgba(255,69,0,0.6)] hover:shadow-[0_0_50px_rgba(255,69,0,1)] flex items-center justify-center gap-3 glitch-hover border border-iqoo-orange">
-              Engage System <Target size={22} />
+          <Link href="/dashboard">
+            <button className="w-full sm:w-auto apple-button px-8 py-4 text-lg flex items-center justify-center gap-3">
+              Enter Workspace <ArrowRight size={18} />
             </button>
           </Link>
+          <button className="w-full sm:w-auto bg-white/50 hover:bg-white/80 border border-white/60 backdrop-blur-md text-apple-text px-8 py-4 rounded-[980px] font-semibold text-lg transition-all shadow-sm">
+            Read Whitepaper
+          </button>
         </motion.div>
 
-        {/* Tactical UI Panels */}
-        <div id="features" className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-40 w-full text-left">
+        {/* Vision Glass Feature Cards */}
+        <div id="features" className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-32 w-full text-left">
           {[
-            { title: "RAG Intel Core", icon: Target, desc: "Sub-millisecond retrieval powered by vector overclocking." },
-            { title: "Collision Radar", icon: Crosshair, desc: "Aggressive scanning to eliminate IP infringement instantly." },
-            { title: "Blockchain Armor", icon: ShieldAlert, desc: "Immutable cryptographic locking on the Polygon network." }
+            { title: "RAG Intelligence", icon: Database, desc: "Instant contextual retrieval powered by advanced vector search." },
+            { title: "Collision Radar", icon: Search, desc: "Proactive infringement scanning across global patent databases." },
+            { title: "Blockchain Vault", icon: Lock, desc: "Immutable timestamping on the Polygon cryptographic network." }
           ].map((feature, idx) => (
             <motion.div 
               key={idx}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3, delay: 0.4 + (idx * 0.1) }}
-              className="iqoo-panel p-8 hover:-translate-y-2 transition-transform duration-200 group cursor-crosshair"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 + (idx * 0.1) }}
+              className="vision-glass-card p-8 hover:-translate-y-1 transition-transform duration-300"
             >
-              <div className="w-16 h-16 bg-black border border-iqoo-orange/40 flex items-center justify-center mb-6 group-hover:border-iqoo-orange group-hover:shadow-[0_0_15px_rgba(255,69,0,0.5)] transition-all">
-                <feature.icon size={32} className="text-iqoo-orange" />
+              <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-6 shadow-inner">
+                <feature.icon size={24} />
               </div>
-              <h3 className="text-2xl font-black mb-3 tracking-widest uppercase text-white group-hover:text-iqoo-yellow transition-colors">{feature.title}</h3>
-              <p className="text-gray-400 font-bold font-mono-tech text-sm leading-relaxed tracking-wider">
-                &gt; {feature.desc}
+              <h3 className="text-xl font-bold mb-3 tracking-tight">{feature.title}</h3>
+              <p className="text-apple-gray font-medium text-sm leading-relaxed">
+                {feature.desc} Experience the seamless integration of high-performance analytics in a remarkably intuitive interface.
               </p>
             </motion.div>
           ))}
         </div>
       </main>
 
-      {/* Industrial Footer */}
-      <footer className="mt-20 border-t-2 border-iqoo-orange/40 bg-black relative z-10">
-        <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <ShieldAlert size={20} className="text-iqoo-orange" />
-            <span className="font-black tracking-widest text-lg uppercase">ROOT-CLAIM // 2026</span>
+      {/* Elegant Footer */}
+      <footer className="mt-32 pb-8 px-6">
+        <div className="max-w-7xl mx-auto vision-glass rounded-3xl px-8 py-8 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-2">
+            <ShieldCheck size={20} className="text-apple-text" />
+            <span className="font-bold tracking-tight">Root-Claim</span>
           </div>
           
-          <div className="text-gray-500 font-mono-tech text-xs tracking-[0.2em] uppercase">
-            Developed By: <span className="text-iqoo-white font-bold">Abhijeet Kangane</span>
+          <div className="text-apple-gray text-sm font-medium">
+            &copy; {new Date().getFullYear()} Enterprise Systems. Designed with precision.
+          </div>
+          
+          <div className="text-apple-gray text-xs font-medium uppercase tracking-widest">
+            Developed by <span className="font-bold text-apple-text">Abhijeet Kangane</span>
           </div>
         </div>
       </footer>
