@@ -3,10 +3,10 @@
 
 @theme {
   --color-gov-ivory: #fdfbf7;
-  --color-gov-blue: #003366;
-  --color-gov-gold: #c5a059;
-  --color-gov-text: #1a1a1a;
-  --color-gov-light: #f3efe6;
+  --color-gov-blue: #0b1f38; /* Deeper, richer Navy Blue */
+  --color-gov-gold: #b08d44; /* More solid, premium Gold */
+  --color-gov-text: #111827;
+  --color-gov-light: #e6e0d4;
 }
 
 :root {
@@ -37,10 +37,11 @@ h1, h2, h3, h4, h5, h6, .font-cinzel {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(circle at 50% 50%, rgba(197, 160, 89, 0.05) 0%, transparent 60%);
-  background-size: 600px 600px;
-  background-position: center;
-  background-repeat: no-repeat;
+  /* Slightly more visible, rich pattern using radial gradients to simulate a large emblem */
+  background-image: 
+    radial-gradient(circle at 50% 30%, rgba(176, 141, 68, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(11, 31, 56, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 10% 90%, rgba(176, 141, 68, 0.05) 0%, transparent 30%);
   z-index: -1;
   pointer-events: none;
 }

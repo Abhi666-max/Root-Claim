@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
-import { ShieldCheck, BookOpen, Search, AlertOctagon, Quote, ChevronRight } from 'lucide-react'
+import { ShieldCheck, BookOpen, Search, AlertOctagon, Quote, ChevronRight, Landmark } from 'lucide-react'
 import Link from 'next/link'
 
 export default function LandingPage() {
@@ -57,25 +57,30 @@ export default function LandingPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
         >
-          <div className="w-px h-16 bg-gov-gold mx-auto mb-8"></div>
+          {/* Replaced Vertical Line with a subtle Landmark/Emblem icon */}
+          <div className="flex justify-center mb-6 text-gov-gold">
+            <Landmark size={48} strokeWidth={1} />
+          </div>
           
-          <h2 className="text-4xl md:text-6xl font-cinzel font-bold tracking-wide mb-6 text-gov-blue leading-[1.2]">
-            Securing India's <br/>
+          <h2 className="text-4xl md:text-6xl font-cinzel font-bold tracking-wide mb-6 leading-[1.2]">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gov-blue to-[#1a365d]">
+              Securing India's
+            </span> <br/>
             <span className="text-gov-gold">Traditional Knowledge.</span>
           </h2>
 
-          <p className="text-lg text-gray-700 max-w-2xl mx-auto mb-12 leading-relaxed italic">
+          <p className="text-lg text-gov-blue max-w-2xl mx-auto mb-12 leading-relaxed font-bold">
             Welcome to the official registry for Indian citizens to protect ancestral wisdom. Submit your knowledge, get it verified by the Ministry, and lock it forever on the blockchain to prevent foreign bio-piracy.
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center gap-6">
             <Link href="/login">
-              <button className="gov-btn px-10 py-4 text-sm w-full sm:w-auto shadow-lg hover:shadow-xl">
+              <button className="bg-gov-gold text-white px-10 py-4 text-sm font-cinzel font-bold tracking-widest uppercase hover:bg-[#9a7b3b] transition-colors shadow-md w-full sm:w-auto">
                 Login as Citizen
               </button>
             </Link>
             <Link href="/admin-login">
-              <button className="gov-btn-outline px-10 py-4 text-sm w-full sm:w-auto">
+              <button className="bg-gov-blue text-white px-10 py-4 text-sm font-cinzel font-bold tracking-widest uppercase hover:bg-[#081729] transition-colors shadow-md w-full sm:w-auto">
                 Ministry Login
               </button>
             </Link>
@@ -86,7 +91,7 @@ export default function LandingPage() {
       {/* SECTION 2: THE MANDATE (Authority & Trust) */}
       <section id="mandate" className="bg-gov-light py-20 px-8 relative overflow-hidden">
         <div className="max-w-4xl mx-auto relative z-10">
-          <div className="text-gov-gold/20 absolute -top-10 -left-10">
+          <div className="text-gov-gold/30 absolute -top-10 -left-10">
             <Quote size={120} strokeWidth={1} />
           </div>
           
@@ -94,7 +99,7 @@ export default function LandingPage() {
             <h3 className="font-cinzel text-xs font-bold uppercase tracking-widest text-gov-blue mb-6">
               Official Government Mandate
             </h3>
-            <p className="text-2xl text-gov-blue leading-relaxed font-medium italic mb-8">
+            <p className="text-2xl text-gov-blue leading-relaxed font-bold mb-8">
               "The objective of this portal is to ensure that India's vast heritage of traditional medicine and practices remains the sovereign intellectual property of the nation. No foreign entity shall patent what belongs to our ancestors."
             </p>
             <div className="w-16 h-px bg-gov-gold mx-auto"></div>
