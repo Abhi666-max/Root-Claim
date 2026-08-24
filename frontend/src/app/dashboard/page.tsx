@@ -2,38 +2,43 @@
 
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Lock, Database, Radar, LogOut, ChevronRight, FileText } from 'lucide-react'
+import { Terminal, Fingerprint, Radar, Lock, LogOut, Command, Hexagon } from 'lucide-react'
 import Link from 'next/link'
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('chat')
 
   const navItems = [
-    { id: 'chat', label: 'Semantic Analysis', icon: Database },
-    { id: 'scanner', label: 'Document Collision', icon: Search },
-    { id: 'vault', label: 'Blockchain Vault', icon: Lock },
-    { id: 'radar', label: 'Patent Radar', icon: Radar },
+    { id: 'chat', label: 'Neural Uplink', icon: Terminal },
+    { id: 'scanner', label: 'Collision Radar', icon: Radar },
+    { id: 'vault', label: 'Decentralized Vault', icon: Lock },
   ]
 
   return (
-    <div className="flex h-screen w-full bg-notion-bg text-notion-text font-sans selection:bg-gray-200">
+    <div className="flex h-screen w-full bg-metal-bg text-white font-sans selection:bg-neon-cyan selection:text-black p-6 gap-6">
       
-      {/* Minimalist Sidebar */}
-      <aside className="w-64 bg-gray-50/50 border-r border-notion-border flex flex-col">
-        {/* Workspace Header */}
-        <div className="px-4 py-4 border-b border-notion-border">
-          <div className="flex items-center gap-2 hover:bg-notion-hover p-1 -ml-1 rounded cursor-pointer transition-colors">
-            <div className="w-5 h-5 bg-notion-text text-white rounded flex items-center justify-center font-bold text-xs">
-              R
+      {/* Tactical Sidebar */}
+      <aside className="w-72 neu-outset flex flex-col overflow-hidden">
+        
+        {/* Workspace Brand */}
+        <div className="p-8 border-b border-white/5">
+          <div className="flex items-center gap-3">
+            <div className="neu-inset p-2.5 rounded-xl text-neon-purple shadow-[inset_0_0_10px_rgba(181,0,255,0.1)]">
+              <Hexagon size={24} />
             </div>
-            <span className="font-semibold text-sm">Root-Claim Workspace</span>
+            <div>
+              <h1 className="font-bold tracking-widest uppercase text-sm">Root-Claim</h1>
+              <p className="text-[10px] text-neon-cyan font-bold tracking-[0.3em] uppercase mt-1 animate-pulse">
+                System Active
+              </p>
+            </div>
           </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 py-4 space-y-0.5">
-          <div className="px-4 text-xs font-semibold text-notion-gray uppercase tracking-wider mb-2">
-            Modules
+        <nav className="flex-1 p-6 space-y-4">
+          <div className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-4 pl-2">
+            Control Modules
           </div>
           {navItems.map((item) => {
             const Icon = item.icon
@@ -42,116 +47,102 @@ export default function Dashboard() {
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center gap-2.5 px-4 py-1.5 transition-colors text-sm ${
+                className={`w-full flex items-center gap-4 px-5 py-4 transition-all duration-300 rounded-xl uppercase text-xs tracking-widest font-bold ${
                   isActive 
-                  ? 'bg-gray-200/50 text-notion-text font-medium' 
-                  : 'hover:bg-notion-hover text-notion-gray hover:text-notion-text'
+                  ? 'neu-inset text-neon-cyan' 
+                  : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'
                 }`}
               >
-                <Icon size={16} className={isActive ? 'text-notion-text' : 'text-notion-gray'} />
+                <Icon size={18} className={isActive ? 'text-neon-cyan' : 'text-gray-600'} />
                 <span>{item.label}</span>
               </button>
             )
           })}
         </nav>
 
-        <div className="p-4 border-t border-notion-border">
+        {/* Footer Actions */}
+        <div className="p-6 border-t border-white/5">
           <Link href="/">
-            <button className="w-full flex items-center gap-2.5 px-2 py-1.5 hover:bg-notion-hover text-notion-gray hover:text-red-600 rounded transition-colors text-sm">
+            <button className="w-full flex items-center justify-center gap-3 px-4 py-4 text-gray-600 hover:text-red-500 transition-colors uppercase text-xs font-bold tracking-widest neu-button">
               <LogOut size={16} />
-              <span>Log out</span>
+              <span>Terminate Session</span>
             </button>
           </Link>
         </div>
       </aside>
 
-      {/* Main Content Document */}
-      <main className="flex-1 flex flex-col bg-white overflow-hidden">
+      {/* Main Command Area */}
+      <main className="flex-1 flex flex-col overflow-hidden neu-outset">
         
-        {/* Breadcrumb Header */}
-        <header className="h-12 border-b border-notion-border flex items-center px-6">
-          <div className="flex items-center gap-2 text-sm text-notion-gray">
-            <span className="hover:underline cursor-pointer">Root-Claim Workspace</span>
-            <ChevronRight size={14} />
-            <span className="text-notion-text font-medium">
-              {navItems.find(i => i.id === activeTab)?.label}
+        {/* Module Header */}
+        <header className="h-24 border-b border-white/5 flex items-center px-10 justify-between">
+          <h2 className="text-xl font-bold tracking-widest uppercase text-gray-300">
+            // {navItems.find(i => i.id === activeTab)?.label}
+          </h2>
+          <div className="neu-inset px-4 py-2 rounded-lg flex items-center gap-3 border border-white/5">
+            <div className="h-2 w-2 rounded-full bg-neon-cyan shadow-[0_0_10px_#00f0ff] animate-pulse"></div>
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+              Secure Channel
             </span>
           </div>
         </header>
 
-        {/* Workspace Canvas */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="max-w-3xl mx-auto px-10 py-12">
-            
-            {/* Page Title */}
-            <h1 className="text-4xl font-serif font-semibold mb-8 text-notion-text flex items-center gap-3">
-              <span className="text-4xl border-b-2 border-transparent">
-                {navItems.find(i => i.id === activeTab)?.icon({ size: 36, className: "text-notion-gray" })}
-              </span>
-              {navItems.find(i => i.id === activeTab)?.label}
-            </h1>
-
-            <AnimatePresence mode="wait">
-              {activeTab === 'chat' && (
-                <motion.div 
-                  key="chat"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="space-y-6"
-                >
-                  <p className="text-notion-gray font-serif text-lg border-b border-notion-border pb-6">
-                    Utilize the Semantic Analysis module to query the global intellectual property vector database. Type `/` for commands.
-                  </p>
-
-                  <div className="space-y-6 py-4">
-                    {/* Mock Chat / Document block */}
-                    <div className="flex gap-4">
-                      <div className="w-6 h-6 bg-gray-100 rounded flex items-center justify-center shrink-0 mt-0.5">
-                        <FileText size={14} className="text-notion-gray" />
-                      </div>
-                      <div>
-                        <div className="font-medium text-sm mb-1">System Status</div>
-                        <p className="text-sm text-notion-text font-serif leading-relaxed">
-                          IP-SAKTI intelligence engine is active. The vector database is currently indexing 4.2 million patents and traditional knowledge manuscripts. How may I assist your research today?
-                        </p>
-                      </div>
-                    </div>
+        {/* Module Content */}
+        <div className="flex-1 p-10 overflow-y-auto">
+          <AnimatePresence mode="wait">
+            {activeTab === 'chat' && (
+              <motion.div 
+                key="chat"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+                className="h-full flex flex-col"
+              >
+                <div className="neu-inset p-6 rounded-2xl mb-8 flex items-start gap-5 border border-white/5">
+                  <div className="neu-outset w-12 h-12 flex items-center justify-center shrink-0 text-neon-cyan">
+                    <Command size={20} />
                   </div>
-                  
-                  {/* Input Block */}
-                  <div className="mt-8">
-                    <input 
-                      type="text" 
-                      placeholder="Type a query, or press '/' for commands..." 
-                      className="w-full text-base font-serif bg-transparent border-none focus:outline-none focus:ring-0 placeholder-gray-300 py-2"
-                    />
-                    <div className="h-px bg-notion-border w-full mt-2"></div>
-                  </div>
-                </motion.div>
-              )}
-
-              {activeTab !== 'chat' && (
-                <motion.div 
-                  key="other"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="pt-10 border-t border-notion-border"
-                >
-                  <div className="notion-card bg-gray-50/50">
-                    <h3 className="font-semibold mb-2 flex items-center gap-2">
-                      <Lock size={16} /> Restricted Access
-                    </h3>
-                    <p className="text-sm text-notion-gray leading-relaxed font-serif">
-                      This workspace block requires elevated permissions. Please authenticate with your credentials to unlock this module.
+                  <div>
+                    <h3 className="font-bold uppercase tracking-widest text-sm mb-2 text-gray-300">IP-SAKTI Interface</h3>
+                    <p className="text-sm text-gray-500 font-medium leading-relaxed tracking-wide">
+                      Awaiting directives. The semantic vector engine is calibrated and connected to the global intellectual property matrix.
                     </p>
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-            
-          </div>
+                </div>
+
+                <div className="mt-auto relative">
+                  <div className="neu-inset rounded-2xl p-2 flex items-center border border-white/5">
+                    <input 
+                      type="text" 
+                      placeholder="Input query parameters..." 
+                      className="w-full bg-transparent border-none focus:outline-none text-gray-300 px-6 py-4 placeholder-gray-600 text-sm tracking-wide"
+                    />
+                    <button className="neu-button neon-edge px-8 py-4 text-xs font-bold uppercase tracking-widest text-gray-300 hover:text-white shrink-0 mr-1">
+                      Execute
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab !== 'chat' && (
+              <motion.div 
+                key="other"
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="h-full flex flex-col items-center justify-center text-center"
+              >
+                <div className="neu-inset w-24 h-24 rounded-full flex items-center justify-center mb-8 text-gray-600 border border-white/5 shadow-[inset_0_0_20px_rgba(255,0,0,0.1)]">
+                  <Fingerprint size={40} className="text-red-500/50" />
+                </div>
+                <h3 className="text-2xl font-bold tracking-widest uppercase text-gray-400 mb-3">Access Restricted</h3>
+                <p className="text-gray-600 max-w-md font-medium text-sm tracking-wide leading-relaxed">
+                  Cryptographic verification required. Please authenticate via the primary command interface to access this sector.
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </main>
     </div>
