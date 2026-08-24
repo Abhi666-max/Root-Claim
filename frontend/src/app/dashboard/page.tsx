@@ -2,44 +2,48 @@
 
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Terminal, Fingerprint, Radar, Lock, LogOut, Command, Hexagon } from 'lucide-react'
+import { Cpu, Search, Lock, ShieldAlert, LogOut, ChevronRight, MessageSquare, Terminal } from 'lucide-react'
 import Link from 'next/link'
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('chat')
 
   const navItems = [
-    { id: 'chat', label: 'Neural Uplink', icon: Terminal },
-    { id: 'scanner', label: 'Collision Radar', icon: Radar },
-    { id: 'vault', label: 'Decentralized Vault', icon: Lock },
+    { id: 'chat', label: 'Semantic Engine', icon: Cpu },
+    { id: 'scanner', label: 'Collision Matrix', icon: Search },
+    { id: 'vault', label: 'Crypto Vault', icon: Lock },
+    { id: 'radar', label: 'Threat Radar', icon: ShieldAlert },
   ]
 
   return (
-    <div className="flex h-screen w-full bg-metal-bg text-white font-sans selection:bg-neon-cyan selection:text-black p-6 gap-6">
+    <div className="flex h-screen w-full bg-cyber-bg text-cyber-text font-sans overflow-hidden relative">
       
-      {/* Tactical Sidebar */}
-      <aside className="w-72 neu-outset flex flex-col overflow-hidden">
-        
-        {/* Workspace Brand */}
-        <div className="p-8 border-b border-white/5">
-          <div className="flex items-center gap-3">
-            <div className="neu-inset p-2.5 rounded-xl text-neon-purple shadow-[inset_0_0_10px_rgba(181,0,255,0.1)]">
-              <Hexagon size={24} />
-            </div>
-            <div>
-              <h1 className="font-bold tracking-widest uppercase text-sm">Root-Claim</h1>
-              <p className="text-[10px] text-neon-cyan font-bold tracking-[0.3em] uppercase mt-1 animate-pulse">
-                System Active
-              </p>
-            </div>
+      {/* Glowing Orbs */}
+      <div className="orb-container">
+        <div className="orb orb-cyan" style={{opacity: 0.3}}></div>
+        <div className="orb orb-pink" style={{opacity: 0.3}}></div>
+      </div>
+
+      {/* Glass Sidebar */}
+      <motion.aside 
+        initial={{ x: -300 }}
+        animate={{ x: 0 }}
+        transition={{ type: "spring", stiffness: 100, damping: 20 }}
+        className="w-72 cyber-glass border-y-0 border-l-0 z-10 flex flex-col m-4 rounded-[32px] overflow-hidden"
+      >
+        <div className="p-8 pb-4">
+          <h1 className="text-2xl font-black tracking-tight text-cyber-text flex items-center gap-2">
+            Root-Claim
+          </h1>
+          <div className="mt-3 flex items-center gap-2 bg-white/60 border border-white px-3 py-1.5 rounded-full shadow-sm w-max">
+            <div className="w-2 h-2 rounded-full bg-cyber-cyan shadow-[0_0_8px_#00f0ff] animate-pulse"></div>
+            <p className="text-[10px] text-cyber-text font-bold tracking-widest uppercase">
+              Uplink Active
+            </p>
           </div>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 p-6 space-y-4">
-          <div className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-4 pl-2">
-            Control Modules
-          </div>
+        <nav className="flex-1 p-4 space-y-2 mt-4">
           {navItems.map((item) => {
             const Icon = item.icon
             const isActive = activeTab === item.id
@@ -47,102 +51,117 @@ export default function Dashboard() {
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center gap-4 px-5 py-4 transition-all duration-300 rounded-xl uppercase text-xs tracking-widest font-bold ${
+                className={`w-full flex items-center gap-4 px-5 py-3.5 rounded-2xl transition-all duration-300 font-semibold text-sm ${
                   isActive 
-                  ? 'neu-inset text-neon-cyan' 
-                  : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'
+                  ? 'bg-white shadow-md text-cyber-text border border-white scale-[1.02]' 
+                  : 'hover:bg-white/50 text-cyber-gray hover:text-cyber-text border border-transparent'
                 }`}
               >
-                <Icon size={18} className={isActive ? 'text-neon-cyan' : 'text-gray-600'} />
+                <div className={`${isActive ? 'text-cyber-pink' : 'text-cyber-gray'}`}>
+                  <Icon size={20} />
+                </div>
                 <span>{item.label}</span>
               </button>
             )
           })}
         </nav>
 
-        {/* Footer Actions */}
-        <div className="p-6 border-t border-white/5">
+        <div className="p-4">
           <Link href="/">
-            <button className="w-full flex items-center justify-center gap-3 px-4 py-4 text-gray-600 hover:text-red-500 transition-colors uppercase text-xs font-bold tracking-widest neu-button">
+            <button className="w-full flex items-center justify-center gap-2 px-4 py-3.5 bg-white/50 hover:bg-white text-cyber-gray hover:text-red-500 rounded-2xl transition-all font-bold text-sm border border-transparent hover:border-red-100 shadow-sm">
               <LogOut size={16} />
-              <span>Terminate Session</span>
+              <span>Disconnect</span>
             </button>
           </Link>
         </div>
-      </aside>
+      </motion.aside>
 
-      {/* Main Command Area */}
-      <main className="flex-1 flex flex-col overflow-hidden neu-outset">
-        
-        {/* Module Header */}
-        <header className="h-24 border-b border-white/5 flex items-center px-10 justify-between">
-          <h2 className="text-xl font-bold tracking-widest uppercase text-gray-300">
-            // {navItems.find(i => i.id === activeTab)?.label}
-          </h2>
-          <div className="neu-inset px-4 py-2 rounded-lg flex items-center gap-3 border border-white/5">
-            <div className="h-2 w-2 rounded-full bg-neon-cyan shadow-[0_0_10px_#00f0ff] animate-pulse"></div>
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-              Secure Channel
-            </span>
+      {/* Main Glass Workspace */}
+      <main className="flex-1 relative z-10 flex flex-col p-4 pl-0">
+        <div className="flex-1 cyber-glass-card flex flex-col overflow-hidden bg-white/70">
+          
+          {/* Header */}
+          <header className="h-20 border-b border-white/80 flex items-center px-8 justify-between bg-white/30 backdrop-blur-md">
+            <div className="flex items-center gap-2">
+              <h2 className="text-xl font-bold tracking-tight text-cyber-text">
+                {navItems.find(i => i.id === activeTab)?.label}
+              </h2>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-bold text-cyber-gray uppercase tracking-widest">
+                Network: Polygon Amoy
+              </span>
+              <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-cyber-cyan to-cyber-pink p-[2px]">
+                <div className="w-full h-full bg-white rounded-full flex items-center justify-center">
+                  <Terminal size={14} className="text-cyber-text" />
+                </div>
+              </div>
+            </div>
+          </header>
+
+          {/* Dynamic Content */}
+          <div className="flex-1 p-8 overflow-y-auto">
+            <AnimatePresence mode="wait">
+              {activeTab === 'chat' && (
+                <motion.div 
+                  key="chat"
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.3 }}
+                  className="h-full flex flex-col bg-white rounded-[24px] shadow-sm border border-white overflow-hidden"
+                >
+                  <div className="flex-1 p-8 space-y-6 overflow-y-auto">
+                    <div className="flex items-start gap-5">
+                      <div className="w-12 h-12 rounded-[16px] bg-gradient-to-br from-cyber-cyan to-cyber-pink flex items-center justify-center shrink-0 shadow-lg text-white">
+                        <MessageSquare size={20} />
+                      </div>
+                      <div className="bg-gray-50 border border-gray-100 p-5 rounded-2xl rounded-tl-none max-w-[80%] shadow-sm">
+                        <h4 className="font-bold text-xs uppercase tracking-widest text-cyber-gray mb-2">System Initialized</h4>
+                        <p className="text-sm leading-relaxed text-cyber-text font-medium">
+                          I am IP-SAKTI, your advanced semantic interface. The vector space is fully loaded with global patent data and traditional knowledge repositories. Awaiting your inquiry.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 border-t border-gray-100 bg-gray-50/50">
+                    <div className="relative flex items-center">
+                      <input 
+                        type="text" 
+                        placeholder="Initialize semantic query..." 
+                        className="w-full bg-white border border-gray-200 rounded-full py-4 pl-6 pr-32 text-cyber-text focus:outline-none focus:border-cyber-cyan focus:ring-4 focus:ring-cyber-cyan/10 transition-all text-sm shadow-sm font-medium"
+                      />
+                      <button className="absolute right-2 cyber-btn px-8 py-3 text-sm">
+                        Execute
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {activeTab !== 'chat' && (
+                <motion.div 
+                  key="other"
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="h-full flex flex-col items-center justify-center text-center bg-white rounded-[24px] border border-white shadow-sm relative overflow-hidden"
+                >
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyber-pink/5 rounded-full blur-3xl"></div>
+                  
+                  <div className="w-24 h-24 rounded-[32px] bg-gray-50 flex items-center justify-center mb-8 text-gray-300 relative z-10 shadow-inner">
+                    <Lock size={40} />
+                  </div>
+                  <h3 className="text-3xl font-black tracking-tight text-cyber-text mb-3 relative z-10">Module Locked</h3>
+                  <p className="text-cyber-gray max-w-md font-medium text-sm leading-relaxed relative z-10">
+                    This sector requires cryptographic authorization. Please verify your Web3 identity to access this intelligence tier.
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
-        </header>
 
-        {/* Module Content */}
-        <div className="flex-1 p-10 overflow-y-auto">
-          <AnimatePresence mode="wait">
-            {activeTab === 'chat' && (
-              <motion.div 
-                key="chat"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-                className="h-full flex flex-col"
-              >
-                <div className="neu-inset p-6 rounded-2xl mb-8 flex items-start gap-5 border border-white/5">
-                  <div className="neu-outset w-12 h-12 flex items-center justify-center shrink-0 text-neon-cyan">
-                    <Command size={20} />
-                  </div>
-                  <div>
-                    <h3 className="font-bold uppercase tracking-widest text-sm mb-2 text-gray-300">IP-SAKTI Interface</h3>
-                    <p className="text-sm text-gray-500 font-medium leading-relaxed tracking-wide">
-                      Awaiting directives. The semantic vector engine is calibrated and connected to the global intellectual property matrix.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-auto relative">
-                  <div className="neu-inset rounded-2xl p-2 flex items-center border border-white/5">
-                    <input 
-                      type="text" 
-                      placeholder="Input query parameters..." 
-                      className="w-full bg-transparent border-none focus:outline-none text-gray-300 px-6 py-4 placeholder-gray-600 text-sm tracking-wide"
-                    />
-                    <button className="neu-button neon-edge px-8 py-4 text-xs font-bold uppercase tracking-widest text-gray-300 hover:text-white shrink-0 mr-1">
-                      Execute
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-            {activeTab !== 'chat' && (
-              <motion.div 
-                key="other"
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="h-full flex flex-col items-center justify-center text-center"
-              >
-                <div className="neu-inset w-24 h-24 rounded-full flex items-center justify-center mb-8 text-gray-600 border border-white/5 shadow-[inset_0_0_20px_rgba(255,0,0,0.1)]">
-                  <Fingerprint size={40} className="text-red-500/50" />
-                </div>
-                <h3 className="text-2xl font-bold tracking-widest uppercase text-gray-400 mb-3">Access Restricted</h3>
-                <p className="text-gray-600 max-w-md font-medium text-sm tracking-wide leading-relaxed">
-                  Cryptographic verification required. Please authenticate via the primary command interface to access this sector.
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
       </main>
     </div>
