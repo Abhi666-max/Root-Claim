@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Hexagon, ArrowRight, ShieldCheck, Cpu, Layers } from 'lucide-react'
+import { Hexagon, ArrowRight, ShieldCheck, Cpu, Layers, Radar } from 'lucide-react'
 import Link from 'next/link'
 
 export default function LandingPage() {
