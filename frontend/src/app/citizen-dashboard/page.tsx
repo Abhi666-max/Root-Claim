@@ -5,10 +5,6 @@ import {
   ShieldCheck, User, Search, Activity, Download, 
   ChevronRight, CheckCircle, Clock, Home, FileText, 
   AlertTriangle, UploadCloud, FileSignature, 
-import { 
-  ShieldCheck, User, Search, Activity, Download, 
-  ChevronRight, CheckCircle, Clock, Home, FileText, 
-  AlertTriangle, UploadCloud, FileSignature, 
   Sparkles, ShieldAlert, Cpu, MessageSquare, Send, Link as LinkIcon
 } from 'lucide-react'
 import Link from 'next/link'
