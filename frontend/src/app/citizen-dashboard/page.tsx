@@ -5,7 +5,11 @@ import {
   ShieldCheck, User, Search, Activity, Download, 
   ChevronRight, CheckCircle, Clock, Home, FileText, 
   AlertTriangle, UploadCloud, FileSignature, 
-  Sparkles, ShieldAlert, Cpu, MessageSquare, Send
+import { 
+  ShieldCheck, User, Search, Activity, Download, 
+  ChevronRight, CheckCircle, Clock, Home, FileText, 
+  AlertTriangle, UploadCloud, FileSignature, 
+  Sparkles, ShieldAlert, Cpu, MessageSquare, Send, Link as LinkIcon
 } from 'lucide-react'
 import Link from 'next/link'
 import axios from 'axios'
@@ -134,17 +138,18 @@ export default function CitizenDashboard() {
             <Home size={16} /> Overview
           </button>
           <button 
-            onClick={() => setActiveTab('submit')}
-            className={`flex items-center gap-3 px-4 py-3 rounded text-xs font-bold uppercase tracking-widest transition-colors ${activeTab === 'submit' ? 'bg-gov-gold text-white shadow-md' : 'text-gray-300 hover:bg-white/5 hover:text-white'}`}
-          >
-            <FileText size={16} /> Submit Knowledge
-          </button>
-          <button 
             onClick={() => setActiveTab('ip-sakti')}
             className={`flex items-center gap-3 px-4 py-3 rounded text-xs font-bold uppercase tracking-widest transition-colors ${activeTab === 'ip-sakti' ? 'bg-gov-gold text-white shadow-md' : 'text-gray-300 hover:bg-white/5 hover:text-white'}`}
           >
             <MessageSquare size={16} /> IP-SAKTI Sahayak
           </button>
+          <button 
+            onClick={() => setActiveTab('submit')}
+            className={`flex items-center gap-3 px-4 py-3 rounded text-xs font-bold uppercase tracking-widest transition-colors ${activeTab === 'submit' ? 'bg-gov-gold text-white shadow-md' : 'text-gray-300 hover:bg-white/5 hover:text-white'}`}
+          >
+            <FileText size={16} /> Submit Knowledge
+          </button>
+
           <button 
             onClick={() => setActiveTab('vault')}
             className={`flex items-center gap-3 px-4 py-3 rounded text-xs font-bold uppercase tracking-widest transition-colors ${activeTab === 'vault' ? 'bg-gov-gold text-white shadow-md' : 'text-gray-300 hover:bg-white/5 hover:text-white'}`}
@@ -200,7 +205,7 @@ export default function CitizenDashboard() {
           {activeTab === 'overview' && (
             <div className="max-w-6xl">
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
                 <div className="bg-white p-6 border-t-4 border-gov-blue shadow-sm">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Total Claims Submitted</p>
                   <h3 className="text-4xl font-serif-official font-bold text-gov-blue">02</h3>
@@ -209,40 +214,76 @@ export default function CitizenDashboard() {
                   <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Blockchain Verified</p>
                   <h3 className="text-4xl font-serif-official font-bold text-green-700">01</h3>
                 </div>
+                <div className="bg-white p-6 border-t-4 border-yellow-500 shadow-sm">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Knowledge Digitized</p>
+                  <h3 className="text-4xl font-serif-official font-bold text-yellow-600">4.2<span className="text-sm">TB</span></h3>
+                </div>
                 <div className="bg-white p-6 border-t-4 border-red-600 shadow-sm">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Piracy Reports Filed</p>
-                  <h3 className="text-4xl font-serif-official font-bold text-red-700">00</h3>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Bio-Piracy Blocked</p>
+                  <h3 className="text-4xl font-serif-official font-bold text-red-700">14</h3>
                 </div>
               </div>
 
-              <div className="bg-white border border-gray-200 shadow-sm p-8 mb-10">
-                <h3 className="font-serif-official font-bold text-xl text-gov-blue mb-6 border-b border-gray-100 pb-4">Quick Actions</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div 
-                    onClick={() => setActiveTab('submit')}
-                    className="group border border-gray-200 p-6 hover:border-gov-gold cursor-pointer transition-colors bg-gray-50 flex items-start gap-4"
-                  >
-                    <div className="bg-gov-blue text-gov-gold p-3 rounded group-hover:scale-110 transition-transform">
-                      <Sparkles size={24} />
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+                {/* System Status / Network */}
+                <div className="lg:col-span-2 bg-white border border-gray-200 shadow-sm p-8">
+                  <h3 className="font-serif-official font-bold text-xl text-gov-blue mb-6 border-b border-gray-100 pb-4">Digital Ecosystem Status</h3>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center p-4 bg-gray-50 border border-gray-100">
+                      <div className="flex items-center gap-3">
+                        <MessageSquare className="text-gov-gold" />
+                        <div>
+                          <p className="font-bold text-sm text-gray-800">IP-SAKTI RAG Chatbot</p>
+                          <p className="text-xs text-gray-500">Connected to Ministry Legal Database</p>
+                        </div>
+                      </div>
+                      <span className="bg-green-100 text-green-700 px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full">Online</span>
                     </div>
-                    <div>
-                      <h4 className="font-bold text-gov-blue mb-1">AI-Assisted Submission</h4>
-                      <p className="text-xs text-gray-500 mb-3 leading-relaxed">Draft your claim in simple language and let our AI format it into an official botanical/medical claim.</p>
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-gov-gold flex items-center gap-1 group-hover:text-gov-blue">Start Draft <ChevronRight size={12}/></span>
+                    
+                    <div className="flex justify-between items-center p-4 bg-gray-50 border border-gray-100">
+                      <div className="flex items-center gap-3">
+                        <Cpu className="text-gov-blue" />
+                        <div>
+                          <p className="font-bold text-sm text-gray-800">AI Collision Radar</p>
+                          <p className="text-xs text-gray-500">Scanning USPTO, EPO, and TKDL Databases</p>
+                        </div>
+                      </div>
+                      <span className="bg-green-100 text-green-700 px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full">Active</span>
+                    </div>
+
+                    <div className="flex justify-between items-center p-4 bg-gray-50 border border-gray-100">
+                      <div className="flex items-center gap-3">
+                        <LinkIcon className="text-purple-600" />
+                        <div>
+                          <p className="font-bold text-sm text-gray-800">Polygon Blockchain Vault</p>
+                          <p className="text-xs text-gray-500">Cryptographic Anchoring System</p>
+                        </div>
+                      </div>
+                      <span className="bg-green-100 text-green-700 px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full">Synced</span>
                     </div>
                   </div>
-                  
-                  <div 
-                    onClick={() => setActiveTab('vault')}
-                    className="group border border-gray-200 p-6 hover:border-gov-gold cursor-pointer transition-colors bg-gray-50 flex items-start gap-4"
-                  >
-                    <div className="bg-gov-blue text-gov-gold p-3 rounded group-hover:scale-110 transition-transform">
-                      <FileSignature size={24} />
-                    </div>
+                </div>
+
+                {/* Notifications / Directives */}
+                <div className="bg-white border border-gray-200 shadow-sm p-8">
+                  <h3 className="font-serif-official font-bold text-xl text-gov-blue mb-6 border-b border-gray-100 pb-4 flex items-center gap-2">
+                    <AlertTriangle size={20} className="text-yellow-500"/> Ministry Directives
+                  </h3>
+                  <div className="space-y-6">
                     <div>
-                      <h4 className="font-bold text-gov-blue mb-1">Download Certificates</h4>
-                      <p className="text-xs text-gray-500 mb-3 leading-relaxed">Download official government certificates with QR codes for your blockchain-verified claims.</p>
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-gov-gold flex items-center gap-1 group-hover:text-gov-blue">View Vault <ChevronRight size={12}/></span>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Today, 09:00 AM</p>
+                      <p className="text-sm text-gray-700 font-bold leading-snug">New Patent Guidelines Released for Ayurvedic Extracts</p>
+                      <p className="text-xs text-gray-500 mt-1">Check the IP-SAKTI Chatbot for detailed summaries.</p>
+                    </div>
+                    <div className="border-t border-gray-100 pt-4">
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Yesterday</p>
+                      <p className="text-sm text-gray-700 font-bold leading-snug">Blockchain Node Upgrade Complete</p>
+                      <p className="text-xs text-gray-500 mt-1">All digital vault certificates are now instantly verifiable.</p>
+                    </div>
+                    <div className="border-t border-gray-100 pt-4">
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">21 Aug 2026</p>
+                      <p className="text-sm text-red-600 font-bold leading-snug flex items-center gap-1"><ShieldAlert size={14}/> Bio-Piracy Alert</p>
+                      <p className="text-xs text-gray-500 mt-1">High volume of fake turmeric patents detected from EU regions.</p>
                     </div>
                   </div>
                 </div>
@@ -404,7 +445,13 @@ export default function CitizenDashboard() {
                           <p className="text-xs text-gray-600 line-clamp-2 italic">"Verified against ancient Ayurvedic texts. No prior patents found. Cleared for IP lock."</p>
                         </td>
                         <td className="p-5 pr-8 text-right">
-                          <button className="bg-gov-gold text-white px-4 py-2 text-[10px] font-bold tracking-widest uppercase hover:bg-[#9a7b3b] transition-colors flex items-center gap-2 ml-auto shadow-sm">
+                          <button 
+                            onClick={() => {
+                              alert("Generating securely signed Blockchain PDF Certificate...");
+                              setTimeout(() => alert("Certificate Downloaded: TK-2026-1142_Verified.pdf"), 1000);
+                            }}
+                            className="bg-gov-gold text-white px-4 py-2 text-[10px] font-bold tracking-widest uppercase hover:bg-[#9a7b3b] transition-colors flex items-center gap-2 ml-auto shadow-sm"
+                          >
                             <Download size={14} /> Official Certificate
                           </button>
                         </td>
