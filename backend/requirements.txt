@@ -5,5 +5,7 @@ groq
 web3
 python-multipart
 deep-translator
-PyMuPDF
 python-dotenv
+easyocr
+opencv-python-headless
+sentence-transformers
