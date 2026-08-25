@@ -1,7 +1,35 @@
-import React from 'react'
+"use client"
+
+import React, { useState } from 'react'
 import { ShieldAlert, Fingerprint, Database, CheckSquare, XSquare, Link as LinkIcon, Network, AlertTriangle } from 'lucide-react'
+import axios from 'axios'
 
 export default function AdminDashboard() {
+  const [isLocking, setIsLocking] = useState(false)
+  const [blockchainResult, setBlockchainResult] = useState<any>(null)
+
+  const handleBlockchainLock = async () => {
+    setIsLocking(true)
+    try {
+      const mockClaimData = {
+        title: "Turmeric Wound Healing Formulation",
+        description: "A paste made of Curcuma longa mixed with clarified butter used for rapid healing of deep cuts.",
+        verified_by: "Ministry of Ayush",
+        timestamp: new Date().toISOString()
+      }
+      
+      const response = await axios.post('http://localhost:8000/api/v1/anchor', {
+        claim_data: mockClaimData
+      })
+      
+      setBlockchainResult(response.data)
+    } catch (error) {
+      console.error("Blockchain error:", error)
+      alert("Failed to anchor to blockchain.")
+    } finally {
+      setIsLocking(false)
+    }
+  }
   return (
     <div className="min-h-screen bg-gray-50 text-gov-text font-sans flex flex-col">
       
@@ -131,9 +159,26 @@ export default function AdminDashboard() {
               <p className="text-sm text-gray-400 mb-6 max-w-xl">
                 Warning: Anchoring this claim to the Polygon blockchain is an irreversible action. It will permanently establish this formulation as the sovereign IP of the Government of India.
               </p>
-              <button className="bg-yellow-500 text-gray-900 px-8 py-4 font-black uppercase tracking-widest text-sm hover:bg-yellow-400 transition-colors shadow-[0_0_20px_rgba(234,179,8,0.3)]">
-                Lock on Blockchain Now
+              <button 
+                onClick={handleBlockchainLock}
+                disabled={isLocking || blockchainResult}
+                className={`px-8 py-4 font-black uppercase tracking-widest text-sm transition-colors shadow-[0_0_20px_rgba(234,179,8,0.3)] ${
+                  blockchainResult 
+                    ? 'bg-green-500 text-white cursor-default' 
+                    : 'bg-yellow-500 text-gray-900 hover:bg-yellow-400 disabled:opacity-50'
+                }`}
+              >
+                {isLocking ? 'Anchoring to Polygon...' : blockchainResult ? 'Successfully Anchored' : 'Lock on Blockchain Now'}
               </button>
+
+              {blockchainResult && (
+                <div className="mt-6 p-4 bg-gray-800 border border-gray-700 rounded text-xs font-mono">
+                  <p className="text-green-400 mb-2">✅ Immutable Proof Generated</p>
+                  <p className="mb-1"><span className="text-gray-500">Tx Hash:</span> <span className="text-blue-400 break-all">{blockchainResult.polygon_tx_hash}</span></p>
+                  <p className="mb-1"><span className="text-gray-500">Block:</span> {blockchainResult.block_number}</p>
+                  <p><span className="text-gray-500">SHA-256 Claim Hash:</span> <span className="text-yellow-400 break-all">{blockchainResult.sha256_hash}</span></p>
+                </div>
+              )}
             </div>
           </div>
 

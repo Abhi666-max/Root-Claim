@@ -1,8 +1,8 @@
 import os
 from groq import Groq
+from dotenv import load_dotenv
 
-# Initialize Groq Client
-# Ensure GROQ_API_KEY is in .env
+load_dotenv()
 groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 def generate_smart_draft(raw_text: str) -> str:
@@ -31,7 +31,7 @@ def generate_smart_draft(raw_text: str) -> str:
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": raw_text}
             ],
-            model="llama3-8b-8192",
+            model="llama-3.1-8b-instant",
             temperature=0.2, # Low temperature for strict, formal output
             max_tokens=1024,
         )
@@ -66,7 +66,7 @@ def query_ip_sakti(query: str, retrieved_context: str = "") -> str:
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
             ],
-            model="llama3-8b-8192",
+            model="llama-3.1-8b-instant",
             temperature=0.1,
             max_tokens=1024,
         )

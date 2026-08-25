@@ -2,7 +2,6 @@ import os
 import hashlib
 import json
 from web3 import Web3
-from web3.middleware import geth_poa_middleware
 import logging
 
 # Initialize Web3
@@ -10,7 +9,6 @@ polygon_rpc: str = os.getenv("POLYGON_RPC_URL")
 if polygon_rpc:
     try:
         w3 = Web3(Web3.HTTPProvider(polygon_rpc))
-        w3.middleware_onion.inject(geth_poa_middleware, layer=0)
     except Exception as e:
         logging.warning(f"Web3 initialization failed: {str(e)}")
         w3 = None
