@@ -53,16 +53,37 @@ def run_collision_radar(claim_text: str) -> dict:
                 "is_simulation": False
             }
         else:
-            # HACKATHON DEMO FALLBACK: If DB is empty, return a simulated high-risk match
-            # This ensures the judges see the "Heatmap UI" in action.
+            # REAL MODE: No matches found in the DB.
             return {
-                "risk_level": "HIGH",
-                "similarity_percentage": 89.4,
-                "flagged_patent": "US-5401504",
-                "patent_title": "Use of turmeric in wound healing (Simulated Prior Art)",
-                "is_simulation": True,
-                "note": "Returned simulated collision because Supabase patents table is currently empty."
+                "risk_level": "LOW",
+                "similarity_percentage": 0.0,
+                "flagged_patent": "None",
+                "patent_title": "No prior art found in databases",
+                "is_simulation": False
             }
 
     except Exception as e:
         return {"error": f"Radar scan failed: {str(e)}"}
+
+def get_rag_context(query_text: str) -> str:
+    """
+    Searches the vector database for relevant patents/texts to provide context to the LLM.
+    """
+    if embedding_model is None or supabase is None:
+        return ""
+        
+    try:
+        query_embedding = embedding_model.encode(query_text).tolist()
+        # Fetch top 2 matches
+        response = supabase.rpc("match_patents", {"query_embedding": query_embedding, "match_threshold": 0.3, "match_count": 2}).execute()
+        matches = response.data
+        
+        if not matches:
+            return ""
+            
+        context = ""
+        for match in matches:
+            context += f"Document: {match.get('title', 'Unknown')} - Content: {match.get('content', '')}\n\n"
+        return context
+    except Exception as e:
+        return ""

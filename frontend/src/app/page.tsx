@@ -112,7 +112,7 @@ export default function LandingPage() {
           </div>
           <h3 className="text-sm font-bold uppercase tracking-widest text-gov-gold mb-6">Official Government Mandate</h3>
           <p className="text-2xl md:text-3xl font-serif-official font-bold text-gov-blue leading-relaxed">
-            "The objective of this portal is to ensure that India's vast heritage of traditional medicine and practices remains the sovereign intellectual property of the nation. No foreign entity shall patent what rightfully belongs to our ancestors."
+            &quot;The objective of this portal is to ensure that India&apos;s vast heritage of traditional medicine and practices remains the sovereign intellectual property of the nation. No foreign entity shall patent what rightfully belongs to our ancestors.&quot;
           </p>
           <div className="w-16 h-1 bg-gov-gold mx-auto mt-8"></div>
         </div>
@@ -229,7 +229,7 @@ export default function LandingPage() {
               </div>
             </div>
             <p className="text-gray-600 text-sm leading-relaxed max-w-sm">
-              An official initiative to empower citizens in protecting India's traditional knowledge. Backed by immutable blockchain technology to ensure global recognition and prevent bio-piracy.
+              An official initiative to empower citizens in protecting India&apos;s traditional knowledge. Backed by immutable blockchain technology to ensure global recognition and prevent bio-piracy.
             </p>
           </div>
 

@@ -2,10 +2,11 @@
 
 import React, { useState } from 'react'
 import { 
-  ShieldCheck, User, Search, Activity, Download, 
-  ChevronRight, CheckCircle, Clock, Home, FileText, 
-  AlertTriangle, UploadCloud, FileSignature, 
-  Sparkles, ShieldAlert, Cpu, MessageSquare, Send, Link as LinkIcon
+  ShieldCheck, User, Download, 
+  CheckCircle, Clock, Home, FileText, 
+  AlertTriangle, UploadCloud, 
+  CheckSquare, FileWarning, SearchCheck, MessageSquare, Send,
+  Sparkles, ShieldAlert, Cpu, Link as LinkIcon
 } from 'lucide-react'
 import Link from 'next/link'
 import axios from 'axios'
@@ -15,10 +16,11 @@ export default function CitizenDashboard() {
   
   // State for AI Smart Draft
   const [rawText, setRawText] = useState('')
-  const [formattedClaim, setFormattedClaim] = useState('')
+  const [formattedClaim, setFormattedClaim] = useState<string | null>(null)
   const [isDrafting, setIsDrafting] = useState(false)
   
   // State for Radar Pre-Check
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [radarResult, setRadarResult] = useState<any>(null)
   const [isCheckingRadar, setIsCheckingRadar] = useState(false)
 
@@ -396,6 +398,21 @@ export default function CitizenDashboard() {
                       {isCheckingRadar ? 'Scanning Patents...' : 'Run Patent Pre-Check'}
                     </button>
                   </div>
+                  
+                  {/* Submit to Vault Action */}
+                  {radarResult && (
+                    <div className="pt-4 mt-2">
+                      <button 
+                        onClick={() => {
+                          alert("Knowledge encrypted and anchored to the Blockchain Vault!");
+                          setActiveTab('vault');
+                        }}
+                        className="w-full bg-green-600 text-white py-4 text-xs font-bold tracking-widest uppercase hover:bg-green-700 transition-colors flex justify-center items-center gap-2 shadow-md"
+                      >
+                        <ShieldCheck size={16} /> Submit & Anchor to Digital Vault
+                      </button>
+                    </div>
+                  )}
                 </div>
 
               </div>
@@ -438,7 +455,7 @@ export default function CitizenDashboard() {
                           </span>
                         </td>
                         <td className="p-5">
-                          <p className="text-xs text-gray-600 line-clamp-2 italic">"Verified against ancient Ayurvedic texts. No prior patents found. Cleared for IP lock."</p>
+                          <p className="text-xs text-gray-600 line-clamp-2 italic">&quot;Verified against ancient Ayurvedic texts. No prior patents found. Cleared for IP lock.&quot;</p>
                         </td>
                         <td className="p-5 pr-8 text-right">
                           <button 

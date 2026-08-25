@@ -5,11 +5,7 @@ from .ai_service import groq_client
 
 # Initialize EasyOCR Reader (loads models into memory on first run)
 # We use 'en' and 'hi' (Hindi) since we are dealing with Indian traditional knowledge
-try:
-    reader = easyocr.Reader(['en', 'hi'], gpu=False) # CPU mode for compatibility
-except Exception as e:
-    logging.warning(f"EasyOCR initialization failed (this is expected if models aren't downloaded yet): {str(e)}")
-    reader = None
+reader = easyocr.Reader(['en', 'hi'], gpu=True) # Enabled GPU since user has RTX 3050
 
 def extract_and_structure_text(image_bytes: bytes) -> dict:
     """
@@ -49,7 +45,7 @@ def extract_and_structure_text(image_bytes: bytes) -> dict:
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"OCR Raw Text:\n{raw_text}"}
             ],
-            model="llama-3.1-8b-instant",
+            model="qwen/qwen3.6-27b",
             temperature=0.1,
             response_format={"type": "json_object"}
         )
@@ -60,12 +56,6 @@ def extract_and_structure_text(image_bytes: bytes) -> dict:
         return structured_json
         
     except Exception as e:
-        logging.error(f"Digitization failed: {str(e)}. Falling back to Hackathon Simulation.")
-        # Hackathon Demo Fallback: So presentation doesn't crash on stage.
-        return {
-            "identified_herbs": ["Azadirachta indica (Neem)", "Curcuma longa (Turmeric)"],
-            "symptoms_targeted": ["Severe Skin Infections", "Deep Tissue Wounds", "Inflammation"],
-            "formulation_steps": "1. Grind Neem leaves into fine paste. 2. Mix with Turmeric powder. 3. Apply heated clarified butter.",
-            "confidence_score": "High (Simulated)",
-            "raw_ocr_text": "[Simulated Extraction] In ancient times, the paste of Neem and Turmeric was utilized for severe wound healing and prevention of bacterial decay... (Fallback triggered due to missing AI components)"
-        }
+        logging.error(f"Digitization failed: {str(e)}")
+        # Real Mode: Return the actual error
+        return {"error": str(e)}

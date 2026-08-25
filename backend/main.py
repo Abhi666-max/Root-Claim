@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 # Import our Groq AI Service
 from services.ai_service import generate_smart_draft, query_ip_sakti
 from services.ocr_service import extract_and_structure_text
-from services.vector_service import run_collision_radar
+from services.vector_service import run_collision_radar, get_rag_context
 from services.blockchain_service import generate_claim_hash, anchor_to_blockchain
 from fastapi import UploadFile, File
 
@@ -58,8 +58,11 @@ def api_ip_sakti(request: ChatRequest):
     if not request.query:
         raise HTTPException(status_code=400, detail="Query is required.")
     
-    mock_context = "Section 3(p) of the Indian Patents Act, 1970 states that an invention which in effect, is traditional knowledge or which is an aggregation or duplication of known properties of traditionally known component or components is not patentable. (Page 42, IP Laws Handbook)"
-    answer = query_ip_sakti(request.query, retrieved_context=mock_context)
+    # Real RAG Execution: Fetch context from Supabase Vector DB
+    retrieved_context = get_rag_context(request.query)
+    
+    # Pass both the user query and the retrieved context to Groq
+    answer = query_ip_sakti(request.query, retrieved_context=retrieved_context)
     return {"reply": answer}
 
 class RadarRequest(BaseModel):

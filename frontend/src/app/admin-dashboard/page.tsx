@@ -6,6 +6,7 @@ import axios from 'axios'
 
 export default function AdminDashboard() {
   const [isLocking, setIsLocking] = useState(false)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [blockchainResult, setBlockchainResult] = useState<any>(null)
 
   const handleBlockchainLock = async () => {
