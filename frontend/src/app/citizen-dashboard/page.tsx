@@ -5,7 +5,7 @@ import {
   ShieldCheck, User, Search, Activity, Download, 
   ChevronRight, CheckCircle, Clock, Home, FileText, 
   AlertTriangle, UploadCloud, FileSignature, 
-  Sparkles, ShieldAlert, Cpu
+  Sparkles, ShieldAlert, Cpu, MessageSquare, Send
 } from 'lucide-react'
 import Link from 'next/link'
 import axios from 'axios'
@@ -25,6 +25,13 @@ export default function CitizenDashboard() {
   // State for OCR Digitizer
   const [ocrResult, setOcrResult] = useState<any>(null)
   const [isUploading, setIsUploading] = useState(false)
+
+  // State for IP-SAKTI RAG Chatbot
+  const [chatInput, setChatInput] = useState('')
+  const [chatHistory, setChatHistory] = useState<{role: 'user'|'bot', content: string}[]>([
+    {role: 'bot', content: 'Namaste! I am IP-SAKTI Sahayak (A Multilingual RAG-based AI Assistant). Ask me any question regarding Indian Intellectual Property Laws, Biopiracy, or Traditional Knowledge.'}
+  ])
+  const [isChatting, setIsChatting] = useState(false)
 
   // API Call: Feature 2 - AI Smart Draft
   const handleAiEnhance = async () => {
@@ -85,6 +92,27 @@ export default function CitizenDashboard() {
     }
   }
 
+  // API Call: Feature 1 - IP-SAKTI Chat
+  const handleChatSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!chatInput.trim()) return;
+
+    const userMsg = chatInput;
+    setChatHistory(prev => [...prev, { role: 'user', content: userMsg }]);
+    setChatInput('');
+    setIsChatting(true);
+
+    try {
+      const response = await axios.post('http://localhost:8000/api/v1/ip-sakti', { query: userMsg });
+      setChatHistory(prev => [...prev, { role: 'bot', content: response.data.reply }]);
+    } catch (error) {
+      console.error("Chat Error:", error);
+      setChatHistory(prev => [...prev, { role: 'bot', content: 'Error connecting to IP-SAKTI backend.' }]);
+    } finally {
+      setIsChatting(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 text-gov-text font-sans flex">
       
@@ -110,6 +138,12 @@ export default function CitizenDashboard() {
             className={`flex items-center gap-3 px-4 py-3 rounded text-xs font-bold uppercase tracking-widest transition-colors ${activeTab === 'submit' ? 'bg-gov-gold text-white shadow-md' : 'text-gray-300 hover:bg-white/5 hover:text-white'}`}
           >
             <FileText size={16} /> Submit Knowledge
+          </button>
+          <button 
+            onClick={() => setActiveTab('ip-sakti')}
+            className={`flex items-center gap-3 px-4 py-3 rounded text-xs font-bold uppercase tracking-widest transition-colors ${activeTab === 'ip-sakti' ? 'bg-gov-gold text-white shadow-md' : 'text-gray-300 hover:bg-white/5 hover:text-white'}`}
+          >
+            <MessageSquare size={16} /> IP-SAKTI Sahayak
           </button>
           <button 
             onClick={() => setActiveTab('vault')}
@@ -146,6 +180,7 @@ export default function CitizenDashboard() {
           <h2 className="text-xl font-serif-official font-bold text-gov-blue">
             {activeTab === 'overview' && 'Dashboard Overview'}
             {activeTab === 'submit' && 'Submit Traditional Knowledge'}
+            {activeTab === 'ip-sakti' && 'IP-SAKTI Sahayak (RAG AI Assistant)'}
             {activeTab === 'vault' && 'My Secure Digital Vault'}
             {activeTab === 'whistleblower' && 'Whistleblower: Report Bio-Piracy'}
           </h2>
@@ -438,6 +473,67 @@ export default function CitizenDashboard() {
                   </div>
                 </div>
 
+              </div>
+            </div>
+          )}
+
+          {/* ====================================================== */}
+          {/* TAB: IP-SAKTI SAHAYAK (RAG Chatbot) */}
+          {/* ====================================================== */}
+          {activeTab === 'ip-sakti' && (
+            <div className="max-w-4xl h-[700px] flex flex-col bg-white border border-gray-200 shadow-sm">
+              <div className="bg-gov-blue p-6 border-b border-gray-800 flex justify-between items-center">
+                <div>
+                  <h3 className="font-serif-official font-bold text-white text-xl flex items-center gap-2 mb-1">
+                    <MessageSquare size={24} className="text-gov-gold"/> IP-SAKTI Sahayak
+                  </h3>
+                  <p className="text-xs text-gray-300">SIH26045: A Multilingual, RAG-based AI assistant for Intellectual Property</p>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest bg-white/10 text-white px-3 py-1.5 rounded-full border border-white/20">
+                  <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span> RAG Online
+                </div>
+              </div>
+              
+              <div className="flex-1 p-6 overflow-y-auto bg-gray-50 flex flex-col gap-4">
+                {chatHistory.map((msg, idx) => (
+                  <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[80%] p-4 text-sm rounded shadow-sm ${
+                      msg.role === 'user' 
+                        ? 'bg-gov-blue text-white rounded-br-none' 
+                        : 'bg-white border border-gray-200 text-gray-800 rounded-bl-none font-serif'
+                    }`}>
+                      {msg.role === 'bot' && <strong className="block text-xs uppercase tracking-widest text-gov-gold mb-2">IP-SAKTI Assistant</strong>}
+                      {msg.content}
+                    </div>
+                  </div>
+                ))}
+                {isChatting && (
+                  <div className="flex justify-start">
+                    <div className="bg-white border border-gray-200 p-4 text-sm rounded shadow-sm rounded-bl-none italic text-gray-500">
+                      IP-SAKTI is searching the legal database...
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="p-4 bg-white border-t border-gray-200">
+                <form onSubmit={handleChatSubmit} className="flex gap-2">
+                  <input 
+                    type="text" 
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    placeholder="Ask about IP Laws, Patents, or Bio-Piracy (English/Hindi)..." 
+                    className="flex-1 border border-gray-300 p-4 focus:outline-none focus:border-gov-gold text-sm bg-gray-50"
+                  />
+                  <button 
+                    type="submit"
+                    disabled={isChatting || !chatInput.trim()}
+                    className="bg-gov-gold text-white px-8 py-4 font-bold uppercase tracking-widest text-xs hover:bg-[#9a7b3b] transition-colors flex justify-center items-center gap-2 shadow-sm disabled:opacity-50"
+                  >
+                    <Send size={18} />
+                  </button>
+                </form>
+                <p className="text-[10px] text-gray-400 mt-2 text-center">Powered by Groq LLM & Supabase Vector RAG</p>
               </div>
             </div>
           )}
