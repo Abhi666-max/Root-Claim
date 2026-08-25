@@ -22,6 +22,10 @@ export default function CitizenDashboard() {
   const [radarResult, setRadarResult] = useState<any>(null)
   const [isCheckingRadar, setIsCheckingRadar] = useState(false)
 
+  // State for OCR Digitizer
+  const [ocrResult, setOcrResult] = useState<any>(null)
+  const [isUploading, setIsUploading] = useState(false)
+
   // API Call: Feature 2 - AI Smart Draft
   const handleAiEnhance = async () => {
     if (!rawText) return;
@@ -53,6 +57,31 @@ export default function CitizenDashboard() {
       alert("Failed to run collision radar.");
     } finally {
       setIsCheckingRadar(false);
+    }
+  }
+
+  // API Call: Feature 4 - OCR Digitizer
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    setIsUploading(true);
+    setOcrResult(null);
+    try {
+      const response = await axios.post('http://localhost:8000/api/v1/ocr', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setOcrResult(response.data);
+      // Auto-fill raw text with OCR text so they can run AI Enhance
+      setRawText((prev) => prev + "\n" + response.data.raw_ocr_text);
+    } catch (error) {
+      console.error("OCR Error:", error);
+      alert("Failed to process image. Make sure backend is running and file is an image.");
+    } finally {
+      setIsUploading(false);
     }
   }
 
@@ -247,12 +276,35 @@ export default function CitizenDashboard() {
                   {/* Multi-Media Upload */}
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-widest text-gov-blue mb-2">Upload Historical Proof (Manuscripts, Images, PDFs)</label>
-                    <div className="border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center hover:bg-gray-100 transition-colors cursor-pointer">
-                      <UploadCloud className="mx-auto text-gray-400 mb-3" size={32} />
-                      <p className="text-sm text-gray-500 font-bold mb-1">Click to upload or drag & drop</p>
-                      <p className="text-xs text-gray-400">AI OCR will extract text automatically (JPG, PNG, PDF)</p>
-                    </div>
+                    <label className="border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center hover:bg-gray-100 transition-colors cursor-pointer flex flex-col items-center justify-center relative">
+                      <input type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleFileUpload} disabled={isUploading} />
+                      <UploadCloud className={`mx-auto text-gray-400 mb-3 ${isUploading ? 'animate-bounce text-gov-gold' : ''}`} size={32} />
+                      <p className="text-sm text-gray-500 font-bold mb-1">{isUploading ? 'Extracting Text...' : 'Click to upload or drag & drop'}</p>
+                      <p className="text-xs text-gray-400">AI OCR will extract text automatically (JPG, PNG)</p>
+                    </label>
                   </div>
+
+                  {/* OCR Result UI */}
+                  {ocrResult && !ocrResult.error && (
+                    <div className="bg-white border border-gov-gold p-4 mt-4 shadow-sm">
+                      <h4 className="text-xs font-bold uppercase tracking-widest text-gov-gold mb-2 flex items-center gap-2">
+                        <FileText size={14}/> Digitized Manuscript Data
+                      </h4>
+                      <div className="grid grid-cols-2 gap-4 text-xs">
+                        <div>
+                          <p className="font-bold text-gray-700">Identified Herbs</p>
+                          <p className="text-gray-600">{ocrResult.identified_herbs?.join(", ") || "None"}</p>
+                        </div>
+                        <div>
+                          <p className="font-bold text-gray-700">Symptoms</p>
+                          <p className="text-gray-600">{ocrResult.symptoms_targeted?.join(", ") || "None"}</p>
+                        </div>
+                        <div className="col-span-2">
+                          <p className="font-bold text-gray-700">Raw OCR Text Added to Description Above</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="flex gap-4 pt-4 border-t border-gray-100">
                     <button 
