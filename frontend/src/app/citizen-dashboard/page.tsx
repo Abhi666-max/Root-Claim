@@ -8,9 +8,53 @@ import {
   Sparkles, ShieldAlert, Cpu
 } from 'lucide-react'
 import Link from 'next/link'
+import axios from 'axios'
 
 export default function CitizenDashboard() {
   const [activeTab, setActiveTab] = useState('overview')
+  
+  // State for AI Smart Draft
+  const [rawText, setRawText] = useState('')
+  const [formattedClaim, setFormattedClaim] = useState('')
+  const [isDrafting, setIsDrafting] = useState(false)
+  
+  // State for Radar Pre-Check
+  const [radarResult, setRadarResult] = useState<any>(null)
+  const [isCheckingRadar, setIsCheckingRadar] = useState(false)
+
+  // API Call: Feature 2 - AI Smart Draft
+  const handleAiEnhance = async () => {
+    if (!rawText) return;
+    setIsDrafting(true);
+    try {
+      const response = await axios.post('http://localhost:8000/api/v1/draft', { raw_text: rawText });
+      setFormattedClaim(response.data.formatted_claim);
+    } catch (error) {
+      console.error("AI Draft Error:", error);
+      alert("Failed to connect to AI Engine.");
+    } finally {
+      setIsDrafting(false);
+    }
+  }
+
+  // API Call: Feature 3 - Collision Radar Pre-Check
+  const handleRadarCheck = async () => {
+    const textToCheck = formattedClaim || rawText;
+    if (!textToCheck) {
+      alert("Please generate a draft or enter text first.");
+      return;
+    }
+    setIsCheckingRadar(true);
+    try {
+      const response = await axios.post('http://localhost:8000/api/v1/radar', { claim_text: textToCheck });
+      setRadarResult(response.data);
+    } catch (error) {
+      console.error("Radar Error:", error);
+      alert("Failed to run collision radar.");
+    } finally {
+      setIsCheckingRadar(false);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 text-gov-text font-sans flex">
@@ -168,8 +212,37 @@ export default function CitizenDashboard() {
                     <textarea 
                       className="w-full border border-gray-300 p-3 focus:outline-none focus:border-gov-gold text-sm h-32" 
                       placeholder="Haldi aur neem ko mix karke lagane se infection nahi hota aur ghaav jaldi bharta hai..."
+                      value={rawText}
+                      onChange={(e) => setRawText(e.target.value)}
                     ></textarea>
                   </div>
+
+                  {/* AI Formatted Output */}
+                  {formattedClaim && (
+                    <div className="bg-gov-blue/5 border-l-4 border-gov-gold p-4 mt-4">
+                      <h4 className="text-xs font-bold uppercase tracking-widest text-gov-blue mb-2 flex items-center gap-2">
+                        <Sparkles size={14} className="text-gov-gold"/> AI Enhanced Legal Claim
+                      </h4>
+                      <div className="text-sm text-gray-700 whitespace-pre-wrap font-serif">
+                        {formattedClaim}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Radar Result UI */}
+                  {radarResult && (
+                    <div className={`border p-4 mt-4 ${radarResult.risk_level === 'HIGH' ? 'bg-red-50 border-red-200' : 'bg-green-50 border-green-200'}`}>
+                      <h4 className={`text-xs font-bold uppercase tracking-widest mb-2 flex items-center gap-2 ${radarResult.risk_level === 'HIGH' ? 'text-red-700' : 'text-green-700'}`}>
+                        {radarResult.risk_level === 'HIGH' ? <ShieldAlert size={14}/> : <CheckCircle size={14}/>} 
+                        Collision Radar: {radarResult.risk_level} RISK ({radarResult.similarity_percentage}% Match)
+                      </h4>
+                      {radarResult.risk_level === 'HIGH' && (
+                        <p className="text-sm text-red-600 font-mono">
+                          Flagged Prior Art: {radarResult.flagged_patent} - {radarResult.patent_title}
+                        </p>
+                      )}
+                    </div>
+                  )}
 
                   {/* Multi-Media Upload */}
                   <div>
@@ -182,11 +255,21 @@ export default function CitizenDashboard() {
                   </div>
 
                   <div className="flex gap-4 pt-4 border-t border-gray-100">
-                    <button className="flex-1 bg-gov-blue text-white py-4 text-xs font-bold tracking-widest uppercase hover:bg-[#081729] transition-colors flex justify-center items-center gap-2 shadow-md">
-                      <Sparkles size={16} className="text-gov-gold" /> Enhance with AI
+                    <button 
+                      onClick={handleAiEnhance}
+                      disabled={isDrafting}
+                      className="flex-1 bg-gov-blue text-white py-4 text-xs font-bold tracking-widest uppercase hover:bg-[#081729] transition-colors flex justify-center items-center gap-2 shadow-md disabled:opacity-50"
+                    >
+                      <Sparkles size={16} className={isDrafting ? "animate-spin text-gov-gold" : "text-gov-gold"} /> 
+                      {isDrafting ? 'Drafting...' : 'Enhance with AI'}
                     </button>
-                    <button className="flex-1 bg-white border border-gov-blue text-gov-blue py-4 text-xs font-bold tracking-widest uppercase hover:bg-gov-blue hover:text-white transition-colors flex justify-center items-center gap-2 shadow-sm">
-                      <Cpu size={16} /> Run Patent Pre-Check
+                    <button 
+                      onClick={handleRadarCheck}
+                      disabled={isCheckingRadar}
+                      className="flex-1 bg-white border border-gov-blue text-gov-blue py-4 text-xs font-bold tracking-widest uppercase hover:bg-gov-blue hover:text-white transition-colors flex justify-center items-center gap-2 shadow-sm disabled:opacity-50"
+                    >
+                      <Cpu size={16} className={isCheckingRadar ? "animate-pulse" : ""} /> 
+                      {isCheckingRadar ? 'Scanning Patents...' : 'Run Patent Pre-Check'}
                     </button>
                   </div>
                 </div>
