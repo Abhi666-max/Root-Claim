@@ -72,6 +72,24 @@ export default function AdminDashboard() {
   };
   
   const [ministryAlerts, setMinistryAlerts] = useState<{msg: string, time: string, id: number}[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [stats, setStats] = useState<any>({ total_patents: '...', active_threats: '...', system_health: '99.9' });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [reports, setReports] = useState<any[]>([]);
+
+  const fetchStats = async () => {
+    try {
+      const res = await axios.get('http://localhost:8000/api/v1/stats');
+      setStats(res.data);
+    } catch(e) {}
+  };
+
+  const fetchReports = async () => {
+    try {
+      const res = await axios.get('http://localhost:8000/api/v1/reports');
+      setReports(res.data.reports || []);
+    } catch(e) {}
+  };
 
   const handleBroadcast = () => {
     if(!broadcastMessage.trim()) return;
@@ -130,10 +148,12 @@ export default function AdminDashboard() {
     }
   }
 
-  // Real-time simulation
+  // Real-time simulation & Fetching
   useEffect(() => {
     setMounted(true);
     fetchClaims();
+    fetchStats();
+    fetchReports();
     const existing = localStorage.getItem('ministry_alerts_array');
     if(existing) {
       try { setMinistryAlerts(JSON.parse(existing)); } catch(e){}
@@ -142,13 +162,15 @@ export default function AdminDashboard() {
     const interval = setInterval(() => {
       setLiveNodes(prev => prev + Math.floor(Math.random() * 3) - 1);
       if (Math.random() > 0.8) setClaimsSecured(prev => prev + 1);
-    }, 3000);
+      fetchStats(); // Poll stats
+      fetchReports(); // Poll reports
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
   // Modals state
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [showConfirmModal, setShowConfirmModal] = useState<{isOpen: boolean, action: 'Reject' | 'Verify' | 'Lock' | 'DeleteAlert' | 'Error' | null, meta?: any}>({isOpen: false, action: null});
+  const [showConfirmModal, setShowConfirmModal] = useState<{isOpen: boolean, action: 'Reject' | 'Verify' | 'Lock' | 'DeleteAlert' | 'Error' | 'Broadcast' | null, meta?: any}>({isOpen: false, action: null});
 
   const handleStatusUpdate = async (status: string) => {
     if(!activeClaim) return;
@@ -200,7 +222,7 @@ export default function AdminDashboard() {
             onClick={() => setActiveTab('whistleblower')}
             className={`flex items-center gap-4 px-6 py-4 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'whistleblower' ? 'bg-red-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-200 border border-transparent'}`}
           >
-            <AlertTriangle size={18} /> Threat Reports <span className="bg-red-100 text-red-700 border border-red-200 text-[9px] px-2 py-0.5 rounded-full ml-auto animate-pulse">3 NEW</span>
+            <AlertTriangle size={18} /> Threat Reports {reports.length > 0 && <span className="bg-red-100 text-red-700 border border-red-200 text-[9px] px-2 py-0.5 rounded-full ml-auto animate-pulse">{reports.length} NEW</span>}
           </button>
 
           <button 
@@ -264,15 +286,15 @@ export default function AdminDashboard() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <div className="bg-white border-t-4 border-gov-blue p-6 rounded shadow-sm">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Global Database Size</p>
-                  <h3 className="text-4xl font-serif-official font-bold text-gov-blue">2,005 <span className="text-sm font-sans text-gray-500">patents</span></h3>
+                  <h3 className="text-4xl font-serif-official font-bold text-gov-blue">{stats.total_patents} <span className="text-sm font-sans text-gray-500">patents</span></h3>
                 </div>
                 <div className="bg-white border-t-4 border-red-600 p-6 rounded shadow-sm">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Active Bio-Piracy Threats</p>
-                  <h3 className="text-4xl font-serif-official font-bold text-red-700">14</h3>
+                  <h3 className="text-4xl font-serif-official font-bold text-red-700">{stats.active_threats}</h3>
                 </div>
                 <div className="bg-white border-t-4 border-green-600 p-6 rounded shadow-sm">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">System Health</p>
-                  <h3 className="text-4xl font-serif-official font-bold text-green-700">99.9%</h3>
+                  <h3 className="text-4xl font-serif-official font-bold text-green-700">{stats.system_health}%</h3>
                 </div>
               </div>
 
@@ -305,7 +327,7 @@ export default function AdminDashboard() {
                     >
                       <Sparkles size={16} className={isEnhancing ? "animate-spin" : ""} /> {isEnhancing ? 'Enhancing...' : 'AI Enhance'}
                     </button>
-                    <button onClick={handleBroadcast} className="bg-red-600 text-white px-8 py-4 font-bold uppercase tracking-widest text-xs rounded shadow-md hover:bg-red-700 transition-colors flex items-center gap-2 shrink-0">
+                    <button onClick={() => {if(broadcastMessage.trim()) setShowConfirmModal({isOpen: true, action: 'Broadcast'})}} className="bg-red-600 text-white px-8 py-4 font-bold uppercase tracking-widest text-xs rounded shadow-md hover:bg-red-700 transition-colors flex items-center gap-2 shrink-0">
                       <Activity size={16} /> Broadcast Now
                     </button>
                   </div>
@@ -351,14 +373,21 @@ export default function AdminDashboard() {
                         <Globe size={48} className="text-gov-blue animate-spin-slow" style={{ animationDuration: '20s' }} />
                       </div>
                       
-                      {/* Threat Dots */}
-                      <div className="absolute top-16 left-16 w-3 h-3 bg-red-500 rounded-full shadow-[0_0_10px_rgba(239,68,68,0.5)] animate-pulse">
-                        <span className="absolute top-4 left-4 text-[10px] font-mono font-bold text-red-600 w-32 bg-white px-2 py-1 rounded shadow border border-red-100">EPO MATCH: 98%</span>
-                      </div>
-                      <div className="absolute bottom-20 right-10 w-2 h-2 bg-yellow-500 rounded-full shadow-[0_0_5px_rgba(234,179,8,0.5)]">
-                        <span className="absolute top-4 left-2 text-[9px] font-mono font-bold text-yellow-700 w-24 bg-white px-2 py-1 rounded shadow border border-yellow-100">USPTO: 74%</span>
-                      </div>
-                      <div className="absolute top-1/2 right-1/4 w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                      {/* Threat Dots based on real claims */}
+                      {claims.filter(c => c.collision_score > 0).slice(0, 3).map((claim, idx) => (
+                        <div key={claim.id} className={`absolute w-3 h-3 ${claim.collision_score > 80 ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)] animate-pulse' : 'bg-yellow-500 shadow-[0_0_5px_rgba(234,179,8,0.5)]'} rounded-full`}
+                             style={{
+                               top: `${20 + idx * 30}%`,
+                               left: `${10 + idx * 40}%`
+                             }}>
+                          <span className={`absolute top-4 left-4 text-[10px] font-mono font-bold ${claim.collision_score > 80 ? 'text-red-600 border-red-100' : 'text-yellow-700 border-yellow-100'} whitespace-nowrap bg-white px-2 py-1 rounded shadow border`}>
+                            TK-{claim.id.substring(0,6)}: {claim.collision_score}%
+                          </span>
+                        </div>
+                      ))}
+                      {claims.filter(c => c.collision_score > 0).length === 0 && (
+                        <div className="absolute top-1/2 right-1/4 w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -413,32 +442,26 @@ export default function AdminDashboard() {
                        </tr>
                      </thead>
                      <tbody className="text-sm">
-                       <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                         <td className="py-4 pl-4 font-mono text-[10px] text-gray-600">UID-992-881</td>
-                         <td className="py-4 font-bold text-gray-900 text-sm">US Patent #5,401,504</td>
-                         <td className="py-4 text-gray-600 text-xs truncate max-w-[250px]">Turmeric is being used for wound healing in this patent which is a known Indian traditional...</td>
-                         <td className="py-4">
-                           <span className="bg-red-100 text-red-700 border border-red-200 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest animate-pulse inline-block">Critical</span>
-                         </td>
-                         <td className="py-4">
-                           <button className="bg-white hover:bg-gray-50 text-gov-blue border border-gray-300 px-4 py-2 rounded text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center gap-2 shadow-sm">
-                             <Eye size={12} /> Review
-                           </button>
-                         </td>
-                       </tr>
-                       <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                         <td className="py-4 pl-4 font-mono text-[10px] text-gray-600">UID-112-409</td>
-                         <td className="py-4 font-bold text-gray-900 text-sm">www.biocorp.eu/neem-extract</td>
-                         <td className="py-4 text-gray-600 text-xs truncate max-w-[250px]">European company selling neem as their own invention for pesticides...</td>
-                         <td className="py-4">
-                           <span className="bg-yellow-100 text-yellow-800 border border-yellow-200 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest inline-block">High</span>
-                         </td>
-                         <td className="py-4">
-                           <button className="bg-white hover:bg-gray-50 text-gov-blue border border-gray-300 px-4 py-2 rounded text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center gap-2 shadow-sm">
-                             <Eye size={12} /> Review
-                           </button>
-                         </td>
-                       </tr>
+                       {reports.map((report) => (
+                         <tr key={report.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                           <td className="py-4 pl-4 font-mono text-[10px] text-gray-600">{report.user_id}</td>
+                           <td className="py-4 font-bold text-gray-900 text-sm max-w-[200px] truncate">{report.target_url}</td>
+                           <td className="py-4 text-gray-600 text-xs truncate max-w-[250px]">{report.context}</td>
+                           <td className="py-4">
+                             <span className="bg-red-100 text-red-700 border border-red-200 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest animate-pulse inline-block">{report.risk_level}</span>
+                           </td>
+                           <td className="py-4">
+                             <button className="bg-white hover:bg-gray-50 text-gov-blue border border-gray-300 px-4 py-2 rounded text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center gap-2 shadow-sm">
+                               <Eye size={12} /> Review
+                             </button>
+                           </td>
+                         </tr>
+                       ))}
+                       {reports.length === 0 && (
+                         <tr>
+                           <td colSpan={5} className="py-8 text-center text-gray-400 text-sm italic">No active threat reports.</td>
+                         </tr>
+                       )}
                      </tbody>
                    </table>
                  </div>
@@ -606,6 +629,7 @@ export default function AdminDashboard() {
               {showConfirmModal.action === 'Verify' && <><CheckSquare className="text-green-600"/> Confirm Verification</>}
               {showConfirmModal.action === 'Lock' && <><LinkIcon className="text-gov-gold"/> Confirm Blockchain Lock</>}
               {showConfirmModal.action === 'DeleteAlert' && <><Trash2 className="text-red-600"/> Delete Broadcast Alert</>}
+              {showConfirmModal.action === 'Broadcast' && <><Activity className="text-red-600"/> Confirm Global Broadcast</>}
               {showConfirmModal.action === 'Error' && <><AlertTriangle className="text-red-600"/> System Error</>}
             </h3>
             <p className="text-sm text-gray-600 mb-8 leading-relaxed">
@@ -613,6 +637,7 @@ export default function AdminDashboard() {
               {showConfirmModal.action === 'Verify' && "Are you sure you want to verify this claim? This will approve it for the final Blockchain anchoring process."}
               {showConfirmModal.action === 'Lock' && "WARNING: Anchoring to the Polygon blockchain is permanent and immutable. This legally establishes the claim as sovereign IP of India. Proceed?"}
               {showConfirmModal.action === 'DeleteAlert' && "Are you sure you want to delete this emergency broadcast? This will immediately remove it from all Citizen Dashboards globally."}
+              {showConfirmModal.action === 'Broadcast' && "You are about to push a high-priority alert to all connected Citizen Dashboards globally. Ensure the message is accurate and verified."}
               {showConfirmModal.action === 'Error' && showConfirmModal.meta}
             </p>
             <div className="flex gap-4">
@@ -629,6 +654,10 @@ export default function AdminDashboard() {
                   if(showConfirmModal.action === 'Reject') handleStatusUpdate('Rejected');
                   else if(showConfirmModal.action === 'Verify') handleStatusUpdate('Verified');
                   else if(showConfirmModal.action === 'DeleteAlert') handleDeleteAlert(showConfirmModal.meta);
+                  else if(showConfirmModal.action === 'Broadcast') {
+                    setShowConfirmModal({isOpen: false, action: null});
+                    handleBroadcast();
+                  }
                   else if(showConfirmModal.action === 'Lock') {
                     setShowConfirmModal({isOpen: false, action: null});
                     handleBlockchainLock();
@@ -637,13 +666,13 @@ export default function AdminDashboard() {
                   }
                 }}
                 className={`flex-1 py-3 text-white font-bold uppercase tracking-widest text-xs rounded shadow-md transition-colors ${
-                  showConfirmModal.action === 'Reject' || showConfirmModal.action === 'DeleteAlert' ? 'bg-red-600 hover:bg-red-700' :
+                  showConfirmModal.action === 'Reject' || showConfirmModal.action === 'DeleteAlert' || showConfirmModal.action === 'Broadcast' ? 'bg-red-600 hover:bg-red-700' :
                   showConfirmModal.action === 'Verify' ? 'bg-green-600 hover:bg-green-700' :
                   showConfirmModal.action === 'Error' ? 'bg-gov-blue hover:bg-[#081729]' :
                   'bg-gov-gold hover:bg-yellow-600'
                 }`}
               >
-                {showConfirmModal.action === 'Error' ? 'Dismiss' : `Confirm ${showConfirmModal.action === 'DeleteAlert' ? 'Deletion' : showConfirmModal.action}`}
+                {showConfirmModal.action === 'Error' ? 'Dismiss' : `Confirm ${showConfirmModal.action === 'DeleteAlert' ? 'Deletion' : showConfirmModal.action === 'Broadcast' ? 'Broadcast' : showConfirmModal.action}`}
               </button>
             </div>
           </div>

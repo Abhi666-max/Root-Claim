@@ -85,10 +85,11 @@ export default function CitizenDashboard() {
   const [reportError, setReportError] = useState('')
   const [hasReported, setHasReported] = useState(false)
 
-  // Ministry Broadcast Alerts
+  // Ministry Broadcast states
   const [ministryAlerts, setMinistryAlerts] = useState<{msg: string, time: string}[]>([])
   const [currentAlertIndex, setCurrentAlertIndex] = useState(0)
-  const [showBroadcasts, setShowBroadcasts] = useState(true)
+  const [showBroadcasts, setShowBroadcasts] = useState(false)
+  const [isBroadcastMinimized, setIsBroadcastMinimized] = useState(false)
 
   useEffect(() => {
     // Poll for alerts broadcasted by Admin Dashboard via localStorage
@@ -121,8 +122,23 @@ export default function CitizenDashboard() {
       return;
     }
     setReportError("");
-    setHasReported(true);
-    setShowReportModal(true);
+    
+    setIsCheckingRadar(true); // Reusing a loading state for simplicity
+    try {
+      await axios.post('http://localhost:8000/api/v1/reports', {
+        user_id: "UID-992-881",
+        target_url: reportUrl,
+        context: reportContext,
+        risk_level: "High" // Default or we could let them choose
+      });
+      setHasReported(true);
+      setShowReportModal(true);
+    } catch (e) {
+      console.error(e);
+      setErrorMsg("Failed to submit report to the Ministry.");
+    } finally {
+      setIsCheckingRadar(false);
+    }
   }
 
   // API Call: Feature 2 - AI Smart Draft
@@ -307,6 +323,16 @@ export default function CitizenDashboard() {
               {activeTab === 'whistleblower' && 'Whistleblower: Report Bio-Piracy'}
             </h2>
             <div className="flex items-center gap-4">
+              {showBroadcasts && isBroadcastMinimized && ministryAlerts.length > 0 && (
+                <button 
+                  onClick={() => setIsBroadcastMinimized(false)}
+                  className="relative p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-full transition-colors"
+                  title="View Ministry Broadcasts"
+                >
+                  <AlertTriangle size={18} className="animate-pulse" />
+                  <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-600 rounded-full border-2 border-white"></span>
+                </button>
+              )}
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest bg-green-50 text-green-700 px-3 py-1.5 rounded-full border border-green-200">
                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Network: Secure
               </div>
@@ -324,7 +350,7 @@ export default function CitizenDashboard() {
             <div className="max-w-6xl">
               
               {/* Ministry Broadcast Alerts (Global) */}
-              {showBroadcasts && ministryAlerts.length > 0 && (
+              {showBroadcasts && !isBroadcastMinimized && ministryAlerts.length > 0 && (
                 <div className="mb-8 bg-red-50 border-l-4 border-red-600 p-6 shadow-sm rounded-r flex items-start gap-4 relative">
                   <div className="bg-red-100 p-2 rounded-full shrink-0">
                     <AlertTriangle size={24} className="text-red-600" />
@@ -340,11 +366,11 @@ export default function CitizenDashboard() {
                   
                   <div className="flex flex-col items-center gap-2 absolute top-6 right-6">
                     <button 
-                      onClick={() => setShowBroadcasts(false)}
+                      onClick={() => setIsBroadcastMinimized(true)}
                       className="text-red-400 hover:text-red-700 font-bold text-xl leading-none mb-1"
-                      title="Hide Alerts"
+                      title="Minimize Alert"
                     >
-                      &times;
+                      &minus;
                     </button>
                     {ministryAlerts.length > 1 && (
                       <div className="flex gap-1.5 mt-2 bg-red-100 p-1.5 rounded-full border border-red-200 shadow-inner">
