@@ -66,6 +66,7 @@ export default function CitizenDashboard() {
   // Ministry Broadcast Alerts
   const [ministryAlerts, setMinistryAlerts] = useState<{msg: string, time: string}[]>([])
   const [currentAlertIndex, setCurrentAlertIndex] = useState(0)
+  const [showBroadcasts, setShowBroadcasts] = useState(true)
 
   useEffect(() => {
     // Poll for alerts broadcasted by Admin Dashboard via localStorage
@@ -275,12 +276,12 @@ export default function CitizenDashboard() {
             <div className="max-w-6xl">
               
               {/* Ministry Broadcast Alerts (Global) */}
-              {ministryAlerts.length > 0 && (
+              {showBroadcasts && ministryAlerts.length > 0 && (
                 <div className="mb-8 bg-red-50 border-l-4 border-red-600 p-6 shadow-sm rounded-r flex items-start gap-4 relative">
                   <div className="bg-red-100 p-2 rounded-full shrink-0">
                     <AlertTriangle size={24} className="text-red-600" />
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 pr-32">
                     <h3 className="font-serif font-bold text-red-800 text-lg mb-1 flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
                       MINISTRY BROADCAST ALERT
@@ -289,23 +290,32 @@ export default function CitizenDashboard() {
                     <p className="text-red-700 text-sm font-medium">{ministryAlerts[currentAlertIndex].msg}</p>
                   </div>
                   
-                  {ministryAlerts.length > 1 && (
-                    <div className="flex items-center gap-2 absolute top-6 right-6">
-                      <span className="text-[10px] font-bold text-red-500">{currentAlertIndex + 1} of {ministryAlerts.length}</span>
-                      <button 
-                        onClick={() => setCurrentAlertIndex(prev => prev > 0 ? prev - 1 : ministryAlerts.length - 1)}
-                        className="w-6 h-6 rounded bg-red-200 hover:bg-red-300 text-red-800 flex items-center justify-center font-bold transition-colors"
-                      >
-                        &larr;
-                      </button>
-                      <button 
-                        onClick={() => setCurrentAlertIndex(prev => prev < ministryAlerts.length - 1 ? prev + 1 : 0)}
-                        className="w-6 h-6 rounded bg-red-200 hover:bg-red-300 text-red-800 flex items-center justify-center font-bold transition-colors"
-                      >
-                        &rarr;
-                      </button>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-4 absolute top-6 right-6">
+                    {ministryAlerts.length > 1 && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold text-red-500">{currentAlertIndex + 1} of {ministryAlerts.length}</span>
+                        <button 
+                          onClick={() => setCurrentAlertIndex(prev => prev > 0 ? prev - 1 : ministryAlerts.length - 1)}
+                          className="w-6 h-6 rounded bg-red-200 hover:bg-red-300 text-red-800 flex items-center justify-center font-bold transition-colors"
+                        >
+                          &larr;
+                        </button>
+                        <button 
+                          onClick={() => setCurrentAlertIndex(prev => prev < ministryAlerts.length - 1 ? prev + 1 : 0)}
+                          className="w-6 h-6 rounded bg-red-200 hover:bg-red-300 text-red-800 flex items-center justify-center font-bold transition-colors"
+                        >
+                          &rarr;
+                        </button>
+                      </div>
+                    )}
+                    <button 
+                      onClick={() => setShowBroadcasts(false)}
+                      className="text-red-400 hover:text-red-700 font-bold ml-2 text-xl"
+                      title="Hide Alerts"
+                    >
+                      &times;
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -829,7 +839,7 @@ export default function CitizenDashboard() {
               <div className="bg-white max-w-3xl w-full p-2 shadow-2xl relative border border-gray-200 my-8 shrink-0 print:shadow-none print:border-none print:m-0 print:p-0 print:w-full print:max-w-none">
                 
                 {/* Print wrapper to enforce exact styling for PDF */}
-                <div id="printable-certificate" className="bg-[#fdfbf7] p-8 md:p-12 border-8 border-double border-gov-gold relative overflow-hidden h-full flex flex-col print:border-8 print:p-12 print:h-screen print:flex print:items-center print:justify-center">
+                <div id="printable-certificate" className="bg-[#fdfbf7] p-8 md:p-12 border-8 border-double border-gov-gold relative overflow-hidden flex flex-col print:border-8 print:p-8 print:h-[285mm] print:w-[210mm] print:scale-95 print:origin-top print:flex print:items-center print:justify-center mx-auto">
                   
                   {/* Subtle Background Watermark */}
                   <div className="absolute inset-0 opacity-5 flex items-center justify-center pointer-events-none">

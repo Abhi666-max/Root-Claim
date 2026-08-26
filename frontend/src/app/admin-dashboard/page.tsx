@@ -223,8 +223,17 @@ export default function AdminDashboard() {
                     placeholder="E.g., WARNING: High volume of bio-piracy attempts detected in Ayurveda section..." 
                     className="flex-1 bg-white border border-red-200 p-4 rounded text-sm outline-none focus:ring-2 focus:ring-red-500 shadow-inner"
                   />
-                  <button onClick={handleBroadcast} className="bg-red-600 text-white px-8 py-4 font-bold uppercase tracking-widest text-xs rounded shadow-md hover:bg-red-700 transition-colors flex items-center gap-2">
+                  <button onClick={handleBroadcast} className="bg-red-600 text-white px-8 py-4 font-bold uppercase tracking-widest text-xs rounded shadow-md hover:bg-red-700 transition-colors flex items-center gap-2 shrink-0">
                     <Activity size={16} /> Broadcast Now
+                  </button>
+                  <button 
+                    onClick={() => {
+                      localStorage.removeItem('ministry_alerts_array');
+                      alert('All broadcasts cleared.');
+                    }} 
+                    className="bg-white text-red-600 border border-red-200 px-4 py-4 font-bold uppercase tracking-widest text-xs rounded hover:bg-red-50 transition-colors shrink-0"
+                  >
+                    Clear All
                   </button>
                 </div>
               </div>
