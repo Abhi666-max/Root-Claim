@@ -96,3 +96,31 @@ h1, h2, h3, h4, h5, h6, .font-serif-official {
   background: linear-gradient(90deg, transparent, var(--color-gov-gold), transparent);
   opacity: 0.3;
 }
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  
+  #printable-certificate, #printable-certificate * {
+    visibility: visible;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  #printable-certificate {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    min-height: 100vh;
+    padding: 40px !important;
+    margin: 0 !important;
+    box-sizing: border-box;
+  }
+  
+  @page { 
+    margin: 0; 
+    size: auto; 
+  }
+}

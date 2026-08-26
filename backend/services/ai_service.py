@@ -25,7 +25,7 @@ def generate_smart_draft(raw_text: str) -> str:
     1. Do NOT include any introductory or conversational text. Output ONLY the formatted claim.
     2. Do NOT use markdown bolding (asterisks).
     3. If the user input is completely nonsensical, dangerous, toxic (like petrol/chemicals), or lacks any botanical/Ayurvedic basis, DO NOT use the structure above. Instead, directly reply with: "REJECTED: This input lacks traditional botanical precedence or contains toxic/non-Ayurvedic elements and cannot be patented under Indian Traditional Knowledge laws."
-
+    """
     try:
         chat_completion = groq_client.chat.completions.create(
             messages=[
