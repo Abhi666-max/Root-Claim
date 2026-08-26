@@ -46,10 +46,11 @@ export default function CitizenDashboard() {
 
   // State for IP-SAKTI RAG Chatbot
   const [chatInput, setChatInput] = useState('')
-  const [chatHistory, setChatHistory] = useState<{role: 'user'|'bot', content: string}[]>([
+  const [chatHistory, setChatHistory] = useState<{role: 'user'|'bot', content: string, sources?: any[]}[]>([
     {role: 'bot', content: 'Namaste! I am IP-SAKTI Sahayak (A Multilingual RAG-based AI Assistant). Ask me any question regarding Indian Intellectual Property Laws, Biopiracy, or Traditional Knowledge.'}
   ])
   const [isChatting, setIsChatting] = useState(false)
+  const [jurisdiction, setJurisdiction] = useState<'india'|'international'>('india')
 
   // Modal States
   const [showSubmitModal, setShowSubmitModal] = useState(false)
@@ -61,6 +62,26 @@ export default function CitizenDashboard() {
   const [reportContext, setReportContext] = useState('')
   const [reportError, setReportError] = useState('')
   const [hasReported, setHasReported] = useState(false)
+
+  // Ministry Broadcast Alerts
+  const [ministryAlerts, setMinistryAlerts] = useState<{msg: string, time: string}[]>([])
+  const [currentAlertIndex, setCurrentAlertIndex] = useState(0)
+
+  useEffect(() => {
+    // Poll for alerts broadcasted by Admin Dashboard via localStorage
+    const checkAlert = () => {
+      const alertData = localStorage.getItem('ministry_alerts_array')
+      if (alertData) {
+        try {
+          const parsed = JSON.parse(alertData)
+          setMinistryAlerts(parsed)
+        } catch(e) {}
+      }
+    }
+    checkAlert()
+    const alertInterval = setInterval(checkAlert, 2000)
+    return () => clearInterval(alertInterval)
+  }, [])
 
   const handleReportSubmit = () => {
     // Basic validation to reject random gibberish (must contain spaces, be somewhat long)
@@ -151,8 +172,8 @@ export default function CitizenDashboard() {
     setIsChatting(true);
 
     try {
-      const response = await axios.post('http://localhost:8000/api/v1/ip-sakti', { query: userMsg });
-      setChatHistory(prev => [...prev, { role: 'bot', content: response.data.reply }]);
+      const response = await axios.post('http://localhost:8000/api/v1/ip-sakti', { query: `[Jurisdiction: ${jurisdiction.toUpperCase()}] ${userMsg}` });
+      setChatHistory(prev => [...prev, { role: 'bot', content: response.data.reply, sources: response.data.sources }]);
     } catch (error) {
       console.error("Chat Error:", error);
       setChatHistory(prev => [...prev, { role: 'bot', content: 'Error connecting to IP-SAKTI backend.' }]);
@@ -165,7 +186,7 @@ export default function CitizenDashboard() {
     <div className="min-h-screen bg-gray-50 text-gov-text font-sans flex">
       
       {/* SIDEBAR NAVIGATION */}
-      <aside className="w-64 bg-gov-blue text-white flex flex-col fixed h-full z-20 shadow-xl">
+      <aside className="w-64 bg-gov-blue text-white flex flex-col fixed h-full z-20 shadow-xl print:hidden">
         <div className="h-20 flex items-center gap-3 px-6 border-b border-white/10 bg-gov-blue">
           <ShieldCheck size={32} className="text-gov-gold" />
           <div>
@@ -211,7 +232,10 @@ export default function CitizenDashboard() {
         <div className="p-4 border-t border-white/10">
           <div className="bg-white/5 p-4 rounded mb-4">
             <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1 font-bold">Logged in as</p>
-            <p className="text-sm font-bold text-white flex items-center gap-2"><User size={14}/> UID-992-881</p>
+            <p className="text-sm font-bold text-white flex items-center gap-2 mb-2"><User size={14}/> UID-992-881</p>
+            <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-green-500/20 border border-green-500/30 rounded text-[9px] text-green-400 font-bold uppercase tracking-widest">
+              <CheckCircle size={10} /> Verified TKDL Contributor
+            </div>
           </div>
           <Link href="/">
             <button className="w-full text-left flex items-center gap-3 px-4 py-2 text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors">
@@ -222,11 +246,11 @@ export default function CitizenDashboard() {
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 ml-64 flex flex-col min-h-screen">
+      <main className="flex-1 ml-64 print:ml-0 flex flex-col min-h-screen">
         
         {/* Top Header */}
         {activeTab !== 'ip-sakti' && (
-          <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-10 sticky top-0 z-10 shadow-sm shrink-0">
+          <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-10 sticky top-0 z-10 shadow-sm shrink-0 print:hidden">
             <h2 className="text-xl font-serif-official font-bold text-gov-blue">
               {activeTab === 'overview' && 'Dashboard Overview'}
               {activeTab === 'submit' && 'Submit Traditional Knowledge'}
@@ -242,7 +266,7 @@ export default function CitizenDashboard() {
         )}
 
         {/* Dynamic Content Body */}
-        <div className={`flex-1 flex flex-col bg-gray-50 ${activeTab === 'ip-sakti' ? 'p-0' : 'p-10'}`}>
+        <div className={`flex-1 flex flex-col bg-gray-50 ${activeTab === 'ip-sakti' ? 'p-0' : 'p-10'} print:p-0 print:bg-white`}>
           
           {/* ====================================================== */}
           {/* TAB: OVERVIEW */}
@@ -250,6 +274,41 @@ export default function CitizenDashboard() {
           {activeTab === 'overview' && (
             <div className="max-w-6xl">
               
+              {/* Ministry Broadcast Alerts (Global) */}
+              {ministryAlerts.length > 0 && (
+                <div className="mb-8 bg-red-50 border-l-4 border-red-600 p-6 shadow-sm rounded-r flex items-start gap-4 relative">
+                  <div className="bg-red-100 p-2 rounded-full shrink-0">
+                    <AlertTriangle size={24} className="text-red-600" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-serif font-bold text-red-800 text-lg mb-1 flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
+                      MINISTRY BROADCAST ALERT
+                      <span className="text-[10px] text-red-500 font-mono tracking-widest bg-red-100 px-2 py-0.5 rounded ml-2">{ministryAlerts[currentAlertIndex].time}</span>
+                    </h3>
+                    <p className="text-red-700 text-sm font-medium">{ministryAlerts[currentAlertIndex].msg}</p>
+                  </div>
+                  
+                  {ministryAlerts.length > 1 && (
+                    <div className="flex items-center gap-2 absolute top-6 right-6">
+                      <span className="text-[10px] font-bold text-red-500">{currentAlertIndex + 1} of {ministryAlerts.length}</span>
+                      <button 
+                        onClick={() => setCurrentAlertIndex(prev => prev > 0 ? prev - 1 : ministryAlerts.length - 1)}
+                        className="w-6 h-6 rounded bg-red-200 hover:bg-red-300 text-red-800 flex items-center justify-center font-bold transition-colors"
+                      >
+                        &larr;
+                      </button>
+                      <button 
+                        onClick={() => setCurrentAlertIndex(prev => prev < ministryAlerts.length - 1 ? prev + 1 : 0)}
+                        className="w-6 h-6 rounded bg-red-200 hover:bg-red-300 text-red-800 flex items-center justify-center font-bold transition-colors"
+                      >
+                        &rarr;
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Personal Impact Section */}
               <div className="mb-10">
                 <h3 className="font-serif-official font-bold text-xl text-gov-blue mb-4 flex items-center gap-2">
@@ -271,40 +330,8 @@ export default function CitizenDashboard() {
                 </div>
               </div>
 
-              {/* Global Ecosystem Section */}
-              <div className="mb-6">
-                <h3 className="font-serif-official font-bold text-xl text-gov-blue mb-4 flex items-center gap-2 border-t border-gray-200 pt-8">
-                  <Globe className="text-blue-500" /> Global TKDL Ecosystem Impact
-                </h3>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-                <div className="bg-white p-6 border-t-4 border-gov-blue shadow-sm relative overflow-hidden group">
-                  <div className="absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-gov-blue/5 to-transparent pointer-events-none"></div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Total Claims Submitted</p>
-                  <h3 className="text-4xl font-serif-official font-bold text-gov-blue flex items-center gap-2">
-                    {liveSubmissions.toLocaleString()} <span className="text-xs text-green-500 font-sans font-bold flex items-center">&uarr; +2%</span>
-                  </h3>
-                </div>
-                <div className="bg-white p-6 border-t-4 border-green-600 shadow-sm relative overflow-hidden group">
-                  <div className="absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-green-600/5 to-transparent pointer-events-none"></div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Blockchain Verified</p>
-                  <h3 className="text-4xl font-serif-official font-bold text-green-700">{liveClaims.toLocaleString()}</h3>
-                </div>
-                <div className="bg-white p-6 border-t-4 border-yellow-500 shadow-sm relative overflow-hidden group">
-                  <div className="absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-yellow-500/5 to-transparent pointer-events-none"></div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Knowledge Digitized</p>
-                  <h3 className="text-4xl font-serif-official font-bold text-yellow-600">{dataSynced}<span className="text-sm ml-1">TB</span></h3>
-                </div>
-                <div className="bg-white p-6 border-t-4 border-red-600 shadow-sm relative overflow-hidden group">
-                  <div className="absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-red-600/5 to-transparent pointer-events-none"></div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Bio-Piracy Blocked</p>
-                  <h3 className="text-4xl font-serif-official font-bold text-red-700">{liveBlocked}</h3>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
-                {/* System Status / Network */}
-                <div className="lg:col-span-2 bg-white border border-gray-200 shadow-sm p-8">
+              {/* System Status / Network */}
+              <div className="bg-white border border-gray-200 shadow-sm p-8">
                   <h3 className="font-serif-official font-bold text-xl text-gov-blue mb-6 border-b border-gray-100 pb-4">Digital Ecosystem Status</h3>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center p-4 bg-gray-50 border border-gray-100">
@@ -350,31 +377,6 @@ export default function CitizenDashboard() {
                     </div>
                   </div>
                 </div>
-
-                {/* Notifications / Directives */}
-                <div className="bg-white border border-gray-200 shadow-sm p-8">
-                  <h3 className="font-serif-official font-bold text-xl text-gov-blue mb-6 border-b border-gray-100 pb-4 flex items-center gap-2">
-                    <AlertTriangle size={20} className="text-yellow-500"/> Ministry Directives & Alerts
-                  </h3>
-                  <div className="space-y-6">
-                    <div>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Today, 09:00 AM • [CIRCULAR NO. 45/2026]</p>
-                      <p className="text-sm text-gray-700 font-bold leading-snug">Updated TKDL Submission Guidelines for Botanical Extracts</p>
-                      <p className="text-xs text-gray-500 mt-1">All new submissions must explicitly state the geographical origin of the raw materials as per the amended Biological Diversity Act.</p>
-                    </div>
-                    <div className="border-t border-gray-100 pt-4">
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Yesterday • [SYSTEM STATUS]</p>
-                      <p className="text-sm text-gray-700 font-bold leading-snug">Polygon Blockchain Node Synchronization Complete</p>
-                      <p className="text-xs text-gray-500 mt-1">Digital vault certificates are now instantly verifiable across decentralized government nodes. Zero downtime reported.</p>
-                    </div>
-                    <div className="border-t border-gray-100 pt-4">
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">21 Aug 2026 • [HIGH PRIORITY]</p>
-                      <p className="text-sm text-red-600 font-bold leading-snug flex items-center gap-1"><ShieldAlert size={14}/> Bio-Piracy Alert: European Patent Office (EPO)</p>
-                      <p className="text-xs text-gray-500 mt-1">High volume of anomalous patent filings detected regarding Curcuma longa (Turmeric) wound healing properties. Collision Radar actively contesting 14 claims.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
 
             </div>
           )}
@@ -704,8 +706,19 @@ export default function CitizenDashboard() {
                   </h3>
                   <p className="text-xs text-gray-300">SIH26045: A Multilingual, RAG-based AI assistant for Intellectual Property</p>
                 </div>
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest bg-white/10 text-white px-3 py-1.5 rounded-full border border-white/20">
-                  <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span> RAG Online
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest bg-white/10 text-white p-1 rounded-full border border-white/20">
+                  <button 
+                    onClick={() => setJurisdiction('india')} 
+                    className={`px-4 py-1.5 rounded-full transition-colors ${jurisdiction === 'india' ? 'bg-gov-gold text-white shadow' : 'hover:bg-white/10'}`}
+                  >
+                    India
+                  </button>
+                  <button 
+                    onClick={() => setJurisdiction('international')} 
+                    className={`px-4 py-1.5 rounded-full transition-colors ${jurisdiction === 'international' ? 'bg-gov-gold text-white shadow' : 'hover:bg-white/10'}`}
+                  >
+                    International
+                  </button>
                 </div>
               </div>
               
@@ -716,6 +729,9 @@ export default function CitizenDashboard() {
                     <p className="text-sm font-bold uppercase tracking-widest mb-2">Suggested Queries</p>
                     <div className="flex flex-col gap-2 text-xs">
                       <button onClick={() => setChatInput("What is TKDL and why is it important?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-gov-gold transition-colors">"What is TKDL and why is it important?"</button>
+                      <button onClick={() => setChatInput("Classify my Ayurvedic product")} className="bg-white px-4 py-2 border border-gov-blue text-gov-blue hover:bg-gov-blue hover:text-white transition-colors flex items-center justify-center gap-2">
+                        <Activity size={14}/> Classify Formulation
+                      </button>
                       <button onClick={() => setChatInput("How does India protect Turmeric from foreign patents?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-gov-gold transition-colors">"How does India protect Turmeric from foreign patents?"</button>
                       <button onClick={() => setChatInput("Can I patent an Ayurvedic herbal extract?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-gov-gold transition-colors">"Can I patent an Ayurvedic herbal extract?"</button>
                     </div>
@@ -729,7 +745,21 @@ export default function CitizenDashboard() {
                         : 'bg-white border border-gray-200 text-gray-800 rounded-bl-none font-serif'
                     }`}>
                       {msg.role === 'bot' && <strong className="block text-xs uppercase tracking-widest text-gov-gold mb-2">IP-SAKTI Assistant</strong>}
-                      {msg.content}
+                      <p className="leading-relaxed">{msg.content}</p>
+                      
+                      {msg.sources && msg.sources.length > 0 && (
+                        <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col gap-2">
+                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Sources Cited</p>
+                          {msg.sources.map((src, sIdx) => (
+                            <div key={sIdx} className="bg-gray-50 border border-gray-200 p-2 rounded flex items-center justify-between text-xs">
+                              <span className="text-gov-blue font-bold truncate max-w-[70%]">{src.title}</span>
+                              <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-[10px] font-bold border border-green-200">
+                                {src.confidence}% Confidence
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -795,11 +825,11 @@ export default function CitizenDashboard() {
 
           {/* Certificate Modal */}
           {showCertificateModal && (
-            <div className="fixed inset-0 bg-black/60 z-50 flex items-start justify-center p-4 overflow-y-auto pt-10 pb-20">
-              <div className="bg-white max-w-3xl w-full p-2 shadow-2xl relative border border-gray-200 my-8 shrink-0">
+            <div className="fixed inset-0 bg-black/60 z-50 flex items-start justify-center p-4 overflow-y-auto pt-10 pb-20 print:static print:bg-white print:p-0 print:m-0 print:h-screen print:w-full print:block print:z-50">
+              <div className="bg-white max-w-3xl w-full p-2 shadow-2xl relative border border-gray-200 my-8 shrink-0 print:shadow-none print:border-none print:m-0 print:p-0 print:w-full print:max-w-none">
                 
                 {/* Print wrapper to enforce exact styling for PDF */}
-                <div id="printable-certificate" className="bg-[#fdfbf7] p-8 md:p-12 border-8 border-double border-gov-gold relative overflow-hidden h-full flex flex-col">
+                <div id="printable-certificate" className="bg-[#fdfbf7] p-8 md:p-12 border-8 border-double border-gov-gold relative overflow-hidden h-full flex flex-col print:border-8 print:p-12 print:h-screen print:flex print:items-center print:justify-center">
                   
                   {/* Subtle Background Watermark */}
                   <div className="absolute inset-0 opacity-5 flex items-center justify-center pointer-events-none">
@@ -851,11 +881,11 @@ export default function CitizenDashboard() {
                 </div>
                 
                 {/* Non-printable UI Actions */}
-                <div className="absolute top-4 right-4 z-50">
+                <div className="absolute top-4 right-4 z-50 print:hidden">
                   <button onClick={() => setShowCertificateModal(false)} className="bg-black/50 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold transition-colors">✕</button>
                 </div>
                 
-                <div className="mt-4 flex justify-center bg-gray-50 p-4 border border-gray-200">
+                <div className="mt-4 flex justify-center bg-gray-50 p-4 border border-gray-200 print:hidden">
                   <button 
                     onClick={() => {
                       setTimeout(() => {

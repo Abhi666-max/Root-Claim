@@ -65,12 +65,13 @@ def run_collision_radar(claim_text: str) -> dict:
     except Exception as e:
         return {"error": f"Radar scan failed: {str(e)}"}
 
-def get_rag_context(query_text: str) -> str:
+def get_rag_context(query_text: str) -> tuple[str, list]:
     """
     Searches the vector database for relevant patents/texts to provide context to the LLM.
+    Returns (context_str, metadata_list)
     """
     if embedding_model is None or supabase is None:
-        return ""
+        return "", []
         
     try:
         query_embedding = embedding_model.encode(query_text).tolist()
@@ -79,11 +80,18 @@ def get_rag_context(query_text: str) -> str:
         matches = response.data
         
         if not matches:
-            return ""
+            return "", []
             
         context = ""
+        metadata_list = []
         for match in matches:
             context += f"Document: {match.get('title', 'Unknown')} - Content: {match.get('content', '')}\n\n"
-        return context
+            similarity_score = round(match.get('similarity', 0) * 100, 1)
+            metadata_list.append({
+                "title": match.get('title', 'Unknown'),
+                "id": match.get('patent_number', 'N/A'),
+                "confidence": similarity_score
+            })
+        return context, metadata_list
     except Exception as e:
-        return ""
+        return "", []

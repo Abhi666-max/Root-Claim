@@ -59,11 +59,11 @@ def api_ip_sakti(request: ChatRequest):
         raise HTTPException(status_code=400, detail="Query is required.")
     
     # Real RAG Execution: Fetch context from Supabase Vector DB
-    retrieved_context = get_rag_context(request.query)
+    retrieved_context, sources = get_rag_context(request.query)
     
     # Pass both the user query and the retrieved context to Groq
     answer = query_ip_sakti(request.query, retrieved_context=retrieved_context)
-    return {"reply": answer}
+    return {"reply": answer, "sources": sources}
 
 class RadarRequest(BaseModel):
     claim_text: str

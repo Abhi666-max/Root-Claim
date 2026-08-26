@@ -24,10 +24,33 @@ import Head from 'next/head';
 import axios from 'axios';
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('radar');
+  const [activeTab, setActiveTab] = useState('command_center');
   const [liveNodes, setLiveNodes] = useState(1284);
   const [threatCount, setThreatCount] = useState(14);
   const [claimsSecured, setClaimsSecured] = useState(84725);
+  
+  const [broadcastMessage, setBroadcastMessage] = useState('');
+  const [broadcastSuccess, setBroadcastSuccess] = useState(false);
+  
+  const handleBroadcast = () => {
+    if(!broadcastMessage.trim()) return;
+    
+    // Save to array
+    const existing = localStorage.getItem('ministry_alerts_array');
+    let alerts = [];
+    if(existing) {
+      try { alerts = JSON.parse(existing); } catch(e){}
+    }
+    alerts.unshift({
+      msg: broadcastMessage,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    });
+    localStorage.setItem('ministry_alerts_array', JSON.stringify(alerts));
+    
+    setBroadcastSuccess(true);
+    setTimeout(() => setBroadcastSuccess(false), 3000);
+    setBroadcastMessage('');
+  };
   
   const [isLocking, setIsLocking] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -86,10 +109,17 @@ export default function AdminDashboard() {
 
         <nav className="flex-1 py-8 flex flex-col gap-2 px-4 relative z-10 bg-gray-50">
           <button 
+            onClick={() => setActiveTab('command_center')}
+            className={`flex items-center gap-4 px-6 py-4 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'command_center' ? 'bg-gov-blue text-white shadow-md' : 'text-gray-600 hover:bg-gray-200 border border-transparent'}`}
+          >
+            <Activity size={18} /> Command Center
+          </button>
+          
+          <button 
             onClick={() => setActiveTab('radar')}
             className={`flex items-center gap-4 px-6 py-4 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'radar' ? 'bg-gov-blue text-white shadow-md' : 'text-gray-600 hover:bg-gray-200 border border-transparent'}`}
           >
-            <Globe size={18} /> Global Collision Radar
+            <Globe size={18} /> Global Threat Radar
           </button>
           
           <button 
@@ -129,9 +159,10 @@ export default function AdminDashboard() {
         <header className="h-24 px-10 flex items-center justify-between border-b border-gray-200 bg-white shadow-sm sticky top-0 z-20 shrink-0">
           <div>
             <h2 className="text-2xl font-serif-official font-bold text-gov-blue flex items-center gap-3">
+              {activeTab === 'command_center' && <><Activity className="text-gov-gold" /> Ministry Command Center</>}
               {activeTab === 'radar' && <><Globe className="text-gov-gold" /> Global Patent Collision Radar</>}
               {activeTab === 'whistleblower' && <><AlertTriangle className="text-red-600" /> Active Threat Intelligence</>}
-              {activeTab === 'database' && <><Database className="text-gov-blue" /> TKDL Verification Queue</>}
+              {activeTab === 'database' && <><Database className="text-gov-blue" /> TKDL Master Database</>}
             </h2>
             <p className="text-[10px] text-gray-500 font-mono mt-1 flex items-center gap-2">
               <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
@@ -153,6 +184,53 @@ export default function AdminDashboard() {
 
         <div className="p-10 relative z-10">
           
+          {/* TAB: COMMAND CENTER */}
+          {activeTab === 'command_center' && (
+            <div className="space-y-6 flex flex-col">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div className="bg-white border-t-4 border-gov-blue p-6 rounded shadow-sm">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Global Database Size</p>
+                  <h3 className="text-4xl font-serif-official font-bold text-gov-blue">2,005 <span className="text-sm font-sans text-gray-500">patents</span></h3>
+                </div>
+                <div className="bg-white border-t-4 border-red-600 p-6 rounded shadow-sm">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Active Bio-Piracy Threats</p>
+                  <h3 className="text-4xl font-serif-official font-bold text-red-700">14</h3>
+                </div>
+                <div className="bg-white border-t-4 border-green-600 p-6 rounded shadow-sm">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">System Health</p>
+                  <h3 className="text-4xl font-serif-official font-bold text-green-700">99.9%</h3>
+                </div>
+              </div>
+
+              {/* Broadcast System */}
+              <div className="bg-red-50 border border-red-200 rounded-xl p-8 shadow-sm relative">
+                <h3 className="text-sm font-bold text-red-700 uppercase tracking-widest mb-2 flex items-center gap-2">
+                  <AlertTriangle size={16} /> Ministry Emergency Broadcast System
+                </h3>
+                <p className="text-xs text-red-600 mb-6">Push instant alerts to all active Citizen Dashboards.</p>
+                
+                {broadcastSuccess && (
+                  <div className="absolute top-8 right-8 bg-green-100 text-green-800 px-4 py-2 rounded text-xs font-bold flex items-center gap-2 animate-pulse border border-green-300 shadow-sm">
+                    <CheckCircle size={14} /> Broadcast Sent Successfully!
+                  </div>
+                )}
+                
+                <div className="flex gap-4">
+                  <input 
+                    type="text" 
+                    value={broadcastMessage}
+                    onChange={(e) => setBroadcastMessage(e.target.value)}
+                    placeholder="E.g., WARNING: High volume of bio-piracy attempts detected in Ayurveda section..." 
+                    className="flex-1 bg-white border border-red-200 p-4 rounded text-sm outline-none focus:ring-2 focus:ring-red-500 shadow-inner"
+                  />
+                  <button onClick={handleBroadcast} className="bg-red-600 text-white px-8 py-4 font-bold uppercase tracking-widest text-xs rounded shadow-md hover:bg-red-700 transition-colors flex items-center gap-2">
+                    <Activity size={16} /> Broadcast Now
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* TAB: RADAR */}
           {activeTab === 'radar' && (
             <div className="space-y-6 flex flex-col">
