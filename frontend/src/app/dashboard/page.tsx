@@ -103,8 +103,9 @@ export default function Dashboard() {
                   <h3 className="font-cinzel font-bold uppercase tracking-widest text-sm mb-4 text-gov-blue">
                     IP-SAKTI Interface
                   </h3>
+                  <p className="text-xl font-bold text-gray-800 mb-2">&quot;Haldi (Turmeric) for Wound Healing&quot;</p>
                   <p className="text-base text-gray-700 leading-relaxed italic">
-                    "Welcome to the central semantic registry. The vector database is currently synchronized with the national traditional knowledge archive. Please enter your query for prior-art examination."
+                    &quot;Welcome to the central semantic registry. The vector database is currently synchronized with the national traditional knowledge archive. Please enter your query for prior-art examination.&quot;
                   </p>
                 </div>
 

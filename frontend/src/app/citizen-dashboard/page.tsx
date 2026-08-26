@@ -6,7 +6,7 @@ import {
   CheckCircle, Clock, Home, FileText, 
   AlertTriangle, UploadCloud, 
   CheckSquare, FileWarning, SearchCheck, MessageSquare, Send,
-  Sparkles, ShieldAlert, Cpu, Link as LinkIcon, Globe
+  Sparkles, ShieldAlert, Cpu, Link as LinkIcon, Globe, Activity
 } from 'lucide-react'
 import Link from 'next/link'
 import axios from 'axios'
@@ -41,11 +41,13 @@ export default function CitizenDashboard() {
   const [isCheckingRadar, setIsCheckingRadar] = useState(false)
 
   // State for OCR Digitizer
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [ocrResult, setOcrResult] = useState<any>(null)
   const [isUploading, setIsUploading] = useState(false)
 
   // State for IP-SAKTI RAG Chatbot
   const [chatInput, setChatInput] = useState('')
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [chatHistory, setChatHistory] = useState<{role: 'user'|'bot', content: string, sources?: any[]}[]>([
     {role: 'bot', content: 'Namaste! I am IP-SAKTI Sahayak (A Multilingual RAG-based AI Assistant). Ask me any question regarding Indian Intellectual Property Laws, Biopiracy, or Traditional Knowledge.'}
   ])
