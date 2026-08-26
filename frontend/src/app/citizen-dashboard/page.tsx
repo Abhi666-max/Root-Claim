@@ -54,10 +54,30 @@ export default function CitizenDashboard() {
   const [isChatting, setIsChatting] = useState(false)
   const [jurisdiction, setJurisdiction] = useState<'india'|'international'>('india')
 
+  // Real DB Claims
+  const [myClaims, setMyClaims] = useState<any[]>([])
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const fetchMyClaims = async () => {
+    try {
+      const res = await axios.get('http://localhost:8000/api/v1/claims')
+      if (res.data.status === 'success') {
+        setMyClaims(res.data.claims)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  useEffect(() => {
+    fetchMyClaims()
+  }, [])
+
   // Modal States
   const [showSubmitModal, setShowSubmitModal] = useState(false)
   const [showCertificateModal, setShowCertificateModal] = useState(false)
   const [showReportModal, setShowReportModal] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   // Report Bio-Piracy States
   const [reportUrl, setReportUrl] = useState('')
@@ -114,7 +134,7 @@ export default function CitizenDashboard() {
       setFormattedClaim(response.data.formatted_claim);
     } catch (error) {
       console.error("AI Draft Error:", error);
-      alert("Failed to connect to AI Engine.");
+      setErrorMsg("Failed to connect to AI Engine. Make sure the backend server is running and API keys are set.");
     } finally {
       setIsDrafting(false);
     }
@@ -124,7 +144,7 @@ export default function CitizenDashboard() {
   const handleRadarCheck = async () => {
     const textToCheck = formattedClaim || rawText;
     if (!textToCheck) {
-      alert("Please generate a draft or enter text first.");
+      setErrorMsg("Please generate a draft or enter text first.");
       return;
     }
     setIsCheckingRadar(true);
@@ -133,9 +153,35 @@ export default function CitizenDashboard() {
       setRadarResult(response.data);
     } catch (error) {
       console.error("Radar Error:", error);
-      alert("Failed to run collision radar.");
+      setErrorMsg("Failed to run collision radar. Make sure the backend server is running.");
     } finally {
       setIsCheckingRadar(false);
+    }
+  }
+
+  // Feature: Submit to Vault
+  const handleSubmitToVault = async () => {
+    setIsSubmitting(true);
+    try {
+      await axios.post('http://localhost:8000/api/v1/claims', {
+        user_id: "UID-992-881",
+        title: rawText.split('\n')[0].substring(0, 50) || "Untitled Knowledge",
+        raw_description: rawText,
+        ai_formatted_claim: formattedClaim || "",
+        collision_score: radarResult ? radarResult.similarity_percentage : 0
+      });
+      fetchMyClaims();
+      setShowSubmitModal(true);
+      
+      // Reset form
+      setRawText('');
+      setFormattedClaim(null);
+      setRadarResult(null);
+    } catch (error) {
+      console.error(error);
+      setErrorMsg("Failed to submit claim. Database connection might be down.");
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -158,7 +204,7 @@ export default function CitizenDashboard() {
       setRawText((prev) => prev + "\n" + response.data.raw_ocr_text);
     } catch (error) {
       console.error("OCR Error:", error);
-      alert("Failed to process image. Make sure backend is running and file is an image.");
+      setErrorMsg("Failed to process image. Make sure backend is running and file is a valid image.");
     } finally {
       setIsUploading(false);
     }
@@ -292,31 +338,30 @@ export default function CitizenDashboard() {
                     <p className="text-red-700 text-sm font-medium">{ministryAlerts[currentAlertIndex].msg}</p>
                   </div>
                   
-                  <div className="flex items-center gap-4 absolute top-6 right-6">
-                    {ministryAlerts.length > 1 && (
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-bold text-red-500">{currentAlertIndex + 1} of {ministryAlerts.length}</span>
-                        <button 
-                          onClick={() => setCurrentAlertIndex(prev => prev > 0 ? prev - 1 : ministryAlerts.length - 1)}
-                          className="w-6 h-6 rounded bg-red-200 hover:bg-red-300 text-red-800 flex items-center justify-center font-bold transition-colors"
-                        >
-                          &larr;
-                        </button>
-                        <button 
-                          onClick={() => setCurrentAlertIndex(prev => prev < ministryAlerts.length - 1 ? prev + 1 : 0)}
-                          className="w-6 h-6 rounded bg-red-200 hover:bg-red-300 text-red-800 flex items-center justify-center font-bold transition-colors"
-                        >
-                          &rarr;
-                        </button>
-                      </div>
-                    )}
+                  <div className="flex flex-col items-center gap-2 absolute top-6 right-6">
                     <button 
                       onClick={() => setShowBroadcasts(false)}
-                      className="text-red-400 hover:text-red-700 font-bold ml-2 text-xl"
+                      className="text-red-400 hover:text-red-700 font-bold text-xl leading-none mb-1"
                       title="Hide Alerts"
                     >
                       &times;
                     </button>
+                    {ministryAlerts.length > 1 && (
+                      <div className="flex gap-1.5 mt-2 bg-red-100 p-1.5 rounded-full border border-red-200 shadow-inner">
+                        {ministryAlerts.map((_, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => setCurrentAlertIndex(idx)}
+                            className={`w-2.5 h-2.5 rounded-full transition-all ${
+                              currentAlertIndex === idx 
+                                ? 'bg-red-600 scale-110 shadow-[0_0_5px_rgba(220,38,38,0.5)]' 
+                                : 'bg-red-300 hover:bg-red-400'
+                            }`}
+                            aria-label={`Go to alert ${idx + 1}`}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -519,10 +564,11 @@ export default function CitizenDashboard() {
                   {radarResult && !formattedClaim?.startsWith('REJECTED:') && (
                     <div className="pt-4 mt-2">
                       <button 
-                        onClick={() => setShowSubmitModal(true)}
-                        className="w-full bg-green-600 text-white py-4 text-xs font-bold tracking-widest uppercase hover:bg-green-700 transition-colors flex justify-center items-center gap-2 shadow-md"
+                        onClick={handleSubmitToVault}
+                        disabled={isSubmitting}
+                        className="w-full bg-green-600 text-white py-4 text-xs font-bold tracking-widest uppercase hover:bg-green-700 transition-colors flex justify-center items-center gap-2 shadow-md disabled:opacity-50"
                       >
-                        <ShieldCheck size={16} /> Submit & Anchor to Digital Vault
+                        <ShieldCheck size={16} /> {isSubmitting ? 'Submitting to Vault...' : 'Submit & Anchor to Digital Vault'}
                       </button>
                     </div>
                   )}
@@ -556,50 +602,63 @@ export default function CitizenDashboard() {
                     </thead>
                     <tbody className="text-sm">
                       
-                      {/* Verified Claim */}
-                      <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                        <td className="p-5 pl-8">
-                          <p className="font-mono text-xs text-gray-500 mb-1">TK-2026-1142</p>
-                          <p className="font-bold text-gov-blue">Neem Anti-Bacterial Extract</p>
-                        </td>
-                        <td className="p-5">
-                          <span className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 border border-green-200 px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider">
-                            <CheckCircle size={12} /> Blockchain Anchored
-                          </span>
-                        </td>
-                        <td className="p-5">
-                          <p className="text-xs text-gray-600 line-clamp-2 italic">&quot;Verified against ancient Ayurvedic texts. No prior patents found. Cleared for IP lock.&quot;</p>
-                        </td>
-                        <td className="p-5 pr-8 text-right">
-                          <button 
-                            onClick={() => setShowCertificateModal(true)}
-                            className="bg-gov-blue text-white border border-gov-blue px-4 py-2 text-[10px] font-bold tracking-widest uppercase hover:bg-[#081729] transition-colors ml-auto flex items-center gap-2 justify-center"
-                          >
-                            <Download size={12} /> View Certificate
-                          </button>
-                        </td>
-                      </tr>
+                      {myClaims.map(claim => (
+                        <tr key={claim.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                          <td className="p-5 pl-8">
+                            <p className="font-mono text-xs text-gray-500 mb-1">TK-{claim.id.substring(0,8)}</p>
+                            <p className="font-bold text-gov-blue">{claim.title}</p>
+                          </td>
+                          <td className="p-5">
+                            {claim.status === 'Blockchain Anchored' ? (
+                              <span className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 border border-green-200 px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider">
+                                <CheckCircle size={12} /> Blockchain Anchored
+                              </span>
+                            ) : claim.status === 'Verified' ? (
+                              <span className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider">
+                                <ShieldCheck size={12} /> Verified
+                              </span>
+                            ) : claim.status === 'Rejected' ? (
+                              <span className="inline-flex items-center gap-1.5 bg-red-50 text-red-700 border border-red-200 px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider">
+                                <AlertTriangle size={12} /> Rejected
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1.5 bg-yellow-50 text-yellow-700 border border-yellow-200 px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider">
+                                <Clock size={12} /> Pending Ministry Review
+                              </span>
+                            )}
+                          </td>
+                          <td className="p-5">
+                            <p className="text-xs text-gray-600 line-clamp-2 italic">
+                              {claim.status === 'Blockchain Anchored' ? `"Verified against ancient Ayurvedic texts. No prior patents found. Cleared for IP lock."` :
+                               claim.status === 'Verified' ? `"Awaiting final blockchain lock."` :
+                               claim.status === 'Rejected' ? `"Claim rejected. High similarity with existing prior art or insufficient traditional context."` :
+                               `"Awaiting official verification."`}
+                            </p>
+                          </td>
+                          <td className="p-5 pr-8 text-right">
+                            {claim.status === 'Blockchain Anchored' ? (
+                              <button 
+                                onClick={() => setShowCertificateModal(true)}
+                                className="bg-gov-blue text-white border border-gov-blue px-4 py-2 text-[10px] font-bold tracking-widest uppercase hover:bg-[#081729] transition-colors ml-auto flex items-center gap-2 justify-center"
+                              >
+                                <Download size={12} /> View Certificate
+                              </button>
+                            ) : (
+                              <button disabled className="bg-gray-100 text-gray-400 border border-gray-200 px-4 py-2 text-[10px] font-bold tracking-widest uppercase cursor-not-allowed ml-auto">
+                                Processing...
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
 
-                      {/* Pending Claim */}
-                      <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                        <td className="p-5 pl-8">
-                          <p className="font-mono text-xs text-gray-500 mb-1">TK-2026-9081</p>
-                          <p className="font-bold text-gov-blue">Turmeric Wound Healing Paste</p>
-                        </td>
-                        <td className="p-5">
-                          <span className="inline-flex items-center gap-1.5 bg-yellow-50 text-yellow-700 border border-yellow-200 px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider">
-                            <Clock size={12} /> Pending Ministry Review
-                          </span>
-                        </td>
-                        <td className="p-5">
-                          <p className="text-xs text-gray-400">Awaiting official verification.</p>
-                        </td>
-                        <td className="p-5 pr-8 text-right">
-                          <button disabled className="bg-gray-100 text-gray-400 border border-gray-200 px-4 py-2 text-[10px] font-bold tracking-widest uppercase cursor-not-allowed ml-auto">
-                            Processing...
-                          </button>
-                        </td>
-                      </tr>
+                      {myClaims.length === 0 && (
+                        <tr>
+                          <td colSpan={4} className="p-10 text-center text-gray-400">
+                            No claims found in your secure vault.
+                          </td>
+                        </tr>
+                      )}
 
                     </tbody>
                   </table>
@@ -810,6 +869,27 @@ export default function CitizenDashboard() {
           {/* MODALS */}
           {/* ====================================================== */}
           
+          {/* Error Modal */}
+          {errorMsg && (
+            <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+              <div className="bg-white max-w-md w-full p-8 shadow-2xl relative border-t-4 border-red-600">
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                    <AlertTriangle className="text-red-600" size={32} />
+                  </div>
+                  <h2 className="font-serif-official text-2xl font-bold text-gov-blue mb-2">Notice</h2>
+                  <p className="text-sm text-gray-600 mb-6">{errorMsg}</p>
+                  <button 
+                    onClick={() => setErrorMsg(null)}
+                    className="w-full bg-gov-blue text-white py-3 text-xs font-bold uppercase tracking-widest hover:bg-[#081729]"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Submit Success Modal */}
           {showSubmitModal && (
             <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">

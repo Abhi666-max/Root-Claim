@@ -17,13 +17,17 @@ import {
   Link as LinkIcon,
   CheckSquare,
   XSquare,
-  ShieldAlert
+  ShieldAlert,
+  RefreshCcw,
+  Sparkles,
+  Trash2
 } from 'lucide-react';
 import Link from 'next/link';
 import Head from 'next/head';
 import axios from 'axios';
 
 export default function AdminDashboard() {
+  const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState('command_center');
   const [liveNodes, setLiveNodes] = useState(1284);
   const [threatCount, setThreatCount] = useState(14);
@@ -31,25 +35,64 @@ export default function AdminDashboard() {
   
   const [broadcastMessage, setBroadcastMessage] = useState('');
   const [broadcastSuccess, setBroadcastSuccess] = useState(false);
+  const [isEnhancing, setIsEnhancing] = useState(false);
   
+  // Real DB Claims
+  const [claims, setClaims] = useState<any[]>([]);
+  const [activeClaim, setActiveClaim] = useState<any>(null);
+  
+  const fetchClaims = async () => {
+    try {
+      const res = await axios.get('http://localhost:8000/api/v1/claims');
+      if(res.data.status === 'success') {
+        setClaims(res.data.claims);
+        if(res.data.claims.length > 0 && !activeClaim) {
+          setActiveClaim(res.data.claims[0]);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleEnhanceBroadcast = async () => {
+    if(!broadcastMessage.trim()) return;
+    setIsEnhancing(true);
+    try {
+      const res = await axios.post('http://localhost:8000/api/v1/enhance-broadcast', {
+        raw_message: broadcastMessage
+      });
+      setBroadcastMessage(res.data.enhanced_message);
+    } catch (e) {
+      console.error(e);
+      setShowConfirmModal({isOpen: true, action: 'Error', meta: "Failed to connect to the Groq LLM API. Make sure the backend server is running and the GROQ_API_KEY is properly set in the backend .env file."});
+    } finally {
+      setIsEnhancing(false);
+    }
+  };
+  
+  const [ministryAlerts, setMinistryAlerts] = useState<{msg: string, time: string, id: number}[]>([]);
+
   const handleBroadcast = () => {
     if(!broadcastMessage.trim()) return;
-    
-    // Save to array
-    const existing = localStorage.getItem('ministry_alerts_array');
-    let alerts = [];
-    if(existing) {
-      try { alerts = JSON.parse(existing); } catch(e){}
-    }
-    alerts.unshift({
+    const newAlert = {
       msg: broadcastMessage,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    });
-    localStorage.setItem('ministry_alerts_array', JSON.stringify(alerts));
-    
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      id: Date.now()
+    };
+    const updated = [newAlert, ...ministryAlerts];
+    setMinistryAlerts(updated);
+    localStorage.setItem('ministry_alerts_array', JSON.stringify(updated));
     setBroadcastSuccess(true);
     setTimeout(() => setBroadcastSuccess(false), 3000);
     setBroadcastMessage('');
+  };
+
+  const handleDeleteAlert = (id: number) => {
+    const updated = ministryAlerts.filter(a => a.id !== id);
+    setMinistryAlerts(updated);
+    localStorage.setItem('ministry_alerts_array', JSON.stringify(updated));
+    setShowConfirmModal({isOpen: false, action: null});
   };
   
   const [isLocking, setIsLocking] = useState(false);
@@ -60,8 +103,8 @@ export default function AdminDashboard() {
     setIsLocking(true)
     try {
       const mockClaimData = {
-        title: "Turmeric Wound Healing Formulation",
-        description: "A paste made of Curcuma longa mixed with clarified butter used for rapid healing of deep cuts.",
+        title: activeClaim ? activeClaim.title : "Unknown Formulation",
+        description: activeClaim ? activeClaim.raw_description : "No description available",
         verified_by: "Ministry of Ayush",
         timestamp: new Date().toISOString()
       }
@@ -70,10 +113,18 @@ export default function AdminDashboard() {
         claim_data: mockClaimData
       })
       
+      if(activeClaim) {
+        await axios.patch(`http://localhost:8000/api/v1/claims/${activeClaim.id}`, { 
+          status: 'Blockchain Anchored',
+          polygon_tx_hash: response.data.txHash 
+        });
+        fetchClaims();
+      }
+      
       setBlockchainResult(response.data)
     } catch (error) {
       console.error("Blockchain error:", error)
-      alert("Failed to anchor to blockchain.")
+      setShowConfirmModal({isOpen: true, action: 'Error', meta: "Failed to anchor to the Polygon Blockchain. Please verify network connectivity."})
     } finally {
       setIsLocking(false)
     }
@@ -81,12 +132,35 @@ export default function AdminDashboard() {
 
   // Real-time simulation
   useEffect(() => {
+    setMounted(true);
+    fetchClaims();
+    const existing = localStorage.getItem('ministry_alerts_array');
+    if(existing) {
+      try { setMinistryAlerts(JSON.parse(existing)); } catch(e){}
+    }
+    
     const interval = setInterval(() => {
       setLiveNodes(prev => prev + Math.floor(Math.random() * 3) - 1);
       if (Math.random() > 0.8) setClaimsSecured(prev => prev + 1);
     }, 3000);
     return () => clearInterval(interval);
   }, []);
+
+  // Modals state
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [showConfirmModal, setShowConfirmModal] = useState<{isOpen: boolean, action: 'Reject' | 'Verify' | 'Lock' | 'DeleteAlert' | 'Error' | null, meta?: any}>({isOpen: false, action: null});
+
+  const handleStatusUpdate = async (status: string) => {
+    if(!activeClaim) return;
+    try {
+      await axios.patch(`http://localhost:8000/api/v1/claims/${activeClaim.id}`, { status });
+      fetchClaims(); // refresh
+      setActiveClaim({...activeClaim, status}); // optimistic update
+      setShowConfirmModal({isOpen: false, action: null});
+    } catch (e) {
+      setShowConfirmModal({isOpen: true, action: 'Error', meta: "Failed to securely update claim status. Please try again later."});
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 font-sans flex overflow-hidden">
@@ -166,7 +240,7 @@ export default function AdminDashboard() {
             </h2>
             <p className="text-[10px] text-gray-500 font-mono mt-1 flex items-center gap-2">
               <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-              SYSTEM LIVE &bull; LAST SYNC: {new Date().toLocaleTimeString()}
+              SYSTEM LIVE &bull; LAST SYNC: {mounted ? new Date().toLocaleTimeString() : '...'}
             </p>
           </div>
           
@@ -215,26 +289,44 @@ export default function AdminDashboard() {
                   </div>
                 )}
                 
-                <div className="flex gap-4">
-                  <input 
-                    type="text" 
-                    value={broadcastMessage}
-                    onChange={(e) => setBroadcastMessage(e.target.value)}
-                    placeholder="E.g., WARNING: High volume of bio-piracy attempts detected in Ayurveda section..." 
-                    className="flex-1 bg-white border border-red-200 p-4 rounded text-sm outline-none focus:ring-2 focus:ring-red-500 shadow-inner"
-                  />
-                  <button onClick={handleBroadcast} className="bg-red-600 text-white px-8 py-4 font-bold uppercase tracking-widest text-xs rounded shadow-md hover:bg-red-700 transition-colors flex items-center gap-2 shrink-0">
-                    <Activity size={16} /> Broadcast Now
-                  </button>
-                  <button 
-                    onClick={() => {
-                      localStorage.removeItem('ministry_alerts_array');
-                      alert('All broadcasts cleared.');
-                    }} 
-                    className="bg-white text-red-600 border border-red-200 px-4 py-4 font-bold uppercase tracking-widest text-xs rounded hover:bg-red-50 transition-colors shrink-0"
-                  >
-                    Clear All
-                  </button>
+                <div className="flex flex-col gap-4">
+                  <div className="flex gap-4">
+                    <input 
+                      type="text" 
+                      value={broadcastMessage}
+                      onChange={(e) => setBroadcastMessage(e.target.value)}
+                      placeholder="E.g., WARNING: High volume of bio-piracy attempts detected in Ayurveda section..." 
+                      className="flex-1 bg-white border border-red-200 p-4 rounded text-sm outline-none focus:ring-2 focus:ring-red-500 shadow-inner"
+                    />
+                    <button 
+                      onClick={handleEnhanceBroadcast} 
+                      disabled={isEnhancing}
+                      className="bg-red-50 text-red-700 border border-red-200 px-6 py-4 font-bold uppercase tracking-widest text-xs rounded hover:bg-red-100 transition-colors flex items-center gap-2 shrink-0 shadow-sm disabled:opacity-50"
+                    >
+                      <Sparkles size={16} className={isEnhancing ? "animate-spin" : ""} /> {isEnhancing ? 'Enhancing...' : 'AI Enhance'}
+                    </button>
+                    <button onClick={handleBroadcast} className="bg-red-600 text-white px-8 py-4 font-bold uppercase tracking-widest text-xs rounded shadow-md hover:bg-red-700 transition-colors flex items-center gap-2 shrink-0">
+                      <Activity size={16} /> Broadcast Now
+                    </button>
+                  </div>
+                  
+                  {/* Active Broadcasts List */}
+                  {ministryAlerts.length > 0 && (
+                    <div className="mt-4 flex flex-col gap-2">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-red-500 mb-2">Active Broadcasts on Citizen Dashboards</p>
+                      {ministryAlerts.map((alert) => (
+                        <div key={alert.id} className="bg-white border border-red-100 p-3 rounded flex justify-between items-center shadow-sm">
+                          <div>
+                            <span className="text-[9px] font-mono text-red-400 bg-red-50 px-2 py-0.5 rounded mr-3">{alert.time}</span>
+                            <span className="text-sm font-medium text-red-800">{alert.msg}</span>
+                          </div>
+                          <button onClick={() => setShowConfirmModal({isOpen: true, action: 'DeleteAlert', meta: alert.id})} className="text-red-400 hover:text-red-600 hover:bg-red-50 p-2 rounded transition-colors" title="Remove Alert">
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -277,26 +369,23 @@ export default function AdminDashboard() {
                   </h3>
                   <div className="flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar">
                     
-                    <div className="bg-red-50 border border-red-100 p-4 rounded hover:bg-red-100/50 transition-colors cursor-pointer shadow-sm">
-                      <div className="flex justify-between items-start mb-2">
-                        <p className="text-[10px] font-mono font-bold text-red-700">EP-0436257 (EPO)</p>
-                        <span className="bg-red-600 text-white text-[9px] px-2 py-0.5 rounded-full font-bold">98% SIMILARITY</span>
+                    {claims.filter(c => c.collision_score > 0).slice(0, 5).map(claim => (
+                      <div key={claim.id} className={`${claim.collision_score > 80 ? 'bg-red-50 border-red-100 hover:bg-red-100/50' : 'bg-yellow-50 border-yellow-200 hover:bg-yellow-100/50'} border p-4 rounded transition-colors cursor-pointer shadow-sm`}>
+                        <div className="flex justify-between items-start mb-2">
+                          <p className={`text-[10px] font-mono font-bold ${claim.collision_score > 80 ? 'text-red-700' : 'text-yellow-700'}`}>TK-{claim.id.substring(0,8)}</p>
+                          <span className={`${claim.collision_score > 80 ? 'bg-red-600' : 'bg-yellow-500'} text-white text-[9px] px-2 py-0.5 rounded-full font-bold`}>{claim.collision_score}% SIMILARITY</span>
+                        </div>
+                        <p className="text-sm font-bold text-gray-900 leading-snug mb-1">{claim.title}</p>
+                        <p className="text-[10px] text-gray-600 line-clamp-1">Matched against TKDL: {claim.raw_description}</p>
                       </div>
-                      <p className="text-sm font-bold text-gray-900 leading-snug mb-1">Method for controlling fungi on plants</p>
-                      <p className="text-[10px] text-gray-600">Matched against TKDL: Neem (Azadirachta indica) traditional uses.</p>
-                    </div>
-
-                    <div className="bg-yellow-50 border border-yellow-200 p-4 rounded hover:bg-yellow-100/50 transition-colors cursor-pointer shadow-sm">
-                      <div className="flex justify-between items-start mb-2">
-                        <p className="text-[10px] font-mono font-bold text-yellow-700">US-884612 (USPTO)</p>
-                        <span className="bg-yellow-500 text-white text-[9px] px-2 py-0.5 rounded-full font-bold">74% SIMILARITY</span>
-                      </div>
-                      <p className="text-sm font-bold text-gray-900 leading-snug mb-1">Adaptogenic herbal blend for anxiety</p>
-                      <p className="text-[10px] text-gray-600">Matched against TKDL: Ashwagandha (Withania somnifera).</p>
-                    </div>
+                    ))}
+                    
+                    {claims.filter(c => c.collision_score > 0).length === 0 && (
+                      <div className="p-8 text-center text-gray-400 text-sm italic">No collision alerts detected.</div>
+                    )}
 
                   </div>
-                  <button className="w-full mt-4 bg-white hover:bg-gray-50 text-gov-blue text-[10px] font-bold uppercase tracking-widest py-3 border border-gray-200 rounded transition-colors shadow-sm">
+                  <button onClick={() => setActiveTab('database')} className="w-full mt-4 bg-white hover:bg-gray-50 text-gov-blue text-[10px] font-bold uppercase tracking-widest py-3 border border-gray-200 rounded transition-colors shadow-sm">
                     View Full Logs
                   </button>
                 </div>
@@ -368,29 +457,33 @@ export default function AdminDashboard() {
                     <h3 className="font-serif-official font-bold text-gov-blue text-xs tracking-widest uppercase flex items-center gap-2">
                       <Database size={14} className="text-gov-gold"/> Pending Verification
                     </h3>
-                    <span className="bg-gov-gold text-white px-2 py-0.5 rounded text-[9px] font-bold shadow-sm">12 IN QUEUE</span>
+                    <span className="bg-gov-gold text-white px-2 py-0.5 rounded text-[9px] font-bold shadow-sm">{claims.filter(c => c.status === 'Pending Review').length} IN QUEUE</span>
                   </div>
                   <div className="overflow-y-auto flex-1 divide-y divide-gray-100">
                     
-                    {/* Queue Item (Active) */}
-                    <div className="p-4 bg-blue-50/50 border-l-4 border-gov-blue cursor-pointer">
-                      <div className="flex justify-between items-start mb-2">
-                        <span className="font-mono text-[10px] font-bold text-gov-blue">TK-2026-9081</span>
-                        <span className="text-[9px] font-bold text-gray-500 uppercase">22 Aug 2026</span>
+                    {claims.map(claim => (
+                      <div 
+                        key={claim.id} 
+                        onClick={() => setActiveClaim(claim)}
+                        className={`p-4 cursor-pointer transition-colors border-l-4 ${activeClaim?.id === claim.id ? 'bg-blue-50/50 border-gov-blue' : 'hover:bg-gray-50 border-transparent'}`}
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <span className="font-mono text-[10px] font-bold text-gray-500">TK-{claim.id.substring(0,8)}</span>
+                          <span className="text-[9px] font-bold text-gray-500 uppercase">{new Date(claim.created_at).toLocaleDateString()}</span>
+                        </div>
+                        <h4 className={`font-bold text-sm mb-1 leading-snug ${activeClaim?.id === claim.id ? 'text-gray-900' : 'text-gray-600'}`}>{claim.title}</h4>
+                        <div className="flex justify-between items-center mt-2">
+                          <p className="text-xs text-gray-500 line-clamp-1">{claim.raw_description}</p>
+                          <span className={`text-[8px] font-bold px-2 py-0.5 rounded uppercase tracking-widest ml-2 shrink-0 ${claim.status === 'Pending Review' ? 'bg-yellow-100 text-yellow-700' : claim.status === 'Verified' ? 'bg-green-100 text-green-700' : claim.status === 'Rejected' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}`}>
+                            {claim.status}
+                          </span>
+                        </div>
                       </div>
-                      <h4 className="font-bold text-gray-900 text-sm mb-1 leading-snug">Turmeric Wound Healing Formulation</h4>
-                      <p className="text-xs text-gray-600 line-clamp-2">A paste made of Curcuma longa mixed with clarified butter used for rapid healing of deep cuts.</p>
-                    </div>
+                    ))}
 
-                    {/* Queue Item (Idle) */}
-                    <div className="p-4 hover:bg-gray-50 cursor-pointer transition-colors border-l-4 border-transparent">
-                      <div className="flex justify-between items-start mb-2">
-                        <span className="font-mono text-[10px] font-bold text-gray-400">TK-2026-9082</span>
-                        <span className="text-[9px] font-bold text-gray-400 uppercase">23 Aug 2026</span>
-                      </div>
-                      <h4 className="font-bold text-gray-600 text-sm mb-1 leading-snug">Ashwagandha Sleep Aid Decoction</h4>
-                      <p className="text-xs text-gray-500 line-clamp-2">Root extraction process using milk reduction to treat severe insomnia.</p>
-                    </div>
+                    {claims.length === 0 && (
+                      <div className="p-8 text-center text-gray-400 text-sm italic">Queue is empty</div>
+                    )}
 
                   </div>
                 </div>
@@ -398,103 +491,165 @@ export default function AdminDashboard() {
 
               {/* RIGHT COLUMN: Action & Radar */}
               <div className="lg:w-2/3 flex flex-col gap-6">
-                
-                {/* Claim Details */}
-                <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
-                  <div className="flex justify-between items-start mb-6 border-b border-gray-100 pb-4">
-                    <div>
-                      <h2 className="text-2xl font-serif-official font-bold text-gray-900 mb-2">Turmeric Wound Healing Formulation</h2>
-                      <p className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Citizen ID: UID-992-881-22A &bull; Date: 22 Aug 2026</p>
+                {activeClaim ? (
+                  <>
+                  {/* Claim Details */}
+                  <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
+                    <div className="flex justify-between items-start mb-6 border-b border-gray-100 pb-4">
+                      <div>
+                        <h2 className="text-2xl font-serif-official font-bold text-gray-900 mb-2">{activeClaim.title}</h2>
+                        <p className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Citizen ID: {activeClaim.user_id} &bull; Date: {new Date(activeClaim.created_at).toLocaleDateString()}</p>
+                      </div>
                     </div>
-                  </div>
-                  
-                  <div className="mb-8">
-                    <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Formulation Details</h4>
-                    <p className="text-sm text-gray-700 leading-relaxed bg-gray-50 p-4 border border-gray-200 rounded shadow-inner">
-                      A paste made of Curcuma longa mixed with clarified butter used for rapid healing of deep cuts. 
-                      Documented in historical Ayurvedic texts of the Kerala region, passed down through generations.
-                    </p>
-                  </div>
-
-                  {/* AI COLLISION RADAR (The core tech) */}
-                  <div className="bg-red-50 border border-red-100 rounded-lg p-6 mb-8 relative overflow-hidden">
-                    <div className="absolute right-0 top-0 text-red-500/10 pointer-events-none">
-                      <Network size={160} />
-                    </div>
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-red-700 mb-4 flex items-center gap-2">
-                      <ShieldAlert size={14} /> AI Collision Radar Analysis
-                    </h4>
                     
-                    <div className="bg-white p-4 border border-red-200 rounded mb-4 shadow-sm">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs font-bold text-gray-700">USPTO Database Match</span>
-                        <span className="text-xs font-black text-red-600">82% SIMILARITY</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
-                        <div className="bg-red-500 h-2 rounded-full shadow-[0_0_5px_rgba(239,68,68,0.5)]" style={{width: '82%'}}></div>
-                      </div>
-                      <p className="text-xs text-gray-600 leading-relaxed">
-                        <span className="font-bold text-gray-900">Flag:</span> US Patent #5,401,504 (Use of turmeric in wound healing). Note: This patent was historically revoked due to CSIR intervention, but is flagged as prior art.
+                    <div className="mb-8">
+                      <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Formulation Details</h4>
+                      <p className="text-sm text-gray-700 leading-relaxed bg-gray-50 p-4 border border-gray-200 rounded shadow-inner whitespace-pre-wrap">
+                        {activeClaim.raw_description}
                       </p>
                     </div>
-                  </div>
 
-                  {/* Verification Actions */}
-                  <div className="border-t border-gray-100 pt-6">
-                    <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Ministry Actions</h4>
-                    <div className="flex gap-4">
-                      <button onClick={() => alert('Claim Rejected. Notifying citizen UID-992-881.')} className="flex-1 bg-white border-2 border-red-200 text-red-600 px-6 py-3 font-bold uppercase tracking-widest text-xs hover:bg-red-50 hover:border-red-300 transition-colors flex items-center justify-center gap-2 rounded">
-                        <XSquare size={16} /> Reject Claim
-                      </button>
-                      <button onClick={() => alert('Claim Verified successfully. Awaiting Blockchain Anchoring.')} className="flex-1 bg-green-600 border border-transparent text-white px-6 py-3 font-bold uppercase tracking-widest text-xs hover:bg-green-700 transition-colors flex items-center justify-center gap-2 rounded shadow-md">
-                        <CheckSquare size={16} /> Verify Claim
-                      </button>
-                    </div>
-                  </div>
-
-                </div>
-
-                {/* BLOCKCHAIN VAULT (Nuclear Button) */}
-                <div className="bg-white border-2 border-gov-gold shadow-sm rounded-xl p-8 relative overflow-hidden group">
-                  <div className="absolute right-0 top-0 text-gov-gold/10 pointer-events-none group-hover:scale-110 transition-transform duration-1000">
-                    <LinkIcon size={200} />
-                  </div>
-                  <div className="relative z-10">
-                    <h3 className="text-lg font-serif-official font-bold mb-2 flex items-center gap-2 text-gov-blue">
-                      <AlertTriangle size={18} className="text-gov-gold"/> Cryptographic Lock
-                    </h3>
-                    <p className="text-xs text-gray-600 mb-6 max-w-xl leading-relaxed">
-                      Warning: Anchoring this claim to the Polygon blockchain is an irreversible action. It will permanently establish this formulation as the sovereign IP of the Government of India.
-                    </p>
-                    <button 
-                      onClick={handleBlockchainLock}
-                      disabled={isLocking || blockchainResult}
-                      className={`px-8 py-3 rounded font-black uppercase tracking-widest text-xs transition-all ${
-                        blockchainResult 
-                          ? 'bg-green-50 text-green-700 border border-green-200 cursor-default shadow-sm' 
-                          : 'bg-gov-gold text-white hover:bg-yellow-600 shadow-md hover:shadow-lg disabled:opacity-50'
-                      }`}
-                    >
-                      {isLocking ? 'Anchoring to Polygon...' : blockchainResult ? 'Successfully Anchored' : 'Lock on Blockchain Now'}
-                    </button>
-
-                    {blockchainResult && (
-                      <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded text-[10px] font-mono">
-                        <p className="text-green-700 mb-2 font-bold text-xs flex items-center gap-2"><CheckCircle size={14}/> Immutable Proof Generated</p>
-                        <p className="mb-1"><span className="text-gray-500">Tx Hash:</span> <span className="text-blue-600 break-all">{blockchainResult.polygon_tx_hash}</span></p>
-                        <p className="mb-1"><span className="text-gray-500">Block:</span> {blockchainResult.block_number}</p>
-                        <p><span className="text-gray-500">SHA-256 Claim Hash:</span> <span className="text-gray-800 font-bold break-all">{blockchainResult.sha256_hash}</span></p>
+                    {/* AI COLLISION RADAR (The core tech) */}
+                    <div className={`${activeClaim.collision_score > 50 ? 'bg-red-50 border-red-100' : 'bg-green-50 border-green-100'} border rounded-lg p-6 mb-8 relative overflow-hidden`}>
+                      <div className={`absolute right-0 top-0 pointer-events-none ${activeClaim.collision_score > 50 ? 'text-red-500/10' : 'text-green-500/10'}`}>
+                        <Network size={160} />
                       </div>
-                    )}
-                  </div>
-                </div>
+                      <h4 className={`text-xs font-bold uppercase tracking-widest mb-4 flex items-center gap-2 ${activeClaim.collision_score > 50 ? 'text-red-700' : 'text-green-700'}`}>
+                        {activeClaim.collision_score > 50 ? <ShieldAlert size={14} /> : <CheckCircle size={14} />} AI Collision Radar Analysis
+                      </h4>
+                      
+                      <div className="bg-white p-4 border border-gray-200 rounded mb-4 shadow-sm relative z-10">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-xs font-bold text-gray-700">USPTO Database Match</span>
+                          <span className={`text-xs font-black ${activeClaim.collision_score > 50 ? 'text-red-600' : 'text-green-600'}`}>{activeClaim.collision_score}% SIMILARITY</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
+                          <div className={`${activeClaim.collision_score > 50 ? 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.5)]' : 'bg-green-500 shadow-[0_0_5px_rgba(34,197,94,0.5)]'} h-2 rounded-full`} style={{width: `${activeClaim.collision_score}%`}}></div>
+                        </div>
+                      </div>
+                    </div>
 
+                    {/* Verification Actions */}
+                    <div className="border-t border-gray-100 pt-6">
+                      <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Ministry Actions</h4>
+                      {activeClaim.status === 'Pending Review' ? (
+                        <div className="flex gap-4">
+                          <button onClick={() => setShowConfirmModal({isOpen: true, action: 'Reject'})} className="flex-1 bg-white border-2 border-red-200 text-red-600 px-6 py-3 font-bold uppercase tracking-widest text-xs hover:bg-red-50 hover:border-red-300 transition-colors flex items-center justify-center gap-2 rounded">
+                            <XSquare size={16} /> Reject Claim
+                          </button>
+                          <button onClick={() => setShowConfirmModal({isOpen: true, action: 'Verify'})} className="flex-1 bg-green-600 border border-transparent text-white px-6 py-3 font-bold uppercase tracking-widest text-xs hover:bg-green-700 transition-colors flex items-center justify-center gap-2 rounded shadow-md">
+                            <CheckSquare size={16} /> Verify Claim
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex justify-between items-center bg-gray-50 p-4 border border-gray-200 rounded">
+                          <p className="text-sm font-bold text-gray-700">Current Status: <span className={activeClaim.status === 'Verified' ? 'text-green-600' : activeClaim.status === 'Rejected' ? 'text-red-600' : 'text-blue-600'}>{activeClaim.status}</span></p>
+                          <button onClick={() => updateClaimStatus(activeClaim.id, 'Pending Review')} className="text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors bg-white border border-gray-300 px-4 py-2 rounded shadow-sm">
+                            Undo Action
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                  </div>
+
+                  {/* BLOCKCHAIN VAULT */}
+                  {activeClaim.status === 'Verified' && (
+                    <div className="bg-white border-2 border-gov-gold shadow-sm rounded-xl p-8 relative overflow-hidden group mt-6">
+                      <div className="absolute right-0 top-0 text-gov-gold/10 pointer-events-none group-hover:scale-110 transition-transform duration-1000">
+                        <LinkIcon size={200} />
+                      </div>
+                      <div className="relative z-10">
+                        <h3 className="text-lg font-serif-official font-bold mb-2 flex items-center gap-2 text-gov-blue">
+                          <AlertTriangle size={18} className="text-gov-gold"/> Cryptographic Lock
+                        </h3>
+                        <p className="text-xs text-gray-600 mb-6 max-w-xl leading-relaxed">
+                          Warning: Anchoring this claim to the Polygon blockchain is an irreversible action. It will permanently establish this formulation as the sovereign IP of the Government of India.
+                        </p>
+                        <button 
+                          onClick={() => setShowConfirmModal({isOpen: true, action: 'Lock'})}
+                          disabled={isLocking}
+                          className="px-8 py-3 rounded font-black uppercase tracking-widest text-xs transition-all bg-gov-gold text-white hover:bg-yellow-600 shadow-md hover:shadow-lg disabled:opacity-50"
+                        >
+                          {isLocking ? 'Anchoring to Polygon...' : 'Lock on Blockchain Now'}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeClaim.polygon_tx_hash && (
+                    <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded text-[10px] font-mono shadow-sm">
+                      <p className="text-green-700 mb-2 font-bold text-xs flex items-center gap-2"><CheckCircle size={14}/> Immutable Proof Generated</p>
+                      <p className="mb-1"><span className="text-gray-500">Tx Hash:</span> <span className="text-blue-600 break-all">{activeClaim.polygon_tx_hash}</span></p>
+                    </div>
+                  )}
+                  </>
+                ) : (
+                  <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-12 text-center text-gray-400 flex flex-col items-center justify-center">
+                    <Database size={48} className="mb-4 text-gray-200" />
+                    <p>Select a claim from the queue to review.</p>
+                  </div>
+                )}
               </div>
             </div>
           )}
 
         </div>
       </main>
+
+      {/* CONFIRMATION MODALS */}
+      {showConfirmModal.isOpen && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full border-t-4 border-gov-blue">
+            <h3 className="text-xl font-bold font-serif-official mb-4 text-gov-blue flex items-center gap-3">
+              {showConfirmModal.action === 'Reject' && <><XSquare className="text-red-600"/> Confirm Rejection</>}
+              {showConfirmModal.action === 'Verify' && <><CheckSquare className="text-green-600"/> Confirm Verification</>}
+              {showConfirmModal.action === 'Lock' && <><LinkIcon className="text-gov-gold"/> Confirm Blockchain Lock</>}
+              {showConfirmModal.action === 'DeleteAlert' && <><Trash2 className="text-red-600"/> Delete Broadcast Alert</>}
+              {showConfirmModal.action === 'Error' && <><AlertTriangle className="text-red-600"/> System Error</>}
+            </h3>
+            <p className="text-sm text-gray-600 mb-8 leading-relaxed">
+              {showConfirmModal.action === 'Reject' && "Are you sure you want to reject this claim? This will notify the citizen and halt further processing."}
+              {showConfirmModal.action === 'Verify' && "Are you sure you want to verify this claim? This will approve it for the final Blockchain anchoring process."}
+              {showConfirmModal.action === 'Lock' && "WARNING: Anchoring to the Polygon blockchain is permanent and immutable. This legally establishes the claim as sovereign IP of India. Proceed?"}
+              {showConfirmModal.action === 'DeleteAlert' && "Are you sure you want to delete this emergency broadcast? This will immediately remove it from all Citizen Dashboards globally."}
+              {showConfirmModal.action === 'Error' && showConfirmModal.meta}
+            </p>
+            <div className="flex gap-4">
+              {showConfirmModal.action !== 'Error' && (
+                <button 
+                  onClick={() => setShowConfirmModal({isOpen: false, action: null})}
+                  className="flex-1 py-3 bg-gray-100 text-gray-700 font-bold uppercase tracking-widest text-xs rounded hover:bg-gray-200 transition-colors"
+                >
+                  Cancel
+                </button>
+              )}
+              <button 
+                onClick={() => {
+                  if(showConfirmModal.action === 'Reject') handleStatusUpdate('Rejected');
+                  else if(showConfirmModal.action === 'Verify') handleStatusUpdate('Verified');
+                  else if(showConfirmModal.action === 'DeleteAlert') handleDeleteAlert(showConfirmModal.meta);
+                  else if(showConfirmModal.action === 'Lock') {
+                    setShowConfirmModal({isOpen: false, action: null});
+                    handleBlockchainLock();
+                  } else if(showConfirmModal.action === 'Error') {
+                    setShowConfirmModal({isOpen: false, action: null});
+                  }
+                }}
+                className={`flex-1 py-3 text-white font-bold uppercase tracking-widest text-xs rounded shadow-md transition-colors ${
+                  showConfirmModal.action === 'Reject' || showConfirmModal.action === 'DeleteAlert' ? 'bg-red-600 hover:bg-red-700' :
+                  showConfirmModal.action === 'Verify' ? 'bg-green-600 hover:bg-green-700' :
+                  showConfirmModal.action === 'Error' ? 'bg-gov-blue hover:bg-[#081729]' :
+                  'bg-gov-gold hover:bg-yellow-600'
+                }`}
+              >
+                {showConfirmModal.action === 'Error' ? 'Dismiss' : `Confirm ${showConfirmModal.action === 'DeleteAlert' ? 'Deletion' : showConfirmModal.action}`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

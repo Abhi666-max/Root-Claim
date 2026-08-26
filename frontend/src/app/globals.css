@@ -121,6 +121,6 @@ h1, h2, h3, h4, h5, h6, .font-serif-official {
   
   @page { 
     margin: 0; 
-    size: auto; 
+    size: A4 portrait; 
   }
 }
