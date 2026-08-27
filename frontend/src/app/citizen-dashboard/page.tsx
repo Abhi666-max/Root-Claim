@@ -481,7 +481,7 @@ export default function CitizenDashboard() {
               </div>
 
               {/* System Status / Network */}
-              <div className="bg-white border-t-4 border-gov-gold shadow-md rounded-b p-8">
+              <div className="bg-white/80 backdrop-blur-md border-t-4 border-gov-gold shadow-xl rounded-b-2xl p-8">
                   <div className="flex justify-between items-end border-b border-gray-100 pb-4 mb-6">
                     <div>
                       <h3 className="font-serif-official font-bold text-xl text-gov-blue">Ministry Security Grid</h3>
@@ -533,7 +533,7 @@ export default function CitizenDashboard() {
           {/* ====================================================== */}
           {activeTab === 'submit' && (
             <div className="max-w-4xl">
-              <div className="bg-white border border-gray-200 shadow-sm p-8">
+              <div className="bg-white/80 backdrop-blur-md border border-white/60 shadow-xl p-8 rounded-2xl">
                 
                 <div className="mb-8 border-b border-gray-100 pb-6">
                   <h3 className="font-serif-official font-bold text-2xl text-gov-blue mb-2 flex items-center gap-3">
@@ -691,8 +691,8 @@ export default function CitizenDashboard() {
           {/* ====================================================== */}
           {activeTab === 'vault' && (
             <div className="max-w-6xl">
-              <div className="bg-white border border-gray-200 shadow-sm">
-                <div className="bg-gray-900 px-6 py-5 border-b border-gray-800 flex justify-between items-center">
+              <div className="bg-white/80 backdrop-blur-md border border-white/60 shadow-xl rounded-2xl overflow-hidden">
+                <div className="bg-slate-900/90 backdrop-blur-md px-6 py-5 border-b border-slate-800 flex justify-between items-center">
                   <h3 className="font-serif-official font-bold text-white text-lg flex items-center gap-2">
                     <ShieldCheck size={20} className="text-gov-gold"/> My Secured Claims
                   </h3>
@@ -781,7 +781,7 @@ export default function CitizenDashboard() {
           {activeTab === 'whistleblower' && (
             <div className="max-w-4xl">
               {hasReported ? (
-                <div className="bg-white border-t-4 border-yellow-500 shadow-sm p-8">
+                <div className="bg-white/80 backdrop-blur-md border-t-4 border-yellow-500 shadow-xl p-8 rounded-2xl">
                   <div className="mb-8 border-b border-gray-100 pb-6 flex items-center justify-between">
                     <div>
                       <h3 className="font-serif-official font-bold text-2xl text-gov-blue mb-2 flex items-center gap-3">
@@ -823,7 +823,7 @@ export default function CitizenDashboard() {
                   </div>
                 </div>
               ) : (
-                <div className="bg-white border-t-4 border-red-600 shadow-sm p-8">
+                <div className="bg-white/80 backdrop-blur-md border-t-4 border-red-600 shadow-xl p-8 rounded-2xl">
                   
                   <div className="mb-8 border-b border-gray-100 pb-6">
                     <h3 className="font-serif-official font-bold text-2xl text-red-700 mb-2 flex items-center gap-3">
@@ -880,7 +880,8 @@ export default function CitizenDashboard() {
           {/* TAB: IP-SAKTI SAHAYAK (RAG Chatbot) */}
           {/* ====================================================== */}
           {activeTab === 'ip-sakti' && (
-            <div className="w-full h-screen flex flex-col bg-white border-l border-gray-200">
+            <div className="w-full h-full p-4 pl-0">
+              <div className="w-full h-[calc(100vh-2rem)] flex flex-col bg-white/80 backdrop-blur-md border border-white/60 shadow-xl rounded-2xl overflow-hidden">
               <div className="bg-gov-blue p-6 flex justify-between items-center shrink-0">
                 <div>
                   <h3 className="font-serif-official font-bold text-white text-xl flex items-center gap-2 mb-1">
@@ -994,6 +995,7 @@ export default function CitizenDashboard() {
                 </form>
                 <p className="text-[10px] text-gray-400 mt-2 text-center">Powered by Groq LLM & Supabase Vector RAG</p>
               </div>
+            </div>
             </div>
           )}
 

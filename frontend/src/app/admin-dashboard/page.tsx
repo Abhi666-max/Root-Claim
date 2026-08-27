@@ -300,7 +300,7 @@ export default function AdminDashboard() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 
                 {/* Stat Card 1 */}
-                <div className="relative overflow-hidden bg-white p-6 rounded-xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] group">
+                <div className="relative overflow-hidden bg-white/80 backdrop-blur-md p-6 rounded-2xl border border-white/60 shadow-xl group">
                   <div className="absolute top-0 right-0 -mr-8 -mt-8 text-gov-blue/5 transition-transform duration-500 group-hover:scale-110">
                     <Database size={120} />
                   </div>
@@ -340,7 +340,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Stat Card 3 */}
-                <div className="relative overflow-hidden bg-white p-6 rounded-xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] group">
+                <div className="relative overflow-hidden bg-white/80 backdrop-blur-md p-6 rounded-2xl border border-white/60 shadow-xl group">
                   <div className="absolute top-0 right-0 -mr-8 -mt-8 text-green-600/5 transition-transform duration-500 group-hover:scale-110">
                     <Activity size={120} />
                   </div>
@@ -362,7 +362,7 @@ export default function AdminDashboard() {
               </div>
 
               {/* Broadcast System */}
-              <div className="bg-red-50 border border-red-200 rounded-xl p-8 shadow-sm relative">
+              <div className="bg-white/80 backdrop-blur-md border-l-4 border-red-600 rounded-2xl p-8 shadow-xl relative">
                 <h3 className="text-sm font-bold text-red-700 uppercase tracking-widest mb-2 flex items-center gap-2">
                   <AlertTriangle size={16} /> Ministry Emergency Broadcast System
                 </h3>
@@ -422,7 +422,7 @@ export default function AdminDashboard() {
             <div className="space-y-6 flex flex-col">
               
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                <div className="xl:col-span-2 bg-white border border-gray-200 rounded-xl p-8 shadow-sm relative overflow-hidden h-[450px]">
+                <div className="xl:col-span-2 bg-white/80 backdrop-blur-md border border-white/60 rounded-2xl p-8 shadow-xl relative overflow-hidden h-[450px]">
                   <h3 className="text-sm font-bold text-gov-blue uppercase tracking-widest mb-6 relative z-10 flex items-center justify-between border-b border-gray-100 pb-4">
                     Live Global Monitoring
                     <span className="bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1 rounded-full text-[10px]">VECTOR SEARCH ACTIVE</span>
@@ -452,7 +452,7 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm flex flex-col">
+                <div className="bg-white/80 backdrop-blur-md border border-white/60 rounded-2xl p-8 shadow-xl flex flex-col">
                   <h3 className="text-sm font-bold text-gov-blue uppercase tracking-widest mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
                     <AlertTriangle size={16} className="text-red-500"/> Recent Collision Alerts
                   </h3>
@@ -485,7 +485,7 @@ export default function AdminDashboard() {
           {/* TAB: WHISTLEBLOWER THREATS */}
           {activeTab === 'whistleblower' && (
             <div className="space-y-6">
-               <div className="bg-white border-t-4 border-red-600 rounded-xl p-8 shadow-sm">
+               <div className="bg-white/80 backdrop-blur-md border-t-4 border-red-600 rounded-2xl p-8 shadow-xl overflow-hidden">
                  <h3 className="text-sm font-bold text-red-700 uppercase tracking-widest mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
                    <AlertTriangle size={16} /> Incoming Citizen Reports
                  </h3>
@@ -535,7 +535,7 @@ export default function AdminDashboard() {
               
               {/* LEFT COLUMN: Pending Queue */}
               <div className="lg:w-1/3 flex flex-col gap-6">
-                <div className="bg-white border-t-4 border-gov-gold rounded-xl shadow-sm flex-1 flex flex-col overflow-hidden">
+                <div className="bg-white/80 backdrop-blur-md border-t-4 border-gov-gold rounded-2xl shadow-xl flex-1 flex flex-col overflow-hidden">
                   <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                     <h3 className="font-serif-official font-bold text-gov-blue text-xs tracking-widest uppercase flex items-center gap-2">
                       <Database size={14} className="text-gov-gold"/> Pending Verification
@@ -577,7 +577,7 @@ export default function AdminDashboard() {
                 {activeClaim ? (
                   <>
                   {/* Claim Details */}
-                  <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
+                  <div className="bg-white/80 backdrop-blur-md border border-white/60 rounded-2xl shadow-xl p-8">
                     <div className="flex justify-between items-start mb-6 border-b border-gray-100 pb-4">
                       <div>
                         <h2 className="text-2xl font-serif-official font-bold text-gray-900 mb-2">{activeClaim.title}</h2>
@@ -638,7 +638,7 @@ export default function AdminDashboard() {
 
                   {/* BLOCKCHAIN VAULT */}
                   {activeClaim.status === 'Verified' && (
-                    <div className="bg-white border-2 border-gov-gold shadow-sm rounded-xl p-8 relative overflow-hidden group mt-6">
+                    <div className="bg-white/80 backdrop-blur-md border border-gov-gold shadow-xl rounded-2xl p-8 relative overflow-hidden group mt-6">
                       <div className="absolute right-0 top-0 text-gov-gold/10 pointer-events-none group-hover:scale-110 transition-transform duration-1000">
                         <LinkIcon size={200} />
                       </div>
@@ -680,7 +680,7 @@ export default function AdminDashboard() {
           {/* TAB: DATABASE (Real Patents) */}
           {activeTab === 'database' && (
             <div className="flex flex-col gap-6">
-              <div className="bg-white border-t-4 border-gov-gold rounded-xl shadow-sm flex-1 flex flex-col overflow-hidden">
+              <div className="bg-white/80 backdrop-blur-md border-t-4 border-gov-gold rounded-2xl shadow-xl flex-1 flex flex-col overflow-hidden">
                 <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                   <h3 className="font-serif-official font-bold text-gov-blue text-xs tracking-widest uppercase flex items-center gap-2">
                     <Database size={14} className="text-gov-gold"/> Immutable TKDL Master Database
