@@ -782,7 +782,6 @@ export default function CitizenDashboard() {
                   </table>
                 </div>
               </div>
-              </div>
             </div>
           )}
 
@@ -891,7 +890,6 @@ export default function CitizenDashboard() {
                       </button>
                     </div>
                   </div>
-                </div>
                 </div>
               )}
               </div>
@@ -1016,7 +1014,6 @@ export default function CitizenDashboard() {
                 </form>
                 <p className="text-[10px] text-gray-400 mt-2 text-center">Powered by Groq LLM & Supabase Vector RAG</p>
               </div>
-            </div>
             </div>
           )}
 

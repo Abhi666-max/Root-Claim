@@ -177,7 +177,7 @@ export default function AdminDashboard() {
 
   // Modals state
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [showConfirmModal, setShowConfirmModal] = useState<{isOpen: boolean, action: 'Reject' | 'Verify' | 'Lock' | 'DeleteAlert' | 'Error' | 'Broadcast' | null, meta?: any}>({isOpen: false, action: null});
+  const [showConfirmModal, setShowConfirmModal] = useState<{isOpen: boolean, action: 'Reject' | 'Verify' | 'Lock' | 'DeleteAlert' | 'Error' | 'Broadcast' | 'ReviewReport' | null, meta?: any}>({isOpen: false, action: null});
 
   const handleStatusUpdate = async (status: string) => {
     if(!activeClaim) return;
@@ -409,6 +409,7 @@ export default function AdminDashboard() {
                   )}
                 </div>
               </div>
+              </div>
             </div>
           )}
 
@@ -483,6 +484,7 @@ export default function AdminDashboard() {
                   </button>
                 </div>
               </div>
+              </div>
             </div>
           )}
 
@@ -539,8 +541,9 @@ export default function AdminDashboard() {
                    </table>
                  </div>
                </div>
-            </div>
-          )}
+             </div>
+             </div>
+           )}
 
           {/* TAB: QUEUE (Citizen Submissions) */}
           {activeTab === 'queue' && (
@@ -696,6 +699,7 @@ export default function AdminDashboard() {
                   </div>
                 )}
               </div>
+              </div>
             </div>
           )}
 
@@ -749,6 +753,7 @@ export default function AdminDashboard() {
                     </tbody>
                   </table>
                 </div>
+              </div>
               </div>
             </div>
           )}
