@@ -282,7 +282,7 @@ export default function CitizenDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gov-text font-sans flex">
+    <div className="min-h-screen bg-slate-50 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-100 via-white to-slate-50 text-gov-text font-sans flex">
       
       {/* SIDEBAR NAVIGATION */}
       <aside className="w-64 bg-gov-blue text-white flex flex-col fixed h-full z-20 shadow-xl print:hidden">
@@ -382,7 +382,7 @@ export default function CitizenDashboard() {
         )}
 
         {/* Dynamic Content Body */}
-        <div className={`flex-1 flex flex-col bg-gray-50 ${activeTab === 'ip-sakti' ? 'p-0' : 'p-10'} print:p-0 print:bg-white`}>
+        <div className={`flex-1 flex flex-col bg-transparent ${activeTab === 'ip-sakti' ? 'p-0' : 'p-10'} print:p-0 print:bg-white`}>
           
           {/* ====================================================== */}
           {/* TAB: OVERVIEW */}

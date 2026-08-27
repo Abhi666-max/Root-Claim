@@ -192,17 +192,17 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 font-sans flex overflow-hidden">
+    <div className="min-h-screen bg-slate-50 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-100 via-white to-slate-50 text-gray-900 font-sans flex overflow-hidden">
       <Head>
         <title>Minister Command Center | Root-Claim</title>
       </Head>
 
       {/* SIDEBAR */}
-      <aside className="w-72 bg-white border-r border-gray-200 flex flex-col shrink-0 z-20 shadow-xl relative">
-        <div className="h-24 flex items-center gap-4 px-8 border-b border-gray-200 bg-gov-blue">
-          <div className="w-12 h-12 rounded-full border-2 border-gov-gold flex flex-col items-center justify-center bg-white shrink-0 shadow-md">
-            <span className="text-[10px] font-serif font-bold text-gov-blue leading-none">सत्यमेव</span>
-            <span className="text-[10px] font-serif font-bold text-gov-blue leading-none mt-0.5">जयते</span>
+      <aside className="w-72 bg-[#06152a] border-r border-[#0a1e3f] flex flex-col shrink-0 z-20 shadow-2xl relative text-slate-300">
+        <div className="h-24 flex items-center gap-4 px-8 border-b border-[#0a1e3f] bg-[#040f1d]">
+          <div className="w-12 h-12 rounded-full border-2 border-gov-gold flex flex-col items-center justify-center bg-white shrink-0 shadow-[0_0_15px_rgba(212,175,55,0.3)]">
+            <span className="text-[10px] font-serif font-bold text-[#06152a] leading-none">सत्यमेव</span>
+            <span className="text-[10px] font-serif font-bold text-[#06152a] leading-none mt-0.5">जयते</span>
           </div>
           <div>
             <h1 className="font-serif-official font-bold text-white tracking-widest uppercase text-sm leading-tight">Ministry of Ayush</h1>
@@ -210,53 +210,53 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <nav className="flex-1 py-8 flex flex-col gap-2 px-4 relative z-10 bg-gray-50">
+        <nav className="flex-1 py-8 flex flex-col gap-2 px-4 relative z-10 bg-[#06152a]">
           <button 
             onClick={() => setActiveTab('command_center')}
-            className={`flex items-center gap-4 px-6 py-4 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'command_center' ? 'bg-gov-blue text-white shadow-md' : 'text-gray-600 hover:bg-gray-200 border border-transparent'}`}
+            className={`flex items-center gap-4 px-6 py-4 rounded-lg text-xs font-bold uppercase tracking-widest transition-all duration-300 ${activeTab === 'command_center' ? 'bg-gradient-to-r from-gov-blue to-[#0a1e3f] text-white shadow-lg border border-[#0a1e3f]' : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'}`}
           >
             <Activity size={18} /> Command Center
           </button>
           
           <button 
             onClick={() => setActiveTab('radar')}
-            className={`flex items-center gap-4 px-6 py-4 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'radar' ? 'bg-gov-blue text-white shadow-md' : 'text-gray-600 hover:bg-gray-200 border border-transparent'}`}
+            className={`flex items-center gap-4 px-6 py-4 rounded-lg text-xs font-bold uppercase tracking-widest transition-all duration-300 ${activeTab === 'radar' ? 'bg-gradient-to-r from-gov-blue to-[#0a1e3f] text-white shadow-lg border border-[#0a1e3f]' : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'}`}
           >
             <Globe size={18} /> Global Threat Radar
           </button>
           
           <button 
             onClick={() => setActiveTab('whistleblower')}
-            className={`flex items-center gap-4 px-6 py-4 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'whistleblower' ? 'bg-red-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-200 border border-transparent'}`}
+            className={`flex items-center gap-4 px-6 py-4 rounded-lg text-xs font-bold uppercase tracking-widest transition-all duration-300 ${activeTab === 'whistleblower' ? 'bg-gradient-to-r from-red-600 to-rose-700 text-white shadow-lg border border-red-800' : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'}`}
           >
-            <AlertTriangle size={18} /> Threat Reports {reports.length > 0 && <span className="bg-red-100 text-red-700 border border-red-200 text-[9px] px-2 py-0.5 rounded-full ml-auto animate-pulse">{reports.length} NEW</span>}
+            <AlertTriangle size={18} /> Threat Reports {reports.length > 0 && <span className="bg-red-500/20 text-red-400 border border-red-500/30 text-[9px] px-2 py-0.5 rounded-full ml-auto animate-pulse">{reports.length} NEW</span>}
           </button>
 
           <button 
             onClick={() => setActiveTab('queue')}
-            className={`flex items-center gap-4 px-6 py-4 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'queue' ? 'bg-gov-gold text-gov-blue shadow-md' : 'text-gray-600 hover:bg-gray-200 border border-transparent'}`}
+            className={`flex items-center gap-4 px-6 py-4 rounded-lg text-xs font-bold uppercase tracking-widest transition-all duration-300 ${activeTab === 'queue' ? 'bg-gradient-to-r from-gov-gold to-yellow-600 text-white shadow-lg border border-yellow-700' : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'}`}
           >
             <CheckSquare size={18} /> Citizen Submissions
           </button>
 
           <button 
             onClick={() => setActiveTab('database')}
-            className={`flex items-center gap-4 px-6 py-4 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'database' ? 'bg-gov-blue text-white shadow-md' : 'text-gray-600 hover:bg-gray-200 border border-transparent'}`}
+            className={`flex items-center gap-4 px-6 py-4 rounded-lg text-xs font-bold uppercase tracking-widest transition-all duration-300 ${activeTab === 'database' ? 'bg-gradient-to-r from-gov-blue to-[#0a1e3f] text-white shadow-lg border border-[#0a1e3f]' : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'}`}
           >
             <Database size={18} /> TKDL Master DB
           </button>
         </nav>
 
-        <div className="p-6 border-t border-gray-200 bg-white relative z-10">
+        <div className="p-6 border-t border-[#0a1e3f] bg-[#040f1d] relative z-10">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-full bg-gov-blue flex items-center justify-center text-white font-bold border-2 border-gov-gold shadow-sm">M</div>
+            <div className="w-10 h-10 rounded-full bg-gov-blue flex items-center justify-center text-white font-bold border-2 border-gov-gold shadow-[0_0_10px_rgba(212,175,55,0.2)]">M</div>
             <div>
-              <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Authorized User</p>
-              <p className="text-sm font-bold text-gov-blue">Hon. Minister Desk</p>
+              <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Authorized User</p>
+              <p className="text-sm font-bold text-white">Hon. Minister Desk</p>
             </div>
           </div>
           <Link href="/">
-            <button className="w-full bg-white text-gray-600 border border-gray-300 py-3 rounded text-xs font-bold uppercase tracking-widest hover:bg-gray-50 hover:text-red-600 transition-colors flex justify-center items-center gap-2">
+            <button className="w-full bg-white/5 text-slate-400 border border-white/10 py-3 rounded text-xs font-bold uppercase tracking-widest hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 transition-all duration-300 flex justify-center items-center gap-2">
               <LogOut size={14} /> Secure Logout
             </button>
           </Link>
@@ -264,7 +264,7 @@ export default function AdminDashboard() {
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 flex flex-col relative z-0 bg-gray-50 overflow-y-auto">
+      <main className="flex-1 flex flex-col relative z-0 bg-transparent overflow-y-auto">
         
         <header className="h-24 px-10 flex items-center justify-between border-b border-gray-200 bg-white shadow-sm sticky top-0 z-20 shrink-0">
           <div>
