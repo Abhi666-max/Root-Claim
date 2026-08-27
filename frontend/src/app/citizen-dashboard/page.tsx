@@ -27,6 +27,7 @@ export default function CitizenDashboard() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line
     fetchUserStats()
   }, [])
   
@@ -53,7 +54,6 @@ export default function CitizenDashboard() {
     {role: 'bot', content: 'Namaste! I am IP-SAKTI Sahayak (A Multilingual RAG-based AI Assistant). Ask me any question regarding Indian Intellectual Property Laws, Biopiracy, or Traditional Knowledge.'}
   ])
   const [isChatting, setIsChatting] = useState(false)
-  const [isChatting, setIsChatting] = useState(false)
   const [jurisdiction, setJurisdiction] = useState<'india'|'international'>('india')
   const [showJurisdictionModal, setShowJurisdictionModal] = useState<{isOpen: boolean, target: 'india'|'international' | null}>({isOpen: false, target: null})
 
@@ -73,6 +73,7 @@ export default function CitizenDashboard() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line
     fetchMyClaims()
   }, [])
 
@@ -855,12 +856,12 @@ export default function CitizenDashboard() {
                     <ShieldCheck size={48} className="mb-4 text-gov-gold" />
                     <p className="text-sm font-bold uppercase tracking-widest mb-2">Suggested Queries</p>
                     <div className="flex flex-col gap-2 text-xs">
-                      <button onClick={() => setChatInput("What is TKDL and why is it important?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-gov-gold transition-colors">"What is TKDL and why is it important?"</button>
+                      <button onClick={() => setChatInput("What is TKDL and why is it important?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-gov-gold transition-colors">&quot;What is TKDL and why is it important?&quot;</button>
                       <button onClick={() => setChatInput("Classify my Ayurvedic product")} className="bg-white px-4 py-2 border border-gov-blue text-gov-blue hover:bg-gov-blue hover:text-white transition-colors flex items-center justify-center gap-2">
                         <Activity size={14}/> Classify Formulation
                       </button>
-                      <button onClick={() => setChatInput("How does India protect Turmeric from foreign patents?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-gov-gold transition-colors">"How does India protect Turmeric from foreign patents?"</button>
-                      <button onClick={() => setChatInput("Can I patent an Ayurvedic herbal extract?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-gov-gold transition-colors">"Can I patent an Ayurvedic herbal extract?"</button>
+                      <button onClick={() => setChatInput("How does India protect Turmeric from foreign patents?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-gov-gold transition-colors">&quot;How does India protect Turmeric from foreign patents?&quot;</button>
+                      <button onClick={() => setChatInput("Can I patent an Ayurvedic herbal extract?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-gov-gold transition-colors">&quot;Can I patent an Ayurvedic herbal extract?&quot;</button>
                     </div>
                   </div>
                 )}
@@ -999,7 +1000,7 @@ export default function CitizenDashboard() {
                     <h3 className="text-xl md:text-2xl font-bold text-gov-blue mb-4 md:mb-6 uppercase tracking-wider underline decoration-gov-gold decoration-2 underline-offset-8">Abhijeet Kangane</h3>
                     
                     <p className="text-md md:text-lg text-gray-700 italic mb-2 font-serif-official">has successfully documented the traditional knowledge claim titled:</p>
-                    <h3 className="text-lg md:text-xl font-bold text-gov-blue mb-6 md:mb-10 px-4 md:px-8 leading-snug">"{formattedClaim ? formattedClaim.split('\n')[0].replace('TITLE:', '').trim() : 'Traditional Ayurvedic Botanical Formulation'}"</h3>
+                    <h3 className="text-lg md:text-xl font-bold text-gov-blue mb-6 md:mb-10 px-4 md:px-8 leading-snug">&quot;{formattedClaim ? formattedClaim.split('\n')[0].replace('TITLE:', '').trim() : 'Traditional Ayurvedic Botanical Formulation'}&quot;</h3>
                     
                     <p className="text-xs md:text-sm text-gray-600 italic mb-8 md:mb-12 font-serif-official max-w-2xl px-4 md:px-12 leading-relaxed">
                       This formulation has been digitally verified, cryptographically hashed, and securely anchored to the decentralized vault under the Traditional Knowledge Digital Library (TKDL) framework to protect against bio-piracy.

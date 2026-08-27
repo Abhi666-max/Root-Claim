@@ -52,8 +52,6 @@ app.add_middleware(
 class DraftRequest(BaseModel):
     raw_text: str
 
-class ChatRequest(BaseModel):
-    query: str
 
 @app.get("/")
 def read_root():
@@ -90,6 +88,31 @@ def api_stats():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/v1/user-stats/{user_id}")
+def api_user_stats(user_id: str):
+    """
+    Returns personal system statistics for a citizen.
+    """
+    if not supabase:
+        return {"drafted": 0, "under_verification": 0, "secured": 0}
+        
+    try:
+        # Get all claims for the user
+        res = supabase.table("claims").select("status").eq("user_id", user_id).execute()
+        claims = res.data
+        
+        drafted = len(claims)
+        under_verification = len([c for c in claims if c["status"] in ["Pending Review", "In Progress"]])
+        secured = len([c for c in claims if c["status"] in ["Verified", "Blockchain Anchored"]])
+        
+        return {
+            "drafted": drafted,
+            "under_verification": under_verification,
+            "secured": secured
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 class ReportRequest(BaseModel):
     user_id: str
     target_url: str
@@ -112,6 +135,16 @@ def submit_report(request: ReportRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/v1/claims/{user_id}")
+def get_user_claims(user_id: str):
+    if not supabase:
+        raise HTTPException(status_code=500, detail="Database connection not configured")
+    try:
+        res = supabase.table("claims").select("*").eq("user_id", user_id).execute()
+        return {"claims": res.data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/api/v1/reports")
 def get_reports():
     try:
@@ -131,6 +164,10 @@ def api_smart_draft(request: DraftRequest):
     formatted_claim = generate_smart_draft(request.raw_text)
     return {"formatted_claim": formatted_claim}
 
+class ChatRequest(BaseModel):
+    query: str
+    jurisdiction: str = "India"
+
 @app.post("/api/v1/ip-sakti")
 def api_ip_sakti(request: ChatRequest):
     """
@@ -142,8 +179,8 @@ def api_ip_sakti(request: ChatRequest):
     # Real RAG Execution: Fetch context from Supabase Vector DB
     retrieved_context, sources = get_rag_context(request.query)
     
-    # Pass both the user query and the retrieved context to Groq
-    answer = query_ip_sakti(request.query, retrieved_context=retrieved_context)
+    # Pass both the user query and the retrieved context to Groq, along with jurisdiction
+    answer = query_ip_sakti(request.query, retrieved_context=retrieved_context, jurisdiction=request.jurisdiction)
     return {"reply": answer, "sources": sources}
 
 class ClaimRequest(BaseModel):

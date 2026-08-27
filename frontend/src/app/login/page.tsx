@@ -1,10 +1,13 @@
 "use client"
 
 import React from 'react'
-import { ShieldCheck, User } from 'lucide-react'
+import { User } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
 export default function CitizenLogin() {
+  const router = useRouter()
+
   return (
     <div className="min-h-screen bg-gov-ivory flex items-center justify-center p-6 relative bg-mandala font-serif">
       <div className="w-full max-w-md bg-white border border-gov-light p-10 shadow-sm relative z-10">
@@ -17,7 +20,7 @@ export default function CitizenLogin() {
           <p className="text-sm text-gray-500 italic">Login to submit traditional knowledge claims.</p>
         </div>
 
-        <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); window.location.href='/citizen-dashboard'; }}>
+        <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); router.push('/citizen-dashboard'); }}>
           <div>
             <label className="block text-xs font-cinzel font-bold uppercase tracking-widest text-gov-blue mb-2">Aadhaar Number / Mobile</label>
             <input 

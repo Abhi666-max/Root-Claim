@@ -1,8 +1,7 @@
 "use client"
 
 import React from 'react'
-import { motion } from 'framer-motion'
-import { ShieldCheck, User, Building, AlertCircle, ChevronRight, FileText, Globe, Link as LinkIcon, FileSearch, Quote, Network } from 'lucide-react'
+import { ShieldCheck, User, Building, ChevronRight, FileText, Globe, Link as LinkIcon, FileSearch, Quote, Network } from 'lucide-react'
 import Link from 'next/link'
 
 export default function LandingPage() {
@@ -79,7 +78,7 @@ export default function LandingPage() {
               Official Digital Infrastructure
             </div>
             <h2 className="text-4xl md:text-6xl font-serif-official font-bold leading-tight mb-6">
-              Securing India's <br/>
+              Securing India&apos;s <br/>
               <span className="text-gov-gold">Traditional Knowledge.</span>
             </h2>
             <p className="text-lg text-gray-300 max-w-xl mb-10 leading-relaxed">

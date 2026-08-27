@@ -21,7 +21,7 @@ export const updateSession = async (request: NextRequest) => {
             return request.cookies.getAll()
           },
           setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
+            cookiesToSet.forEach(({ name, value, ..._options }) => request.cookies.set(name, value))
             supabaseResponse = NextResponse.next({
               request,
             })
@@ -36,7 +36,7 @@ export const updateSession = async (request: NextRequest) => {
     await supabase.auth.getUser()
 
     return supabaseResponse
-  } catch (e) {
+  } catch (_e) {
     return NextResponse.next({
       request: {
         headers: request.headers,
