@@ -285,59 +285,59 @@ export default function CitizenDashboard() {
     <div className="min-h-screen bg-slate-50 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-100 via-white to-slate-50 text-gov-text font-sans flex">
       
       {/* SIDEBAR NAVIGATION */}
-      <aside className="w-64 bg-white border-r border-slate-200 text-slate-800 flex flex-col fixed h-full z-20 shadow-xl print:hidden">
-        <div className="h-20 flex items-center gap-3 px-6 border-b border-slate-200 bg-white">
-          <ShieldCheck size={32} className="text-gov-blue" />
+      <aside className="w-64 bg-[#0b1f38] border-r border-[#152e4d] text-slate-300 flex flex-col fixed h-full z-20 shadow-2xl print:hidden">
+        <div className="h-20 flex items-center gap-3 px-6 border-b border-[#152e4d] bg-[#07162b]">
+          <ShieldCheck size={32} className="text-gov-gold" />
           <div>
-            <h1 className="font-serif-official font-bold tracking-widest uppercase text-sm text-gov-blue">Root-Claim</h1>
+            <h1 className="font-serif-official font-bold tracking-widest uppercase text-sm text-white">Root-Claim</h1>
             <p className="text-[8px] uppercase tracking-widest text-gov-gold font-bold">Citizen Portal</p>
           </div>
         </div>
 
-        <nav className="flex-1 py-8 flex flex-col gap-2 px-4">
+        <nav className="flex-1 py-8 flex flex-col px-4 bg-[#0b1f38]">
           <button 
             onClick={() => setActiveTab('overview')}
-            className={`flex items-center gap-3 px-4 py-3 rounded text-xs font-bold uppercase tracking-widest transition-colors ${activeTab === 'overview' ? 'bg-gov-blue text-white shadow-md' : 'text-slate-600 hover:bg-slate-50 hover:text-gov-blue'}`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-r text-xs font-bold uppercase tracking-widest transition-colors mb-2 ${activeTab === 'overview' ? 'bg-gradient-to-r from-gov-gold/20 to-transparent text-gov-gold border-l-4 border-gov-gold shadow-md' : 'text-slate-400 hover:bg-white/5 hover:text-white border-l-4 border-transparent'}`}
           >
             <Home size={16} /> Overview
           </button>
           <button 
             onClick={() => setActiveTab('ip-sakti')}
-            className={`flex items-center gap-3 px-4 py-3 rounded text-xs font-bold uppercase tracking-widest transition-colors ${activeTab === 'ip-sakti' ? 'bg-gov-blue text-white shadow-md' : 'text-slate-600 hover:bg-slate-50 hover:text-gov-blue'}`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-r text-xs font-bold uppercase tracking-widest transition-colors mb-2 ${activeTab === 'ip-sakti' ? 'bg-gradient-to-r from-gov-gold/20 to-transparent text-gov-gold border-l-4 border-gov-gold shadow-md' : 'text-slate-400 hover:bg-white/5 hover:text-white border-l-4 border-transparent'}`}
           >
             <MessageSquare size={16} /> IP-SAKTI Sahayak
           </button>
           <button 
             onClick={() => setActiveTab('submit')}
-            className={`flex items-center gap-3 px-4 py-3 rounded text-xs font-bold uppercase tracking-widest transition-colors ${activeTab === 'submit' ? 'bg-gov-blue text-white shadow-md' : 'text-slate-600 hover:bg-slate-50 hover:text-gov-blue'}`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-r text-xs font-bold uppercase tracking-widest transition-colors mb-2 ${activeTab === 'submit' ? 'bg-gradient-to-r from-gov-gold/20 to-transparent text-gov-gold border-l-4 border-gov-gold shadow-md' : 'text-slate-400 hover:bg-white/5 hover:text-white border-l-4 border-transparent'}`}
           >
             <FileText size={16} /> Submit Knowledge
           </button>
 
           <button 
             onClick={() => setActiveTab('vault')}
-            className={`flex items-center gap-3 px-4 py-3 rounded text-xs font-bold uppercase tracking-widest transition-colors ${activeTab === 'vault' ? 'bg-gov-blue text-white shadow-md' : 'text-slate-600 hover:bg-slate-50 hover:text-gov-blue'}`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-r text-xs font-bold uppercase tracking-widest transition-colors mb-2 ${activeTab === 'vault' ? 'bg-gradient-to-r from-gov-gold/20 to-transparent text-gov-gold border-l-4 border-gov-gold shadow-md' : 'text-slate-400 hover:bg-white/5 hover:text-white border-l-4 border-transparent'}`}
           >
             <ShieldCheck size={16} /> My Digital Vault
           </button>
           <button 
             onClick={() => setActiveTab('whistleblower')}
-            className={`flex items-center gap-3 px-4 py-3 rounded text-xs font-bold uppercase tracking-widest transition-colors ${activeTab === 'whistleblower' ? 'bg-red-600 text-white shadow-md' : 'text-slate-500 hover:bg-red-50 hover:text-red-600'}`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-r text-xs font-bold uppercase tracking-widest transition-colors mb-2 ${activeTab === 'whistleblower' ? 'bg-gradient-to-r from-red-600/20 to-transparent text-red-500 border-l-4 border-red-500 shadow-md' : 'text-slate-400 hover:bg-white/5 hover:text-red-400 border-l-4 border-transparent'}`}
           >
             <ShieldAlert size={16} /> Report Bio-Piracy
           </button>
         </nav>
 
-        <div className="p-4 border-t border-slate-200 bg-slate-50">
-          <div className="bg-white p-4 rounded mb-4 shadow-sm border border-slate-100">
-            <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-bold">Logged in as</p>
-            <p className="text-sm font-bold text-gov-blue flex items-center gap-2 mb-2"><User size={14}/> UID-992-881</p>
-            <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-green-50 border border-green-200 rounded text-[9px] text-green-700 font-bold uppercase tracking-widest">
+        <div className="p-4 border-t border-[#152e4d] bg-[#07162b]">
+          <div className="bg-white/5 p-4 rounded mb-4 shadow-sm border border-white/10">
+            <p className="text-[10px] text-slate-400 uppercase tracking-widest mb-1 font-bold">Logged in as</p>
+            <p className="text-sm font-bold text-white flex items-center gap-2 mb-2"><User size={14}/> UID-992-881</p>
+            <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-green-500/20 border border-green-500/30 rounded text-[9px] text-green-400 font-bold uppercase tracking-widest">
               <CheckCircle size={10} /> Verified TKDL Contributor
             </div>
           </div>
           <Link href="/">
-            <button className="w-full text-left flex items-center gap-3 px-4 py-2 text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-red-600 transition-colors">
+            <button className="w-full text-left flex items-center gap-3 px-4 py-2 text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-red-400 transition-colors">
               Logout &rarr;
             </button>
           </Link>
