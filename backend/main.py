@@ -4,6 +4,8 @@ from pydantic import BaseModel
 import os
 from dotenv import load_dotenv
 
+load_dotenv()
+
 # Import our Groq AI Service
 from services.ai_service import generate_smart_draft, query_ip_sakti
 from services.ocr_service import extract_and_structure_text
@@ -50,7 +52,11 @@ app.add_middleware(
 )
 
 class DraftRequest(BaseModel):
-    raw_text: str
+    title: str = ""
+    reference_text: str = ""
+    verse_sloka: str = ""
+    ingredients: str = ""
+    raw_text: str = ""
 
 
 @app.get("/")
@@ -158,10 +164,17 @@ def api_smart_draft(request: DraftRequest):
     Feature 2: Vernacular AI Smart Draft Engine
     Converts Hinglish/English to formal botanical claims.
     """
-    if not request.raw_text:
-        raise HTTPException(status_code=400, detail="Raw text is required.")
+    combined_input = f"""
+    Title: {request.title}
+    Reference: {request.reference_text}
+    Verse: {request.verse_sloka}
+    Ingredients: {request.ingredients}
+    Description: {request.raw_text}
+    """
+    if not combined_input.strip():
+        raise HTTPException(status_code=400, detail="Input is required.")
     
-    formatted_claim = generate_smart_draft(request.raw_text)
+    formatted_claim = generate_smart_draft(combined_input)
     return {"formatted_claim": formatted_claim}
 
 class ChatRequest(BaseModel):
@@ -232,6 +245,19 @@ def update_claim_status(claim_id: str, request: ClaimUpdate):
         
         response = supabase.table("claims").update(update_data).eq("id", claim_id).execute()
         return {"status": "success", "data": response.data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/v1/patents")
+def get_patents():
+    """
+    Fetch the actual TKDL traditional patents from Supabase.
+    """
+    if not supabase:
+        raise HTTPException(status_code=500, detail="Database connection not configured")
+    try:
+        response = supabase.table("patents").select("*").order("created_at", desc=False).limit(50).execute()
+        return {"status": "success", "patents": response.data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

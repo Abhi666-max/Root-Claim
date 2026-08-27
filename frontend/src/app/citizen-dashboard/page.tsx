@@ -73,8 +73,15 @@ export default function CitizenDashboard() {
   }
 
   useEffect(() => {
-    // eslint-disable-next-line
     fetchMyClaims()
+    fetchUserStats()
+    
+    const interval = setInterval(() => {
+      fetchMyClaims()
+      fetchUserStats()
+    }, 5000)
+    
+    return () => clearInterval(interval)
   }, [])
 
   // Modal States
@@ -88,6 +95,9 @@ export default function CitizenDashboard() {
   const [reportContext, setReportContext] = useState('')
   const [reportError, setReportError] = useState('')
   const [hasReported, setHasReported] = useState(false)
+
+  // Action Confirmation Modal
+  const [confirmAction, setConfirmAction] = useState<{isOpen: boolean, type: 'enhance' | 'submit' | 'whistleblower' | null}>({isOpen: false, type: null})
 
   // Ministry Broadcast states
   const [ministryAlerts, setMinistryAlerts] = useState<{msg: string, time: string}[]>([])
@@ -147,6 +157,7 @@ export default function CitizenDashboard() {
 
   // API Call: Feature 2 - AI Smart Draft
   const handleAiEnhance = async () => {
+    setConfirmAction({isOpen: false, type: null});
     const combinedText = `
     Title: ${claimTitle}
     Reference Text (e.g. Charaka Samhita): ${referenceText}
@@ -157,8 +168,16 @@ export default function CitizenDashboard() {
     if (!combinedText.trim()) return;
     setIsDrafting(true);
     try {
-      const response = await axios.post('http://localhost:8000/api/v1/draft', { raw_text: rawText });
+      const response = await axios.post('http://localhost:8000/api/v1/draft', { 
+        title: claimTitle,
+        reference_text: referenceText,
+        verse_sloka: verseText,
+        ingredients: ingredients,
+        raw_text: rawText
+      });
       setFormattedClaim(response.data.formatted_claim);
+      // Reset radar result when claim changes
+      setRadarResult(null);
     } catch (error) {
       console.error("AI Draft Error:", error);
       setErrorMsg("Failed to connect to AI Engine. Make sure the backend server is running and API keys are set.");
@@ -188,6 +207,7 @@ export default function CitizenDashboard() {
 
   // Feature: Submit to Vault
   const handleSubmitToVault = async () => {
+    setConfirmAction({isOpen: false, type: null});
     setIsSubmitting(true);
     try {
       await axios.post('http://localhost:8000/api/v1/claims', {
@@ -347,8 +367,15 @@ export default function CitizenDashboard() {
                   <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-600 rounded-full border-2 border-white"></span>
                 </button>
               )}
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest bg-green-50 text-green-700 px-3 py-1.5 rounded-full border border-green-200">
-                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Network: Secure
+              <div className="flex items-center gap-3 bg-[#0a192f] border border-[#1e2d3d] text-[#64ffda] px-4 py-2 rounded shadow-[0_0_15px_rgba(100,255,218,0.15)]">
+                <div className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#64ffda] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#64ffda]"></span>
+                </div>
+                <span className="text-[9px] font-bold uppercase tracking-[0.2em] flex flex-col leading-tight">
+                  <span className="text-gray-400">Node Status</span>
+                  Secure & Encrypted
+                </span>
               </div>
             </div>
           </header>
@@ -412,17 +439,43 @@ export default function CitizenDashboard() {
                   <User className="text-gov-gold" /> My Personal Contributions
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="bg-white p-6 border-l-4 border-gov-blue shadow-sm">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">My Drafted Claims</p>
-                    <h3 className="text-3xl font-serif-official font-bold text-gov-blue">{userStats.drafted < 10 ? `0${userStats.drafted}` : userStats.drafted}</h3>
+                  <div className="relative bg-white p-6 rounded-xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                      <FileText size={80} />
+                    </div>
+                    <div className="relative z-10 flex flex-col h-full">
+                      <div className="w-10 h-10 rounded-full bg-blue-50 text-gov-blue flex items-center justify-center mb-4">
+                        <FileText size={18} />
+                      </div>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-2">My Drafted Claims</p>
+                      <h3 className="text-4xl font-serif-official font-bold text-gov-blue mt-auto">{userStats.drafted < 10 ? `0${userStats.drafted}` : userStats.drafted}</h3>
+                    </div>
                   </div>
-                  <div className="bg-white p-6 border-l-4 border-yellow-500 shadow-sm">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Under Verification</p>
-                    <h3 className="text-3xl font-serif-official font-bold text-yellow-600">{userStats.under_verification < 10 ? `0${userStats.under_verification}` : userStats.under_verification}</h3>
+
+                  <div className="relative bg-white p-6 rounded-xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                      <Clock size={80} />
+                    </div>
+                    <div className="relative z-10 flex flex-col h-full">
+                      <div className="w-10 h-10 rounded-full bg-yellow-50 text-yellow-600 flex items-center justify-center mb-4">
+                        <Clock size={18} />
+                      </div>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-2">Under Verification</p>
+                      <h3 className="text-4xl font-serif-official font-bold text-yellow-600 mt-auto">{userStats.under_verification < 10 ? `0${userStats.under_verification}` : userStats.under_verification}</h3>
+                    </div>
                   </div>
-                  <div className="bg-white p-6 border-l-4 border-green-600 shadow-sm">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">My Secured Vault Items</p>
-                    <h3 className="text-3xl font-serif-official font-bold text-green-700">{userStats.secured < 10 ? `0${userStats.secured}` : userStats.secured}</h3>
+
+                  <div className="relative bg-white p-6 rounded-xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                      <ShieldCheck size={80} />
+                    </div>
+                    <div className="relative z-10 flex flex-col h-full">
+                      <div className="w-10 h-10 rounded-full bg-green-50 text-green-600 flex items-center justify-center mb-4">
+                        <ShieldCheck size={18} />
+                      </div>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-2">My Secured Vault Items</p>
+                      <h3 className="text-4xl font-serif-official font-bold text-green-600 mt-auto">{userStats.secured < 10 ? `0${userStats.secured}` : userStats.secured}</h3>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -593,9 +646,9 @@ export default function CitizenDashboard() {
 
                   <div className="flex gap-4 pt-4 border-t border-gray-100">
                     <button 
-                      onClick={handleAiEnhance}
+                      onClick={() => setConfirmAction({isOpen: true, type: 'enhance'})}
                       disabled={isDrafting}
-                      className="flex-1 bg-gov-blue text-white py-4 text-xs font-bold tracking-widest uppercase hover:bg-[#081729] transition-colors flex justify-center items-center gap-2 shadow-md disabled:opacity-50"
+                      className="flex-1 bg-gradient-to-r from-gov-blue to-[#0a1e3f] text-white py-4 text-xs font-bold tracking-widest uppercase hover:shadow-lg hover:scale-[1.02] transition-all duration-300 flex justify-center items-center gap-2 shadow-md disabled:opacity-50 disabled:hover:scale-100 border border-[#0a1e3f]"
                     >
                       <Sparkles size={16} className={isDrafting ? "animate-spin text-gov-gold" : "text-gov-gold"} /> 
                       {isDrafting ? 'Drafting...' : 'Enhance with AI'}
@@ -605,7 +658,7 @@ export default function CitizenDashboard() {
                       <button 
                         onClick={handleRadarCheck}
                         disabled={isCheckingRadar}
-                        className="flex-1 bg-white border border-gov-blue text-gov-blue py-4 text-xs font-bold tracking-widest uppercase hover:bg-gov-blue hover:text-white transition-colors flex justify-center items-center gap-2 shadow-sm disabled:opacity-50"
+                        className="flex-1 bg-gradient-to-r from-gray-50 to-white border border-gov-blue text-gov-blue py-4 text-xs font-bold tracking-widest uppercase hover:shadow-lg hover:scale-[1.02] transition-all duration-300 flex justify-center items-center gap-2 shadow-sm disabled:opacity-50 disabled:hover:scale-100"
                       >
                         <Cpu size={16} className={isCheckingRadar ? "animate-pulse" : ""} /> 
                         {isCheckingRadar ? 'Scanning Patents...' : 'Run Patent Pre-Check'}
@@ -615,13 +668,15 @@ export default function CitizenDashboard() {
                   
                   {/* Submit to Vault Action */}
                   {radarResult && !formattedClaim?.startsWith('REJECTED:') && (
-                    <div className="pt-4 mt-2">
+                    <div className="pt-4 mt-2 border-t border-gray-100">
                       <button 
-                        onClick={handleSubmitToVault}
-                        disabled={isSubmitting}
-                        className="w-full bg-green-600 text-white py-4 text-xs font-bold tracking-widest uppercase hover:bg-green-700 transition-colors flex justify-center items-center gap-2 shadow-md disabled:opacity-50"
+                        onClick={() => setConfirmAction({isOpen: true, type: 'submit'})}
+                        disabled={isSubmitting || radarResult?.risk_level === 'HIGH'}
+                        className="w-full bg-gradient-to-r from-green-600 to-emerald-700 text-white py-4 text-xs font-bold tracking-widest uppercase hover:shadow-xl hover:scale-[1.01] transition-all duration-300 flex justify-center items-center gap-2 shadow-md disabled:opacity-50 disabled:hover:scale-100 border border-green-800 relative overflow-hidden"
                       >
-                        <ShieldCheck size={16} /> {isSubmitting ? 'Submitting to Vault...' : 'Submit & Anchor to Digital Vault'}
+                        {isSubmitting && <div className="absolute inset-0 bg-white/20 animate-pulse"></div>}
+                        <ShieldCheck size={18} className="relative z-10" /> 
+                        <span className="relative z-10">{isSubmitting ? 'Anchoring to Polygon Blockchain...' : 'Submit & Anchor to Digital Vault'}</span>
                       </button>
                     </div>
                   )}
@@ -804,12 +859,15 @@ export default function CitizenDashboard() {
                       ></textarea>
                     </div>
 
-                    <div className="pt-4 border-t border-gray-100">
+                    <div className="pt-4 border-t border-gray-100 mt-2">
                       <button 
-                        onClick={handleReportSubmit}
-                        className="w-full bg-red-600 text-white py-4 text-xs font-bold tracking-widest uppercase hover:bg-red-700 transition-colors flex justify-center items-center gap-2 shadow-md mt-4"
+                        onClick={() => setConfirmAction({isOpen: true, type: 'whistleblower'})}
+                        disabled={isCheckingRadar}
+                        className="w-full bg-gradient-to-r from-red-600 to-rose-700 text-white py-4 text-xs font-bold tracking-widest uppercase hover:shadow-xl hover:scale-[1.01] transition-all duration-300 flex justify-center items-center gap-2 shadow-md disabled:opacity-50 disabled:hover:scale-100 border border-red-800 relative overflow-hidden"
                       >
-                        <AlertTriangle size={16} /> Submit Red-Flag Report to Ministry
+                        {isCheckingRadar && <div className="absolute inset-0 bg-white/20 animate-pulse"></div>}
+                        <AlertTriangle size={18} className="relative z-10" /> 
+                        <span className="relative z-10">{isCheckingRadar ? 'Transmitting Threat Data to Ministry...' : 'Submit Red-Flag Report to Ministry'}</span>
                       </button>
                     </div>
                   </div>
@@ -830,22 +888,22 @@ export default function CitizenDashboard() {
                   </h3>
                   <p className="text-xs text-gray-300">SIH26045: A Multilingual, RAG-based AI assistant for Intellectual Property</p>
                 </div>
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest bg-white/10 text-white p-1 rounded-full border border-white/20">
+                <div className="flex items-center text-xs font-bold uppercase tracking-widest bg-black/20 p-1.5 rounded-full border border-white/10 shadow-inner">
                   <button 
                     onClick={() => {
                       if (jurisdiction !== 'india') setShowJurisdictionModal({isOpen: true, target: 'india'})
                     }} 
-                    className={`px-4 py-1.5 rounded-full transition-colors ${jurisdiction === 'india' ? 'bg-gov-gold text-white shadow' : 'hover:bg-white/10'}`}
+                    className={`flex items-center gap-2 px-5 py-2 rounded-full transition-all duration-300 ${jurisdiction === 'india' ? 'bg-gradient-to-r from-gov-gold to-yellow-600 text-white shadow-lg scale-105' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}
                   >
-                    India
+                    <ShieldCheck size={14} className={jurisdiction === 'india' ? 'text-white' : 'text-gray-400'} /> India (TKDL)
                   </button>
                   <button 
                     onClick={() => {
                       if (jurisdiction !== 'international') setShowJurisdictionModal({isOpen: true, target: 'international'})
                     }} 
-                    className={`px-4 py-1.5 rounded-full transition-colors ${jurisdiction === 'international' ? 'bg-gov-gold text-white shadow' : 'hover:bg-white/10'}`}
+                    className={`flex items-center gap-2 px-5 py-2 rounded-full transition-all duration-300 ${jurisdiction === 'international' ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}
                   >
-                    International
+                    <Globe size={14} className={jurisdiction === 'international' ? 'text-white' : 'text-gray-400'} /> International (WIPO)
                   </button>
                 </div>
               </div>
@@ -854,14 +912,27 @@ export default function CitizenDashboard() {
                 {chatHistory.length === 1 && (
                   <div className="flex flex-col items-center justify-center my-8 text-center text-gray-500 opacity-70">
                     <ShieldCheck size={48} className="mb-4 text-gov-gold" />
-                    <p className="text-sm font-bold uppercase tracking-widest mb-2">Suggested Queries</p>
+                    <p className="text-sm font-bold uppercase tracking-widest mb-2">Suggested Queries for {jurisdiction === 'india' ? 'TKDL (India)' : 'WIPO/EPO (International)'}</p>
                     <div className="flex flex-col gap-2 text-xs">
-                      <button onClick={() => setChatInput("What is TKDL and why is it important?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-gov-gold transition-colors">&quot;What is TKDL and why is it important?&quot;</button>
-                      <button onClick={() => setChatInput("Classify my Ayurvedic product")} className="bg-white px-4 py-2 border border-gov-blue text-gov-blue hover:bg-gov-blue hover:text-white transition-colors flex items-center justify-center gap-2">
-                        <Activity size={14}/> Classify Formulation
-                      </button>
-                      <button onClick={() => setChatInput("How does India protect Turmeric from foreign patents?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-gov-gold transition-colors">&quot;How does India protect Turmeric from foreign patents?&quot;</button>
-                      <button onClick={() => setChatInput("Can I patent an Ayurvedic herbal extract?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-gov-gold transition-colors">&quot;Can I patent an Ayurvedic herbal extract?&quot;</button>
+                      {jurisdiction === 'india' ? (
+                        <>
+                          <button onClick={() => setChatInput("What is TKDL and why is it important?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-gov-gold transition-colors">&quot;What is TKDL and why is it important?&quot;</button>
+                          <button onClick={() => setChatInput("Classify Formulation (Ayurvedic/Unani/Siddha)")} className="bg-white px-4 py-2 border border-gov-blue text-gov-blue hover:bg-gov-blue hover:text-white transition-colors flex items-center justify-center gap-2">
+                            <Activity size={14}/> Classify Formulation (Ayush Standards)
+                          </button>
+                          <button onClick={() => setChatInput("How does India protect Turmeric from foreign patents?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-gov-gold transition-colors">&quot;How does India protect Turmeric from foreign patents?&quot;</button>
+                          <button onClick={() => setChatInput("Can I patent an Ayurvedic herbal extract in India?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-gov-gold transition-colors">&quot;Can I patent an Ayurvedic herbal extract in India?&quot;</button>
+                        </>
+                      ) : (
+                        <>
+                          <button onClick={() => setChatInput("What are WIPO's guidelines on genetic resources and traditional knowledge?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-indigo-500 transition-colors">&quot;What are WIPO's guidelines on genetic resources?&quot;</button>
+                          <button onClick={() => setChatInput("Classify Formulation (International Patent Classification)")} className="bg-white px-4 py-2 border border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-colors flex items-center justify-center gap-2">
+                            <Activity size={14}/> Classify Formulation (IPC Standards)
+                          </button>
+                          <button onClick={() => setChatInput("How to challenge a foreign patent on Indian knowledge (Prior Art)?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-indigo-500 transition-colors">&quot;How to challenge a foreign patent on Indian knowledge?&quot;</button>
+                          <button onClick={() => setChatInput("EPO vs USPTO rules on Traditional Knowledge?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-indigo-500 transition-colors">&quot;EPO vs USPTO rules on Traditional Knowledge?&quot;</button>
+                        </>
+                      )}
                     </div>
                   </div>
                 )}
@@ -876,16 +947,20 @@ export default function CitizenDashboard() {
                       <p className="leading-relaxed">{msg.content}</p>
                       
                       {msg.sources && msg.sources.length > 0 && (
-                        <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col gap-2">
-                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Sources Cited</p>
-                          {msg.sources.map((src, sIdx) => (
-                            <div key={sIdx} className="bg-gray-50 border border-gray-200 p-2 rounded flex items-center justify-between text-xs">
-                              <span className="text-gov-blue font-bold truncate max-w-[70%]">{src.title}</span>
-                              <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-[10px] font-bold border border-green-200">
-                                {src.confidence}% Confidence
-                              </span>
-                            </div>
-                          ))}
+                        <div className="mt-4 pt-3 border-t border-gray-100/50 flex flex-col gap-2">
+                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1">
+                            <LinkIcon size={10} /> Verified TKDL Sources Cited
+                          </p>
+                          <div className="grid grid-cols-1 gap-2">
+                            {msg.sources.map((src, sIdx) => (
+                              <div key={sIdx} className="bg-white border border-gray-100 hover:border-gov-gold/50 hover:shadow-sm p-2 rounded flex items-center justify-between text-xs transition-all cursor-pointer">
+                                <span className="text-gov-blue font-bold truncate pr-4">{src.title}</span>
+                                <span className="shrink-0 bg-green-50 text-green-700 px-2 py-0.5 rounded text-[10px] font-mono font-bold border border-green-100 flex items-center gap-1">
+                                  <CheckCircle size={10} /> {src.confidence}% Match
+                                </span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       )}
                     </div>
@@ -1107,6 +1182,51 @@ export default function CitizenDashboard() {
                       className="flex-1 bg-gov-blue text-white py-3 text-xs font-bold uppercase tracking-widest hover:bg-[#081729] transition-colors"
                     >
                       Confirm Switch
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Action Confirmation Modal */}
+          {confirmAction.isOpen && (
+            <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+              <div className="bg-white max-w-md w-full p-8 shadow-2xl relative border-t-4 border-gov-gold">
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-16 h-16 bg-gov-blue/5 rounded-full flex items-center justify-center mb-4 text-gov-blue">
+                    {confirmAction.type === 'enhance' ? <Sparkles size={32} /> : confirmAction.type === 'submit' ? <ShieldCheck size={32} /> : <AlertTriangle size={32} className="text-red-600" />}
+                  </div>
+                  <h2 className="font-serif-official text-2xl font-bold text-gov-blue mb-2">
+                    {confirmAction.type === 'enhance' ? 'Initiate AI Enhancement?' : confirmAction.type === 'submit' ? 'Finalize & Submit?' : 'Submit Threat Report?'}
+                  </h2>
+                  <p className="text-sm text-gray-600 mb-6">
+                    {confirmAction.type === 'enhance' 
+                      ? 'The AI will now restructure all the information you provided into a legally defensible botanical patent claim.'
+                      : confirmAction.type === 'submit' ? 'This action is irreversible. Your claim will be permanently anchored to the cryptographic vault and sent for Ministry review.'
+                      : 'You are submitting a formal bio-piracy report to the Ministry of Ayush. The Collision Radar will immediately begin analyzing the provided URL.'}
+                  </p>
+                  <div className="flex gap-4 w-full">
+                    <button 
+                      onClick={() => setConfirmAction({isOpen: false, type: null})}
+                      className="flex-1 bg-gray-100 text-gray-700 py-3 text-xs font-bold uppercase tracking-widest hover:bg-gray-200 transition-colors border border-gray-300"
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      onClick={() => {
+                        if (confirmAction.type === 'enhance') {
+                          handleAiEnhance();
+                        } else if (confirmAction.type === 'submit') {
+                          handleSubmitToVault();
+                        } else if (confirmAction.type === 'whistleblower') {
+                          handleReportSubmit();
+                        }
+                        setConfirmAction({isOpen: false, type: null});
+                      }}
+                      className="flex-1 bg-gov-blue text-white py-3 text-xs font-bold uppercase tracking-widest hover:bg-[#081729] transition-colors"
+                    >
+                      Confirm Proceed
                     </button>
                   </div>
                 </div>

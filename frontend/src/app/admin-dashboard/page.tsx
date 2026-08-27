@@ -91,6 +91,14 @@ export default function AdminDashboard() {
     } catch(e) {}
   };
 
+  const [patents, setPatents] = useState<any[]>([]);
+  const fetchPatents = async () => {
+    try {
+      const res = await axios.get('http://localhost:8000/api/v1/patents');
+      setPatents(res.data.patents || []);
+    } catch (e) {}
+  };
+
   const handleBroadcast = () => {
     if(!broadcastMessage.trim()) return;
     const newAlert = {
@@ -154,17 +162,16 @@ export default function AdminDashboard() {
     fetchClaims();
     fetchStats();
     fetchReports();
-    const existing = localStorage.getItem('ministry_alerts_array');
-    if(existing) {
-      try { setMinistryAlerts(JSON.parse(existing)); } catch(e){}
-    }
+    fetchPatents();
     
     const interval = setInterval(() => {
+      fetchClaims();
+      fetchStats();
+      fetchReports();
+      fetchPatents();
       setLiveNodes(prev => prev + Math.floor(Math.random() * 3) - 1);
       if (Math.random() > 0.8) setClaimsSecured(prev => prev + 1);
-      fetchStats(); // Poll stats
-      fetchReports(); // Poll reports
-    }, 5000);
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
 
@@ -226,10 +233,17 @@ export default function AdminDashboard() {
           </button>
 
           <button 
-            onClick={() => setActiveTab('database')}
-            className={`flex items-center gap-4 px-6 py-4 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'database' ? 'bg-gov-gold text-gov-blue shadow-md' : 'text-gray-600 hover:bg-gray-200 border border-transparent'}`}
+            onClick={() => setActiveTab('queue')}
+            className={`flex items-center gap-4 px-6 py-4 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'queue' ? 'bg-gov-gold text-gov-blue shadow-md' : 'text-gray-600 hover:bg-gray-200 border border-transparent'}`}
           >
-            <Database size={18} /> TKDL Master Queue
+            <CheckSquare size={18} /> Citizen Submissions
+          </button>
+
+          <button 
+            onClick={() => setActiveTab('database')}
+            className={`flex items-center gap-4 px-6 py-4 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'database' ? 'bg-gov-blue text-white shadow-md' : 'text-gray-600 hover:bg-gray-200 border border-transparent'}`}
+          >
+            <Database size={18} /> TKDL Master DB
           </button>
         </nav>
 
@@ -269,11 +283,11 @@ export default function AdminDashboard() {
           <div className="flex gap-4">
             <div className="bg-white border border-gray-200 rounded p-3 px-6 text-right shadow-sm">
               <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1 font-bold">Network Nodes</p>
-              <p className="text-xl font-mono text-gov-blue font-bold">{liveNodes.toLocaleString()}</p>
+              <p className="text-xl font-mono text-gov-blue font-bold">{stats.total_patents ? stats.total_patents.toLocaleString() : liveNodes.toLocaleString()}</p>
             </div>
             <div className="bg-white border border-gray-200 rounded p-3 px-6 text-right shadow-sm">
               <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1 font-bold">Secured Claims</p>
-              <p className="text-xl font-mono text-green-600 font-bold">{claimsSecured.toLocaleString()}</p>
+              <p className="text-xl font-mono text-green-600 font-bold">{claims.filter(c => c.status === 'Verified' || c.status === 'Blockchain Anchored').length.toLocaleString()}</p>
             </div>
           </div>
         </header>
@@ -434,9 +448,6 @@ export default function AdminDashboard() {
                           </span>
                         </div>
                       ))}
-                      {claims.filter(c => c.collision_score > 0).length === 0 && (
-                        <div className="absolute top-1/2 right-1/4 w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -518,8 +529,8 @@ export default function AdminDashboard() {
             </div>
           )}
 
-          {/* TAB: DATABASE (Old view integrated here) */}
-          {activeTab === 'database' && (
+          {/* TAB: QUEUE (Citizen Submissions) */}
+          {activeTab === 'queue' && (
             <div className="flex flex-col lg:flex-row gap-8">
               
               {/* LEFT COLUMN: Pending Queue */}
@@ -666,6 +677,51 @@ export default function AdminDashboard() {
             </div>
           )}
 
+          {/* TAB: DATABASE (Real Patents) */}
+          {activeTab === 'database' && (
+            <div className="flex flex-col gap-6">
+              <div className="bg-white border-t-4 border-gov-gold rounded-xl shadow-sm flex-1 flex flex-col overflow-hidden">
+                <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                  <h3 className="font-serif-official font-bold text-gov-blue text-xs tracking-widest uppercase flex items-center gap-2">
+                    <Database size={14} className="text-gov-gold"/> Immutable TKDL Master Database
+                  </h3>
+                  <span className="bg-gov-blue text-white px-3 py-1 rounded text-[10px] font-bold shadow-sm flex items-center gap-2">
+                    <CheckCircle size={12} className="text-gov-gold" /> {patents.length} Real Patents Loaded
+                  </span>
+                </div>
+                <div className="p-6 overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b-2 border-gov-blue bg-gray-50">
+                        <th className="p-4 text-xs font-bold text-gov-blue uppercase tracking-widest">Patent / ID</th>
+                        <th className="p-4 text-xs font-bold text-gov-blue uppercase tracking-widest">Title</th>
+                        <th className="p-4 text-xs font-bold text-gov-blue uppercase tracking-widest">Abstract / Claim</th>
+                        <th className="p-4 text-xs font-bold text-gov-blue uppercase tracking-widest">Timestamp</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {patents.map(p => (
+                        <tr key={p.id} className="hover:bg-blue-50/30 transition-colors">
+                          <td className="p-4 text-xs font-mono font-bold text-gray-700 whitespace-nowrap">{p.patent_number}</td>
+                          <td className="p-4 text-sm font-bold text-gov-blue">{p.title}</td>
+                          <td className="p-4 text-xs text-gray-600 max-w-xl truncate" title={p.content}>{p.content}</td>
+                          <td className="p-4 text-xs text-gray-500 whitespace-nowrap">{new Date(p.created_at).toLocaleDateString()}</td>
+                        </tr>
+                      ))}
+                      {patents.length === 0 && (
+                        <tr>
+                          <td colSpan={4} className="p-8 text-center text-gray-400 text-sm italic border border-dashed border-gray-200 bg-gray-50">
+                            Loading TKDL Master Database... If this persists, run the seed script.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
         </div>
       </main>
 
@@ -680,6 +736,7 @@ export default function AdminDashboard() {
               {showConfirmModal.action === 'DeleteAlert' && <><Trash2 className="text-red-600"/> Delete Broadcast Alert</>}
               {showConfirmModal.action === 'Broadcast' && <><Activity className="text-red-600"/> Confirm Global Broadcast</>}
               {showConfirmModal.action === 'Error' && <><AlertTriangle className="text-red-600"/> System Error</>}
+              {showConfirmModal.action === 'ReviewReport' && <><ShieldAlert className="text-gov-gold"/> Review Bio-Piracy Threat</>}
             </h3>
             <p className="text-sm text-gray-600 mb-8 leading-relaxed">
               {showConfirmModal.action === 'Reject' && "Are you sure you want to reject this claim? This will notify the citizen and halt further processing."}
@@ -688,6 +745,9 @@ export default function AdminDashboard() {
               {showConfirmModal.action === 'DeleteAlert' && "Are you sure you want to delete this emergency broadcast? This will immediately remove it from all Citizen Dashboards globally."}
               {showConfirmModal.action === 'Broadcast' && "You are about to push a high-priority alert to all connected Citizen Dashboards globally. Ensure the message is accurate and verified."}
               {showConfirmModal.action === 'Error' && showConfirmModal.meta}
+              {showConfirmModal.action === 'ReviewReport' && (
+                <span className="block border-l-4 border-gov-gold pl-4 bg-yellow-50 p-4 font-mono text-xs">{showConfirmModal.meta}</span>
+              )}
             </p>
             <div className="flex gap-4">
               {showConfirmModal.action !== 'Error' && (
@@ -710,7 +770,7 @@ export default function AdminDashboard() {
                   else if(showConfirmModal.action === 'Lock') {
                     setShowConfirmModal({isOpen: false, action: null});
                     handleBlockchainLock();
-                  } else if(showConfirmModal.action === 'Error') {
+                  } else if(showConfirmModal.action === 'Error' || showConfirmModal.action === 'ReviewReport') {
                     setShowConfirmModal({isOpen: false, action: null});
                   }
                 }}
@@ -721,7 +781,7 @@ export default function AdminDashboard() {
                   'bg-gov-gold hover:bg-yellow-600'
                 }`}
               >
-                {showConfirmModal.action === 'Error' ? 'Dismiss' : `Confirm ${showConfirmModal.action === 'DeleteAlert' ? 'Deletion' : showConfirmModal.action === 'Broadcast' ? 'Broadcast' : showConfirmModal.action}`}
+                {showConfirmModal.action === 'Error' ? 'Dismiss' : showConfirmModal.action === 'ReviewReport' ? 'Dismiss Review' : `Confirm ${showConfirmModal.action === 'DeleteAlert' ? 'Deletion' : showConfirmModal.action === 'Broadcast' ? 'Broadcast' : showConfirmModal.action}`}
               </button>
             </div>
           </div>
