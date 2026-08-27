@@ -283,19 +283,68 @@ export default function AdminDashboard() {
           {/* TAB: COMMAND CENTER */}
           {activeTab === 'command_center' && (
             <div className="space-y-6 flex flex-col">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div className="bg-white border-t-4 border-gov-blue p-6 rounded shadow-sm">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Global Database Size</p>
-                  <h3 className="text-4xl font-serif-official font-bold text-gov-blue">{stats.total_patents} <span className="text-sm font-sans text-gray-500">patents</span></h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                
+                {/* Stat Card 1 */}
+                <div className="relative overflow-hidden bg-white p-6 rounded-xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] group">
+                  <div className="absolute top-0 right-0 -mr-8 -mt-8 text-gov-blue/5 transition-transform duration-500 group-hover:scale-110">
+                    <Database size={120} />
+                  </div>
+                  <div className="relative z-10">
+                    <div className="flex items-center justify-between mb-4">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500">Global TKDL Size</p>
+                      <span className="w-8 h-8 rounded-full bg-gov-blue/10 flex items-center justify-center text-gov-blue"><Database size={14}/></span>
+                    </div>
+                    <div className="flex items-end gap-3">
+                      <h3 className="text-4xl font-serif-official font-bold text-gov-blue tracking-tight">{stats.total_patents}</h3>
+                      <p className="text-xs text-gray-500 mb-1 font-medium">patents indexed</p>
+                    </div>
+                    <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-green-600">
+                      <span className="flex items-center gap-1"><Sparkles size={12}/> Auto-Sync Active</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="bg-white border-t-4 border-red-600 p-6 rounded shadow-sm">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Active Bio-Piracy Threats</p>
-                  <h3 className="text-4xl font-serif-official font-bold text-red-700">{stats.active_threats}</h3>
+
+                {/* Stat Card 2 */}
+                <div className="relative overflow-hidden bg-gradient-to-br from-red-600 to-red-800 p-6 rounded-xl shadow-lg shadow-red-900/20 text-white group">
+                  <div className="absolute top-0 right-0 -mr-4 -mt-4 text-black/10 transition-transform duration-500 group-hover:rotate-12">
+                    <AlertTriangle size={140} />
+                  </div>
+                  <div className="relative z-10">
+                    <div className="flex items-center justify-between mb-4">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-200">Active Bio-Piracy Threats</p>
+                      <span className="w-8 h-8 rounded-full bg-black/20 flex items-center justify-center"><ShieldAlert size={14} className="text-red-100"/></span>
+                    </div>
+                    <div className="flex items-end gap-3">
+                      <h3 className="text-5xl font-serif-official font-bold tracking-tight text-white">{stats.active_threats}</h3>
+                      <p className="text-xs text-red-200 mb-1.5 font-medium">critical flags</p>
+                    </div>
+                    <div className="mt-4 pt-4 border-t border-red-500/30 flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-red-200">
+                      <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse"></span> Requires Action</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="bg-white border-t-4 border-green-600 p-6 rounded shadow-sm">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">System Health</p>
-                  <h3 className="text-4xl font-serif-official font-bold text-green-700">{stats.system_health}%</h3>
+
+                {/* Stat Card 3 */}
+                <div className="relative overflow-hidden bg-white p-6 rounded-xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] group">
+                  <div className="absolute top-0 right-0 -mr-8 -mt-8 text-green-600/5 transition-transform duration-500 group-hover:scale-110">
+                    <Activity size={120} />
+                  </div>
+                  <div className="relative z-10">
+                    <div className="flex items-center justify-between mb-4">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500">System Health</p>
+                      <span className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center text-green-600"><Activity size={14}/></span>
+                    </div>
+                    <div className="flex items-end gap-3">
+                      <h3 className="text-4xl font-serif-official font-bold text-green-600 tracking-tight">{stats.system_health}%</h3>
+                      <p className="text-xs text-gray-500 mb-1 font-medium">uptime</p>
+                    </div>
+                    <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                      <span>All Nodes Operational</span>
+                    </div>
+                  </div>
                 </div>
+
               </div>
 
               {/* Broadcast System */}
@@ -567,7 +616,7 @@ export default function AdminDashboard() {
                       ) : (
                         <div className="flex justify-between items-center bg-gray-50 p-4 border border-gray-200 rounded">
                           <p className="text-sm font-bold text-gray-700">Current Status: <span className={activeClaim.status === 'Verified' ? 'text-green-600' : activeClaim.status === 'Rejected' ? 'text-red-600' : 'text-blue-600'}>{activeClaim.status}</span></p>
-                          <button onClick={() => updateClaimStatus(activeClaim.id, 'Pending Review')} className="text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors bg-white border border-gray-300 px-4 py-2 rounded shadow-sm">
+                          <button onClick={() => handleStatusUpdate('Pending Review')} className="text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors bg-white border border-gray-300 px-4 py-2 rounded shadow-sm">
                             Undo Action
                           </button>
                         </div>

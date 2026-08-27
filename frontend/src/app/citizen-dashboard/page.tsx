@@ -14,29 +14,30 @@ import axios from 'axios'
 export default function CitizenDashboard() {
   const [activeTab, setActiveTab] = useState('overview')
   
-  // Real-time Overview Simulation
-  const [liveClaims, setLiveClaims] = useState(84725)
-  const [liveBlocked, setLiveBlocked] = useState(14)
-  const [dataSynced, setDataSynced] = useState(4.2)
-  const [liveSubmissions, setLiveSubmissions] = useState(24)
+  // User Stats State
+  const [userStats, setUserStats] = useState({ drafted: 0, under_verification: 0, secured: 0 })
+
+  const fetchUserStats = async () => {
+    try {
+      const res = await axios.get('http://localhost:8000/api/v1/user-stats/UID-992-881')
+      setUserStats(res.data)
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (Math.random() > 0.5) setLiveClaims(prev => prev + 1)
-      if (Math.random() > 0.8) setLiveBlocked(prev => prev + 1)
-      if (Math.random() > 0.6) setDataSynced(prev => +(prev + 0.1).toFixed(1))
-      if (Math.random() > 0.4) setLiveSubmissions(prev => prev + 1)
-    }, 4000)
-    return () => clearInterval(interval)
+    fetchUserStats()
   }, [])
   
-  // State for AI Smart Draft
+  // State for AI Smart Draft (Classical Formulation)
+  const [claimTitle, setClaimTitle] = useState('')
+  const [referenceText, setReferenceText] = useState('')
+  const [verseText, setVerseText] = useState('')
+  const [ingredients, setIngredients] = useState('')
   const [rawText, setRawText] = useState('')
   const [formattedClaim, setFormattedClaim] = useState<string | null>(null)
   const [isDrafting, setIsDrafting] = useState(false)
-  
-  // State for Radar Pre-Check
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [radarResult, setRadarResult] = useState<any>(null)
   const [isCheckingRadar, setIsCheckingRadar] = useState(false)
 
@@ -52,7 +53,9 @@ export default function CitizenDashboard() {
     {role: 'bot', content: 'Namaste! I am IP-SAKTI Sahayak (A Multilingual RAG-based AI Assistant). Ask me any question regarding Indian Intellectual Property Laws, Biopiracy, or Traditional Knowledge.'}
   ])
   const [isChatting, setIsChatting] = useState(false)
+  const [isChatting, setIsChatting] = useState(false)
   const [jurisdiction, setJurisdiction] = useState<'india'|'international'>('india')
+  const [showJurisdictionModal, setShowJurisdictionModal] = useState<{isOpen: boolean, target: 'india'|'international' | null}>({isOpen: false, target: null})
 
   // Real DB Claims
   const [myClaims, setMyClaims] = useState<any[]>([])
@@ -107,7 +110,7 @@ export default function CitizenDashboard() {
     return () => clearInterval(alertInterval)
   }, [])
 
-  const handleReportSubmit = () => {
+  const handleReportSubmit = async () => {
     // Basic validation to reject random gibberish (must contain spaces, be somewhat long)
     if (!reportUrl.trim() || !reportContext.trim()) {
       setReportError("Error: Both Patent Number/URL and Context fields are mandatory.");
@@ -143,7 +146,14 @@ export default function CitizenDashboard() {
 
   // API Call: Feature 2 - AI Smart Draft
   const handleAiEnhance = async () => {
-    if (!rawText) return;
+    const combinedText = `
+    Title: ${claimTitle}
+    Reference Text (e.g. Charaka Samhita): ${referenceText}
+    Verse/Sloka: ${verseText}
+    Key Ingredients: ${ingredients}
+    Description: ${rawText}
+    `;
+    if (!combinedText.trim()) return;
     setIsDrafting(true);
     try {
       const response = await axios.post('http://localhost:8000/api/v1/draft', { raw_text: rawText });
@@ -237,7 +247,10 @@ export default function CitizenDashboard() {
     setIsChatting(true);
 
     try {
-      const response = await axios.post('http://localhost:8000/api/v1/ip-sakti', { query: `[Jurisdiction: ${jurisdiction.toUpperCase()}] ${userMsg}` });
+      const response = await axios.post('http://localhost:8000/api/v1/ip-sakti', { 
+        query: userMsg, 
+        jurisdiction: jurisdiction 
+      });
       setChatHistory(prev => [...prev, { role: 'bot', content: response.data.reply, sources: response.data.sources }]);
     } catch (error) {
       console.error("Chat Error:", error);
@@ -400,65 +413,62 @@ export default function CitizenDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="bg-white p-6 border-l-4 border-gov-blue shadow-sm">
                     <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">My Drafted Claims</p>
-                    <h3 className="text-3xl font-serif-official font-bold text-gov-blue">02</h3>
+                    <h3 className="text-3xl font-serif-official font-bold text-gov-blue">{userStats.drafted < 10 ? `0${userStats.drafted}` : userStats.drafted}</h3>
                   </div>
                   <div className="bg-white p-6 border-l-4 border-yellow-500 shadow-sm">
                     <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Under Verification</p>
-                    <h3 className="text-3xl font-serif-official font-bold text-yellow-600">01</h3>
+                    <h3 className="text-3xl font-serif-official font-bold text-yellow-600">{userStats.under_verification < 10 ? `0${userStats.under_verification}` : userStats.under_verification}</h3>
                   </div>
                   <div className="bg-white p-6 border-l-4 border-green-600 shadow-sm">
                     <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">My Secured Vault Items</p>
-                    <h3 className="text-3xl font-serif-official font-bold text-green-700">01</h3>
+                    <h3 className="text-3xl font-serif-official font-bold text-green-700">{userStats.secured < 10 ? `0${userStats.secured}` : userStats.secured}</h3>
                   </div>
                 </div>
               </div>
 
               {/* System Status / Network */}
-              <div className="bg-white border border-gray-200 shadow-sm p-8">
-                  <h3 className="font-serif-official font-bold text-xl text-gov-blue mb-6 border-b border-gray-100 pb-4">Digital Ecosystem Status</h3>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center p-4 bg-gray-50 border border-gray-100">
-                      <div className="flex items-center gap-3">
-                        <MessageSquare className="text-gov-gold" />
-                        <div>
-                          <p className="font-bold text-sm text-gray-800">IP-SAKTI RAG Chatbot</p>
-                          <p className="text-xs text-gray-500 font-mono">Ministry Legal Database Connection</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <span className="bg-green-100 text-green-700 px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full flex items-center gap-2"><span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>ONLINE</span>
-                        <p className="text-[9px] text-gray-400 mt-1 font-mono">Uptime: 99.99% | Latency: 12ms</p>
+              <div className="bg-white border-t-4 border-gov-gold shadow-md rounded-b p-8">
+                  <div className="flex justify-between items-end border-b border-gray-100 pb-4 mb-6">
+                    <div>
+                      <h3 className="font-serif-official font-bold text-xl text-gov-blue">Ministry Security Grid</h3>
+                      <p className="text-xs text-gray-500 mt-1">Live status of sovereign IP protection modules</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <span className="bg-green-100 text-green-700 px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full flex items-center gap-2"><span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>ALL SYSTEMS OPTIMAL</span>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 to-gov-blue p-5 rounded-lg text-white group">
+                      <MessageSquare className="text-gov-gold mb-3 opacity-80 group-hover:scale-110 transition-transform" size={24} />
+                      <h4 className="font-bold text-sm tracking-wide mb-1">IP-SAKTI Chatbot</h4>
+                      <p className="text-xs text-gray-400 font-mono mb-4">Strict-Citation RAG</p>
+                      <div className="flex justify-between items-center text-[10px] font-mono border-t border-white/10 pt-3">
+                        <span className="text-green-400">● ONLINE</span>
+                        <span className="text-gray-500">Latency: 12ms</span>
                       </div>
                     </div>
                     
-                    <div className="flex justify-between items-center p-4 bg-gray-50 border border-gray-100">
-                      <div className="flex items-center gap-3">
-                        <Cpu className="text-gov-blue" />
-                        <div>
-                          <p className="font-bold text-sm text-gray-800">AI Collision Radar</p>
-                          <p className="text-xs text-gray-500 font-mono">Scanning USPTO, EPO, and TKDL Databases</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <span className="bg-blue-100 text-blue-700 px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full flex items-center gap-2"><span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></span>ACTIVE</span>
-                        <p className="text-[9px] text-gray-400 mt-1 font-mono">1.2M Vectors Checked/sec</p>
+                    <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 to-gov-blue p-5 rounded-lg text-white group">
+                      <Cpu className="text-blue-400 mb-3 opacity-80 group-hover:scale-110 transition-transform" size={24} />
+                      <h4 className="font-bold text-sm tracking-wide mb-1">Collision Radar</h4>
+                      <p className="text-xs text-gray-400 font-mono mb-4">EPO / USPTO Scanner</p>
+                      <div className="flex justify-between items-center text-[10px] font-mono border-t border-white/10 pt-3">
+                        <span className="text-blue-400">● ACTIVE</span>
+                        <span className="text-gray-500">1.2M Scans/sec</span>
                       </div>
                     </div>
 
-                    <div className="flex justify-between items-center p-4 bg-gray-50 border border-gray-100">
-                      <div className="flex items-center gap-3">
-                        <LinkIcon className="text-purple-600" />
-                        <div>
-                          <p className="font-bold text-sm text-gray-800">Polygon Blockchain Vault</p>
-                          <p className="text-xs text-gray-500 font-mono">Cryptographic Anchoring System</p>
+                    <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 to-gov-blue p-5 rounded-lg text-white group">
+                      <LinkIcon className="text-purple-400 mb-3 opacity-80 group-hover:scale-110 transition-transform" size={24} />
+                        <h4 className="font-bold text-sm tracking-wide mb-1">Polygon Vault</h4>
+                        <p className="text-xs text-gray-400 font-mono mb-4">Cryptographic Anchoring</p>
+                        <div className="flex justify-between items-center text-[10px] font-mono border-t border-white/10 pt-3">
+                          <span className="text-purple-400">● SYNCED</span>
+                          <span className="text-gray-500">Block: 61,048,291</span>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <span className="bg-purple-100 text-purple-700 px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full flex items-center gap-2"><span className="w-1.5 h-1.5 bg-purple-500 rounded-full animate-pulse"></span>SYNCED</span>
-                        <p className="text-[9px] text-gray-400 mt-1 font-mono">Block height: 61,048,291</p>
-                      </div>
                     </div>
-                  </div>
                 </div>
 
             </div>
@@ -481,14 +491,30 @@ export default function CitizenDashboard() {
                 <div className="space-y-6">
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-widest text-gov-blue mb-2">Claim Title</label>
-                    <input type="text" className="w-full border border-gray-300 p-3 focus:outline-none focus:border-gov-gold text-sm" placeholder="e.g., Turmeric Paste for Wound Healing" />
+                    <input type="text" value={claimTitle} onChange={e => setClaimTitle(e.target.value)} className="w-full border border-gray-300 p-3 focus:outline-none focus:border-gov-gold text-sm" placeholder="e.g., Turmeric Paste for Wound Healing" />
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-widest text-gov-blue mb-2">Reference Text (Classical Source)</label>
+                      <input type="text" value={referenceText} onChange={e => setReferenceText(e.target.value)} className="w-full border border-gray-300 p-3 focus:outline-none focus:border-gov-gold text-sm" placeholder="e.g., Charaka Samhita, Sushruta Samhita" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-widest text-gov-blue mb-2">Verse / Sloka Reference</label>
+                      <input type="text" value={verseText} onChange={e => setVerseText(e.target.value)} className="w-full border border-gray-300 p-3 focus:outline-none focus:border-gov-gold text-sm" placeholder="e.g., Chapter 4, Verse 12" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-gov-blue mb-2">Key Ingredients (Botanical Names)</label>
+                    <input type="text" value={ingredients} onChange={e => setIngredients(e.target.value)} className="w-full border border-gray-300 p-3 focus:outline-none focus:border-gov-gold text-sm" placeholder="e.g., Curcuma longa, Azadirachta indica" />
                   </div>
                   
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-widest text-gov-blue mb-2">Your Raw Description (Hinglish/English)</label>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-gov-blue mb-2">Your Raw Description (Method of Preparation & Use)</label>
                     <textarea 
                       className="w-full border border-gray-300 p-3 focus:outline-none focus:border-gov-gold text-sm h-32" 
-                      placeholder="Haldi aur neem ko mix karke lagane se infection nahi hota aur ghaav jaldi bharta hai..."
+                      placeholder="Explain the method of preparation and traditional use case (Hinglish/English)..."
                       value={rawText}
                       onChange={(e) => setRawText(e.target.value)}
                     ></textarea>
@@ -805,13 +831,17 @@ export default function CitizenDashboard() {
                 </div>
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest bg-white/10 text-white p-1 rounded-full border border-white/20">
                   <button 
-                    onClick={() => setJurisdiction('india')} 
+                    onClick={() => {
+                      if (jurisdiction !== 'india') setShowJurisdictionModal({isOpen: true, target: 'india'})
+                    }} 
                     className={`px-4 py-1.5 rounded-full transition-colors ${jurisdiction === 'india' ? 'bg-gov-gold text-white shadow' : 'hover:bg-white/10'}`}
                   >
                     India
                   </button>
                   <button 
-                    onClick={() => setJurisdiction('international')} 
+                    onClick={() => {
+                      if (jurisdiction !== 'international') setShowJurisdictionModal({isOpen: true, target: 'international'})
+                    }} 
                     className={`px-4 py-1.5 rounded-full transition-colors ${jurisdiction === 'international' ? 'bg-gov-gold text-white shadow' : 'hover:bg-white/10'}`}
                   >
                     International
@@ -1038,6 +1068,46 @@ export default function CitizenDashboard() {
                   >
                     Return to Dashboard
                   </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Jurisdiction Change Modal */}
+          {showJurisdictionModal.isOpen && (
+            <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+              <div className="bg-white max-w-md w-full p-8 shadow-2xl relative border-t-4 border-yellow-500">
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+                    <AlertTriangle className="text-yellow-600" size={32} />
+                  </div>
+                  <h2 className="font-serif-official text-2xl font-bold text-gov-blue mb-2">Switch Jurisdiction?</h2>
+                  <p className="text-sm text-gray-600 mb-6">
+                    You are switching from <span className="font-bold">{jurisdiction.toUpperCase()}</span> to <span className="font-bold">{showJurisdictionModal.target?.toUpperCase()}</span>.
+                    This will reset the current chat context and AI persona to strictly follow the new legal framework.
+                  </p>
+                  <div className="flex gap-4 w-full">
+                    <button 
+                      onClick={() => setShowJurisdictionModal({isOpen: false, target: null})}
+                      className="flex-1 bg-gray-100 text-gray-700 py-3 text-xs font-bold uppercase tracking-widest hover:bg-gray-200 transition-colors border border-gray-300"
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      onClick={() => {
+                        if (showJurisdictionModal.target) {
+                          setJurisdiction(showJurisdictionModal.target);
+                          setChatHistory([
+                            {role: 'bot', content: `Switched to ${showJurisdictionModal.target.toUpperCase()} Jurisdiction. How can I assist you with the ${showJurisdictionModal.target === 'india' ? 'Indian Intellectual Property Laws' : 'International IP frameworks (WIPO, EPO, USPTO)'}?`}
+                          ]);
+                        }
+                        setShowJurisdictionModal({isOpen: false, target: null});
+                      }}
+                      className="flex-1 bg-gov-blue text-white py-3 text-xs font-bold uppercase tracking-widest hover:bg-[#081729] transition-colors"
+                    >
+                      Confirm Switch
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
