@@ -285,59 +285,59 @@ export default function CitizenDashboard() {
     <div className="min-h-screen bg-slate-50 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-100 via-white to-slate-50 text-gov-text font-sans flex">
       
       {/* SIDEBAR NAVIGATION */}
-      <aside className="w-64 bg-[#0b1f38] border-r border-[#152e4d] text-slate-300 flex flex-col fixed h-full z-20 shadow-2xl print:hidden">
-        <div className="h-20 flex items-center gap-3 px-6 border-b border-[#152e4d] bg-[#07162b]">
-          <ShieldCheck size={32} className="text-gov-gold" />
+      <aside className="w-64 bg-[#f8f9fa] border-r border-slate-200 text-slate-700 flex flex-col fixed h-full z-20 shadow-xl print:hidden">
+        <div className="h-20 flex items-center gap-3 px-6 border-b border-slate-200 bg-[#f8f9fa]">
+          <ShieldCheck size={32} className="text-gov-blue" />
           <div>
-            <h1 className="font-serif-official font-bold tracking-widest uppercase text-sm text-white">Root-Claim</h1>
+            <h1 className="font-serif-official font-bold tracking-widest uppercase text-sm text-gov-blue">Root-Claim</h1>
             <p className="text-[8px] uppercase tracking-widest text-gov-gold font-bold">Citizen Portal</p>
           </div>
         </div>
 
-        <nav className="flex-1 py-8 flex flex-col px-4 bg-[#0b1f38]">
+        <nav className="flex-1 py-8 flex flex-col px-4 bg-[#f8f9fa]">
           <button 
             onClick={() => setActiveTab('overview')}
-            className={`flex items-center gap-3 px-4 py-3 rounded-r text-xs font-bold uppercase tracking-widest transition-colors mb-2 ${activeTab === 'overview' ? 'bg-gradient-to-r from-gov-gold/20 to-transparent text-gov-gold border-l-4 border-gov-gold shadow-md' : 'text-slate-400 hover:bg-white/5 hover:text-white border-l-4 border-transparent'}`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-r text-xs font-bold uppercase tracking-widest transition-colors mb-2 ${activeTab === 'overview' ? 'bg-white text-gov-blue border-l-4 border-gov-blue shadow-sm' : 'text-slate-500 hover:bg-slate-200 hover:text-gov-blue border-l-4 border-transparent'}`}
           >
             <Home size={16} /> Overview
           </button>
           <button 
             onClick={() => setActiveTab('ip-sakti')}
-            className={`flex items-center gap-3 px-4 py-3 rounded-r text-xs font-bold uppercase tracking-widest transition-colors mb-2 ${activeTab === 'ip-sakti' ? 'bg-gradient-to-r from-gov-gold/20 to-transparent text-gov-gold border-l-4 border-gov-gold shadow-md' : 'text-slate-400 hover:bg-white/5 hover:text-white border-l-4 border-transparent'}`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-r text-xs font-bold uppercase tracking-widest transition-colors mb-2 ${activeTab === 'ip-sakti' ? 'bg-white text-gov-blue border-l-4 border-gov-blue shadow-sm' : 'text-slate-500 hover:bg-slate-200 hover:text-gov-blue border-l-4 border-transparent'}`}
           >
             <MessageSquare size={16} /> IP-SAKTI Sahayak
           </button>
           <button 
             onClick={() => setActiveTab('submit')}
-            className={`flex items-center gap-3 px-4 py-3 rounded-r text-xs font-bold uppercase tracking-widest transition-colors mb-2 ${activeTab === 'submit' ? 'bg-gradient-to-r from-gov-gold/20 to-transparent text-gov-gold border-l-4 border-gov-gold shadow-md' : 'text-slate-400 hover:bg-white/5 hover:text-white border-l-4 border-transparent'}`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-r text-xs font-bold uppercase tracking-widest transition-colors mb-2 ${activeTab === 'submit' ? 'bg-white text-gov-blue border-l-4 border-gov-blue shadow-sm' : 'text-slate-500 hover:bg-slate-200 hover:text-gov-blue border-l-4 border-transparent'}`}
           >
             <FileText size={16} /> Submit Knowledge
           </button>
 
           <button 
             onClick={() => setActiveTab('vault')}
-            className={`flex items-center gap-3 px-4 py-3 rounded-r text-xs font-bold uppercase tracking-widest transition-colors mb-2 ${activeTab === 'vault' ? 'bg-gradient-to-r from-gov-gold/20 to-transparent text-gov-gold border-l-4 border-gov-gold shadow-md' : 'text-slate-400 hover:bg-white/5 hover:text-white border-l-4 border-transparent'}`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-r text-xs font-bold uppercase tracking-widest transition-colors mb-2 ${activeTab === 'vault' ? 'bg-white text-gov-blue border-l-4 border-gov-blue shadow-sm' : 'text-slate-500 hover:bg-slate-200 hover:text-gov-blue border-l-4 border-transparent'}`}
           >
             <ShieldCheck size={16} /> My Digital Vault
           </button>
           <button 
             onClick={() => setActiveTab('whistleblower')}
-            className={`flex items-center gap-3 px-4 py-3 rounded-r text-xs font-bold uppercase tracking-widest transition-colors mb-2 ${activeTab === 'whistleblower' ? 'bg-gradient-to-r from-red-600/20 to-transparent text-red-500 border-l-4 border-red-500 shadow-md' : 'text-slate-400 hover:bg-white/5 hover:text-red-400 border-l-4 border-transparent'}`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-r text-xs font-bold uppercase tracking-widest transition-colors mb-2 ${activeTab === 'whistleblower' ? 'bg-white text-red-600 border-l-4 border-red-600 shadow-sm' : 'text-slate-500 hover:bg-slate-200 hover:text-red-600 border-l-4 border-transparent'}`}
           >
             <ShieldAlert size={16} /> Report Bio-Piracy
           </button>
         </nav>
 
-        <div className="p-4 border-t border-[#152e4d] bg-[#07162b]">
-          <div className="bg-white/5 p-4 rounded mb-4 shadow-sm border border-white/10">
-            <p className="text-[10px] text-slate-400 uppercase tracking-widest mb-1 font-bold">Logged in as</p>
-            <p className="text-sm font-bold text-white flex items-center gap-2 mb-2"><User size={14}/> UID-992-881</p>
-            <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-green-500/20 border border-green-500/30 rounded text-[9px] text-green-400 font-bold uppercase tracking-widest">
+        <div className="p-4 border-t border-slate-200 bg-[#f8f9fa]">
+          <div className="bg-white p-4 rounded mb-4 shadow-sm border border-slate-200">
+            <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-bold">Logged in as</p>
+            <p className="text-sm font-bold text-gov-blue flex items-center gap-2 mb-2"><User size={14}/> UID-992-881</p>
+            <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-green-50 border border-green-200 rounded text-[9px] text-green-700 font-bold uppercase tracking-widest">
               <CheckCircle size={10} /> Verified TKDL Contributor
             </div>
           </div>
           <Link href="/">
-            <button className="w-full text-left flex items-center gap-3 px-4 py-2 text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-red-400 transition-colors">
+            <button className="w-full text-left flex items-center gap-3 px-4 py-2 text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-red-600 transition-colors">
               Logout &rarr;
             </button>
           </Link>
@@ -345,50 +345,47 @@ export default function CitizenDashboard() {
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 ml-64 print:ml-0 flex flex-col min-h-screen">
+      <main className="flex-1 ml-64 print:ml-0 flex flex-col h-screen overflow-hidden bg-transparent">
         
-        {/* Top Header */}
-        {activeTab !== 'ip-sakti' && (
-          <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-10 sticky top-0 z-10 shadow-sm shrink-0 print:hidden">
-            <h2 className="text-xl font-serif-official font-bold text-gov-blue">
-              {activeTab === 'overview' && 'Dashboard Overview'}
-              {activeTab === 'submit' && 'Submit Traditional Knowledge'}
-              {activeTab === 'vault' && 'My Secure Digital Vault'}
-              {activeTab === 'whistleblower' && 'Whistleblower: Report Bio-Piracy'}
-            </h2>
-            <div className="flex items-center gap-4">
-              {showBroadcasts && isBroadcastMinimized && ministryAlerts.length > 0 && (
-                <button 
-                  onClick={() => setIsBroadcastMinimized(false)}
-                  className="relative p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-full transition-colors"
-                  title="View Ministry Broadcasts"
-                >
-                  <AlertTriangle size={18} className="animate-pulse" />
-                  <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-600 rounded-full border-2 border-white"></span>
-                </button>
-              )}
-              <div className="flex items-center gap-3 bg-[#0a192f] border border-[#1e2d3d] text-[#64ffda] px-4 py-2 rounded shadow-[0_0_15px_rgba(100,255,218,0.15)]">
-                <div className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#64ffda] opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#64ffda]"></span>
-                </div>
-                <span className="text-[9px] font-bold uppercase tracking-[0.2em] flex flex-col leading-tight">
-                  <span className="text-gray-400">Node Status</span>
-                  Secure & Encrypted
-                </span>
-              </div>
-            </div>
-          </header>
-        )}
-
         {/* Dynamic Content Body */}
-        <div className={`flex-1 flex flex-col bg-transparent ${activeTab === 'ip-sakti' ? 'p-0' : 'p-10'} print:p-0 print:bg-white`}>
+        <div className="flex-1 flex flex-col p-4 pl-0 relative z-10 w-full h-full print:p-0 print:bg-white">
           
           {/* ====================================================== */}
           {/* TAB: OVERVIEW */}
           {/* ====================================================== */}
           {activeTab === 'overview' && (
-            <div className="max-w-6xl">
+            <div className="w-full h-full flex flex-col bg-white/80 backdrop-blur-md border border-white/60 shadow-xl rounded-2xl overflow-hidden">
+              <div className="bg-gov-blue p-6 flex justify-between items-center shrink-0">
+                <div>
+                  <h3 className="font-serif-official font-bold text-white text-xl flex items-center gap-2 mb-1">
+                    <Home size={24} className="text-gov-gold"/> Dashboard Overview
+                  </h3>
+                  <p className="text-xs text-blue-100 uppercase tracking-widest font-bold">Citizen Control Center</p>
+                </div>
+                <div className="flex items-center gap-4">
+                  {showBroadcasts && isBroadcastMinimized && ministryAlerts.length > 0 && (
+                    <button 
+                      onClick={() => setIsBroadcastMinimized(false)}
+                      className="relative p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-full transition-colors"
+                      title="View Ministry Broadcasts"
+                    >
+                      <AlertTriangle size={18} className="animate-pulse" />
+                      <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-600 rounded-full border-2 border-white"></span>
+                    </button>
+                  )}
+                  <div className="flex items-center gap-3 bg-[#0a192f] border border-[#1e2d3d] text-[#64ffda] px-4 py-2 rounded shadow-[0_0_15px_rgba(100,255,218,0.15)]">
+                    <div className="relative flex h-2.5 w-2.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#64ffda] opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#64ffda]"></span>
+                    </div>
+                    <span className="text-[9px] font-bold uppercase tracking-[0.2em] flex flex-col leading-tight">
+                      <span className="text-gray-400">Node Status</span>
+                      Secure & Encrypted
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="p-8 flex-1 overflow-y-auto custom-scrollbar">
               
               {/* Ministry Broadcast Alerts (Global) */}
               {showBroadcasts && !isBroadcastMinimized && ministryAlerts.length > 0 && (
@@ -525,6 +522,7 @@ export default function CitizenDashboard() {
                     </div>
                 </div>
 
+              </div>
             </div>
           )}
 
@@ -532,15 +530,24 @@ export default function CitizenDashboard() {
           {/* TAB: SUBMIT KNOWLEDGE (Smart Draft + Pre-Check) */}
           {/* ====================================================== */}
           {activeTab === 'submit' && (
-            <div className="max-w-4xl">
-              <div className="bg-white/80 backdrop-blur-md border border-white/60 shadow-xl p-8 rounded-2xl">
-                
-                <div className="mb-8 border-b border-gray-100 pb-6">
-                  <h3 className="font-serif-official font-bold text-2xl text-gov-blue mb-2 flex items-center gap-3">
-                    <Sparkles className="text-gov-gold" /> Step 1: AI Smart Draft
+            <div className="w-full h-full flex flex-col bg-white/80 backdrop-blur-md border border-white/60 shadow-xl rounded-2xl overflow-hidden">
+              <div className="bg-gov-blue p-6 flex justify-between items-center shrink-0">
+                <div>
+                  <h3 className="font-serif-official font-bold text-white text-xl flex items-center gap-2 mb-1">
+                    <FileText size={24} className="text-gov-gold"/> Submit Traditional Knowledge
                   </h3>
-                  <p className="text-sm text-gray-500">Describe the traditional knowledge in your own words. Our AI will automatically structure it to match international IP and botanical standards.</p>
+                  <p className="text-xs text-blue-100 uppercase tracking-widest font-bold">Draft, verify, and secure your claims</p>
                 </div>
+              </div>
+              <div className="p-8 flex-1 overflow-y-auto custom-scrollbar flex flex-col items-center">
+                <div className="w-full max-w-4xl bg-white border border-gray-100 shadow-sm p-8 rounded-xl">
+                  
+                  <div className="mb-8 border-b border-gray-100 pb-6">
+                    <h3 className="font-serif-official font-bold text-2xl text-gov-blue mb-2 flex items-center gap-3">
+                      <Sparkles className="text-gov-gold" /> Step 1: AI Smart Draft
+                    </h3>
+                    <p className="text-sm text-gray-500">Describe the traditional knowledge in your own words. Our AI will automatically structure it to match international IP and botanical standards.</p>
+                  </div>
 
                 <div className="space-y-6">
                   <div>
@@ -681,7 +688,7 @@ export default function CitizenDashboard() {
                     </div>
                   )}
                 </div>
-
+                </div>
               </div>
             </div>
           )}
@@ -690,14 +697,17 @@ export default function CitizenDashboard() {
           {/* TAB: MY DIGITAL VAULT (Timeline & Certificates) */}
           {/* ====================================================== */}
           {activeTab === 'vault' && (
-            <div className="max-w-6xl">
-              <div className="bg-white/80 backdrop-blur-md border border-white/60 shadow-xl rounded-2xl overflow-hidden">
-                <div className="bg-slate-900/90 backdrop-blur-md px-6 py-5 border-b border-slate-800 flex justify-between items-center">
-                  <h3 className="font-serif-official font-bold text-white text-lg flex items-center gap-2">
-                    <ShieldCheck size={20} className="text-gov-gold"/> My Secured Claims
+            <div className="w-full h-full flex flex-col bg-white/80 backdrop-blur-md border border-white/60 shadow-xl rounded-2xl overflow-hidden">
+              <div className="bg-gov-blue p-6 flex justify-between items-center shrink-0">
+                <div>
+                  <h3 className="font-serif-official font-bold text-white text-xl flex items-center gap-2 mb-1">
+                    <ShieldCheck size={24} className="text-gov-gold"/> My Secured Claims
                   </h3>
+                  <p className="text-xs text-blue-100 uppercase tracking-widest font-bold">Your personal digital IP vault</p>
                 </div>
-                
+              </div>
+              
+              <div className="p-0 flex-1 overflow-y-auto custom-scrollbar bg-white/50">
                 <div className="p-0 overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
@@ -772,6 +782,7 @@ export default function CitizenDashboard() {
                   </table>
                 </div>
               </div>
+              </div>
             </div>
           )}
 
@@ -779,9 +790,18 @@ export default function CitizenDashboard() {
           {/* TAB: WHISTLEBLOWER (Report Piracy) */}
           {/* ====================================================== */}
           {activeTab === 'whistleblower' && (
-            <div className="max-w-4xl">
+            <div className="w-full h-full flex flex-col bg-white/80 backdrop-blur-md border border-white/60 shadow-xl rounded-2xl overflow-hidden">
+              <div className="bg-gov-blue p-6 flex justify-between items-center shrink-0">
+                <div>
+                  <h3 className="font-serif-official font-bold text-white text-xl flex items-center gap-2 mb-1">
+                    <ShieldAlert size={24} className="text-red-500"/> Report Bio-Piracy
+                  </h3>
+                  <p className="text-xs text-blue-100 uppercase tracking-widest font-bold">Secure and anonymous threat reporting</p>
+                </div>
+              </div>
+              <div className="p-8 flex-1 overflow-y-auto custom-scrollbar flex flex-col items-center">
               {hasReported ? (
-                <div className="bg-white/80 backdrop-blur-md border-t-4 border-yellow-500 shadow-xl p-8 rounded-2xl">
+                <div className="w-full max-w-4xl bg-white border-t-4 border-yellow-500 shadow-sm p-8 rounded-xl">
                   <div className="mb-8 border-b border-gray-100 pb-6 flex items-center justify-between">
                     <div>
                       <h3 className="font-serif-official font-bold text-2xl text-gov-blue mb-2 flex items-center gap-3">
@@ -823,7 +843,7 @@ export default function CitizenDashboard() {
                   </div>
                 </div>
               ) : (
-                <div className="bg-white/80 backdrop-blur-md border-t-4 border-red-600 shadow-xl p-8 rounded-2xl">
+                <div className="w-full max-w-4xl bg-white border-t-4 border-red-600 shadow-sm p-8 rounded-xl">
                   
                   <div className="mb-8 border-b border-gray-100 pb-6">
                     <h3 className="font-serif-official font-bold text-2xl text-red-700 mb-2 flex items-center gap-3">
@@ -872,7 +892,9 @@ export default function CitizenDashboard() {
                     </div>
                   </div>
                 </div>
+                </div>
               )}
+              </div>
             </div>
           )}
 
@@ -880,8 +902,7 @@ export default function CitizenDashboard() {
           {/* TAB: IP-SAKTI SAHAYAK (RAG Chatbot) */}
           {/* ====================================================== */}
           {activeTab === 'ip-sakti' && (
-            <div className="w-full h-full p-4 pl-0">
-              <div className="w-full h-[calc(100vh-2rem)] flex flex-col bg-white/80 backdrop-blur-md border border-white/60 shadow-xl rounded-2xl overflow-hidden">
+            <div className="w-full h-full flex flex-col bg-white/80 backdrop-blur-md border border-white/60 shadow-xl rounded-2xl overflow-hidden">
               <div className="bg-gov-blue p-6 flex justify-between items-center shrink-0">
                 <div>
                   <h3 className="font-serif-official font-bold text-white text-xl flex items-center gap-2 mb-1">
