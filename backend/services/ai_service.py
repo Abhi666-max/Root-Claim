@@ -9,6 +9,7 @@ def generate_smart_draft(raw_text: str) -> str:
     """
     Feature 2: Vernacular AI Smart Draft Engine.
     Converts raw Hinglish/English input into a formal botanical patent claim.
+    """
     system_prompt = """
     You are an expert Ayurvedic intellectual property (IP) lawyer and botanist working for the Ministry of Ayush, Government of India.
     Your job is to take raw, vernacular, or conversational input from citizens describing a traditional remedy and format it into a highly structured, legally defensible botanical patent claim.
