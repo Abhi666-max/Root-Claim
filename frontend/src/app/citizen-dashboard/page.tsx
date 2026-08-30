@@ -63,12 +63,12 @@ export default function CitizenDashboard() {
   const [rawText, setRawText] = useState('')
   const [formattedClaim, setFormattedClaim] = useState<string | null>(null)
   const [isDrafting, setIsDrafting] = useState(false)
-  const [radarResult, setRadarResult] = useState<unknown>(null)
+  const [radarResult, setRadarResult] = useState<any>(null)
   const [isCheckingRadar, setIsCheckingRadar] = useState(false)
 
   // State for OCR Digitizer
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [ocrResult, setOcrResult] = useState<unknown>(null)
+  const [ocrResult, setOcrResult] = useState<any>(null)
   const [isUploading, setIsUploading] = useState(false)
 
   // State for IP-SAKTI RAG Chatbot
@@ -82,7 +82,7 @@ export default function CitizenDashboard() {
   const [showJurisdictionModal, setShowJurisdictionModal] = useState<{isOpen: boolean, target: 'india'|'international' | null}>({isOpen: false, target: null})
 
   // Real DB Claims
-  const [myClaims, setMyClaims] = useState<unknown[]>([])
+  const [myClaims, setMyClaims] = useState<any[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const fetchMyClaims = async () => {
@@ -1292,5 +1292,6 @@ export default function CitizenDashboard() {
     </div>
   )
 }
+
 
 

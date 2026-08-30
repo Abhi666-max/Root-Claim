@@ -38,8 +38,8 @@ export default function AdminDashboard() {
   const [isEnhancing, setIsEnhancing] = useState(false);
   
   // Real DB Claims
-  const [claims, setClaims] = useState<unknown[]>([]);
-  const [activeClaim, setActiveClaim] = useState<unknown>(null);
+  const [claims, setClaims] = useState<any[]>([]);
+  const [activeClaim, setActiveClaim] = useState<any>(null);
   
   const fetchClaims = async () => {
     try {
@@ -73,9 +73,9 @@ export default function AdminDashboard() {
   
   const [ministryAlerts, setMinistryAlerts] = useState<{msg: string, time: string, id: number}[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [stats, setStats] = useState<unknown>({ total_patents: '...', active_threats: '...', system_health: '99.9' });
+  const [stats, setStats] = useState<any>({ total_patents: '...', active_threats: '...', system_health: '99.9' });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [reports, setReports] = useState<unknown[]>([]);
+  const [reports, setReports] = useState<any[]>([]);
 
   const fetchStats = async () => {
     try {
@@ -91,7 +91,7 @@ export default function AdminDashboard() {
     } catch(e) {}
   };
 
-  const [patents, setPatents] = useState<unknown[]>([]);
+  const [patents, setPatents] = useState<any[]>([]);
   const fetchPatents = async () => {
     try {
       const res = await axios.get('http://localhost:8000/api/v1/patents');
@@ -123,7 +123,7 @@ export default function AdminDashboard() {
   
   const [isLocking, setIsLocking] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [blockchainResult, setBlockchainResult] = useState<unknown>(null);
+  const [blockchainResult, setBlockchainResult] = useState<any>(null);
   
   const handleBlockchainLock = async () => {
     setIsLocking(true)
@@ -827,5 +827,6 @@ export default function AdminDashboard() {
     </div>
   );
 }
+
 
 
