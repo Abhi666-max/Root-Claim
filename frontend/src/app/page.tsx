@@ -266,7 +266,7 @@ export default function LandingPage() {
                 <p className="text-[10px] uppercase tracking-[0.2em] text-gov-gold mt-1 font-bold">Ministry of Ayush</p>
               </div>
             </div>
-            <p className="text-blue-100 text-lg md:text-xl max-w-2xl font-serif-official mb-12">
+            <p className="text-gov-blue text-lg md:text-xl max-w-2xl font-serif-official mb-12 font-semibold">
               The world&apos;s first cryptographic vault and RAG-powered engine protecting Indian traditional knowledge from bio-piracy. 
             </p>
             <p className="text-gray-600 text-sm leading-relaxed max-w-sm">
