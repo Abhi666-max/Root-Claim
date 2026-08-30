@@ -21,7 +21,7 @@ export default function CitizenLogin() {
     setLoading(true)
 
     try {
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+      const { error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password
       })
@@ -29,8 +29,12 @@ export default function CitizenLogin() {
       if (signInError) throw signInError
 
       router.push('/citizen-dashboard')
-    } catch (err: any) {
-      console.error(err)
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error(err.message)
+      } else {
+        console.error(String(err))
+      }
       setError("Invalid Email or Password.")
     } finally {
       setLoading(false)
@@ -98,7 +102,7 @@ export default function CitizenLogin() {
 
         <div className="mt-8 text-center space-y-4">
           <p className="text-xs text-gray-600">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link href="/signup" className="text-gov-gold hover:text-gov-blue font-bold transition-colors">
               Sign up here
             </Link>

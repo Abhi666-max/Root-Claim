@@ -36,7 +36,7 @@ export default function CitizenSignup() {
 
     setLoading(true)
     try {
-      const { data, error: signUpError } = await supabase.auth.signUp({
+      const { error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -55,9 +55,14 @@ export default function CitizenSignup() {
         router.push('/login')
       }, 2000)
 
-    } catch (err: any) {
-      console.error(err)
-      setError(err.message || "Failed to sign up.")
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error(err.message)
+        setError(err.message)
+      } else {
+        console.error(String(err))
+        setError("Failed to sign up.")
+      }
     } finally {
       setLoading(false)
     }

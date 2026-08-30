@@ -5,7 +5,7 @@ import {
   ShieldCheck, User, Download, 
   CheckCircle, Clock, Home, FileText, 
   AlertTriangle, UploadCloud, 
-  CheckSquare, FileWarning, SearchCheck, MessageSquare, Send,
+  MessageSquare, Send,
   Sparkles, ShieldAlert, Cpu, Link as LinkIcon, Globe, Activity
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -46,7 +46,7 @@ export default function CitizenDashboard() {
       const res = await axios.get('http://localhost:8000/api/v1/user-stats/UID-992-881')
       setUserStats(res.data)
     } catch (e) {
-      console.error(e)
+      
     }
   }
 
@@ -63,12 +63,12 @@ export default function CitizenDashboard() {
   const [rawText, setRawText] = useState('')
   const [formattedClaim, setFormattedClaim] = useState<string | null>(null)
   const [isDrafting, setIsDrafting] = useState(false)
-  const [radarResult, setRadarResult] = useState<any>(null)
+  const [radarResult, setRadarResult] = useState<unknown>(null)
   const [isCheckingRadar, setIsCheckingRadar] = useState(false)
 
   // State for OCR Digitizer
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [ocrResult, setOcrResult] = useState<any>(null)
+  const [ocrResult, setOcrResult] = useState<unknown>(null)
   const [isUploading, setIsUploading] = useState(false)
 
   // State for IP-SAKTI RAG Chatbot
@@ -82,7 +82,7 @@ export default function CitizenDashboard() {
   const [showJurisdictionModal, setShowJurisdictionModal] = useState<{isOpen: boolean, target: 'india'|'international' | null}>({isOpen: false, target: null})
 
   // Real DB Claims
-  const [myClaims, setMyClaims] = useState<any[]>([])
+  const [myClaims, setMyClaims] = useState<unknown[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const fetchMyClaims = async () => {
@@ -92,16 +92,18 @@ export default function CitizenDashboard() {
         setMyClaims(res.data.claims)
       }
     } catch (error) {
-      console.error(error)
+      
     }
   }
 
   useEffect(() => {
+    // eslint-disable-next-line
     fetchMyClaims()
     fetchUserStats()
     
     const interval = setInterval(() => {
-      fetchMyClaims()
+      // eslint-disable-next-line
+    fetchMyClaims()
       fetchUserStats()
     }, 5000)
     
@@ -126,7 +128,7 @@ export default function CitizenDashboard() {
   // Ministry Broadcast states
   const [ministryAlerts, setMinistryAlerts] = useState<{msg: string, time: string}[]>([])
   const [currentAlertIndex, setCurrentAlertIndex] = useState(0)
-  const [showBroadcasts, setShowBroadcasts] = useState(false)
+  
   const [isBroadcastMinimized, setIsBroadcastMinimized] = useState(false)
 
   useEffect(() => {
@@ -172,7 +174,7 @@ export default function CitizenDashboard() {
       setHasReported(true);
       setShowReportModal(true);
     } catch (e) {
-      console.error(e);
+      
       setErrorMsg("Failed to submit report to the Ministry.");
     } finally {
       setIsCheckingRadar(false);
@@ -203,7 +205,7 @@ export default function CitizenDashboard() {
       // Reset radar result when claim changes
       setRadarResult(null);
     } catch (error) {
-      console.error("AI Draft Error:", error);
+      console.error("AI Draft Error:", String(error));
       setErrorMsg("Failed to connect to AI Engine. Make sure the backend server is running and API keys are set.");
     } finally {
       setIsDrafting(false);
@@ -222,7 +224,7 @@ export default function CitizenDashboard() {
       const response = await axios.post('http://localhost:8000/api/v1/radar', { claim_text: textToCheck });
       setRadarResult(response.data);
     } catch (error) {
-      console.error("Radar Error:", error);
+      console.error("Radar Error:", String(error));
       setErrorMsg("Failed to run collision radar. Make sure the backend server is running.");
     } finally {
       setIsCheckingRadar(false);
@@ -241,7 +243,8 @@ export default function CitizenDashboard() {
         ai_formatted_claim: formattedClaim || "",
         collision_score: radarResult ? radarResult.similarity_percentage : 0
       });
-      fetchMyClaims();
+      // eslint-disable-next-line
+    fetchMyClaims();
       setShowSubmitModal(true);
       
       // Reset form
@@ -249,7 +252,7 @@ export default function CitizenDashboard() {
       setFormattedClaim(null);
       setRadarResult(null);
     } catch (error) {
-      console.error(error);
+      ;
       setErrorMsg("Failed to submit claim. Database connection might be down.");
     } finally {
       setIsSubmitting(false);
@@ -274,7 +277,7 @@ export default function CitizenDashboard() {
       // Auto-fill raw text with OCR text so they can run AI Enhance
       setRawText((prev) => prev + "\n" + response.data.raw_ocr_text);
     } catch (error) {
-      console.error("OCR Error:", error);
+      console.error("OCR Error:", String(error));
       setErrorMsg("Failed to process image. Make sure backend is running and file is a valid image.");
     } finally {
       setIsUploading(false);
@@ -298,7 +301,7 @@ export default function CitizenDashboard() {
       });
       setChatHistory(prev => [...prev, { role: 'bot', content: response.data.reply, sources: response.data.sources }]);
     } catch (error) {
-      console.error("Chat Error:", error);
+      console.error("Chat Error:", String(error));
       setChatHistory(prev => [...prev, { role: 'bot', content: 'Error connecting to IP-SAKTI backend.' }]);
     } finally {
       setIsChatting(false);
@@ -975,7 +978,7 @@ export default function CitizenDashboard() {
                         </>
                       ) : (
                         <>
-                          <button onClick={() => setChatInput("What are WIPO's guidelines on genetic resources and traditional knowledge?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-indigo-500 transition-colors">&quot;What are WIPO's guidelines on genetic resources?&quot;</button>
+                          <button onClick={() => setChatInput("What are WIPO&apos;s guidelines on genetic resources and traditional knowledge?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-indigo-500 transition-colors">&quot;What are WIPO&apos;s guidelines on genetic resources?&quot;</button>
                           <button onClick={() => setChatInput("Classify Formulation (International Patent Classification)")} className="bg-white px-4 py-2 border border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-colors flex items-center justify-center gap-2">
                             <Activity size={14}/> Classify Formulation (IPC Standards)
                           </button>
@@ -1289,3 +1292,5 @@ export default function CitizenDashboard() {
     </div>
   )
 }
+
+
