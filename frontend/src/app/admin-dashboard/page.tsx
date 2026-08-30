@@ -177,7 +177,7 @@ export default function AdminDashboard() {
 
   // Modals state
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [showConfirmModal, setShowConfirmModal] = useState<{isOpen: boolean, action: 'Reject' | 'Verify' | 'Lock' | 'DeleteAlert' | 'Error' | 'Broadcast' | 'ReviewReport' | null, meta?: unknown}>({isOpen: false, action: null});
+  const [showConfirmModal, setShowConfirmModal] = useState<{isOpen: boolean, action: 'Reject' | 'Verify' | 'Lock' | 'DeleteAlert' | 'Error' | 'Broadcast' | 'ReviewReport' | null, meta?: any}>({isOpen: false, action: null});
 
   const handleStatusUpdate = async (status: string) => {
     if(!activeClaim) return;
@@ -827,6 +827,7 @@ export default function AdminDashboard() {
     </div>
   );
 }
+
 
 
 

@@ -115,6 +115,7 @@ export default function CitizenDashboard() {
   const [showCertificateModal, setShowCertificateModal] = useState(false)
   const [showReportModal, setShowReportModal] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [showBroadcasts, setShowBroadcasts] = useState(false)
 
   // Report Bio-Piracy States
   const [reportUrl, setReportUrl] = useState('')
@@ -1292,6 +1293,7 @@ export default function CitizenDashboard() {
     </div>
   )
 }
+
 
 
 
