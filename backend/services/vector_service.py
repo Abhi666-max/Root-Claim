@@ -61,12 +61,14 @@ def get_rag_context(query_text: str) -> tuple[str, list]:
         
     try:
         # Extract a few key words from the query for text search (avoiding PyTorch OOM)
-        words = [w for w in query_text.split() if len(w) > 4][:2]
-        query = supabase.table("patents").select("*")
+        words = [w for w in query_text.split() if len(w) > 3][:2]
         
-        # Apply ilike filters if words are present to make search dynamic
-        if words:
-            query = query.ilike("title", f"%{words[0]}%")
+        # If the query is just small talk like 'who are you', return empty context
+        if not words:
+            return "", []
+            
+        query = supabase.table("patents").select("*")
+        query = query.ilike("title", f"%{words[0]}%")
             
         response = query.limit(3).execute()
         matches = response.data
