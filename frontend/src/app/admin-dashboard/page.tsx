@@ -25,6 +25,7 @@ import {
 import Link from 'next/link';
 import Head from 'next/head';
 import axios from 'axios';
+import Logo from '@/components/Logo';
 
 export default function AdminDashboard() {
   const [mounted, setMounted] = useState(false);
@@ -200,10 +201,7 @@ export default function AdminDashboard() {
       {/* SIDEBAR */}
       <aside className="w-72 bg-[#f8f9fa] border-r border-slate-200 flex flex-col shrink-0 z-20 shadow-xl relative text-slate-700">
         <div className="h-24 flex items-center gap-4 px-8 border-b border-slate-200 bg-[#f8f9fa]">
-          <div className="w-12 h-12 rounded-full border-2 border-gov-gold flex flex-col items-center justify-center bg-white shrink-0 shadow-[0_0_15px_rgba(212,175,55,0.3)]">
-            <span className="text-[10px] font-serif font-bold text-gov-blue leading-none">सत्यमेव</span>
-            <span className="text-[10px] font-serif font-bold text-gov-blue leading-none mt-0.5">जयते</span>
-          </div>
+          <Logo type="admin" size={48} />
           <div>
             <h1 className="font-serif-official font-bold text-gov-blue tracking-widest uppercase text-sm leading-tight">Ministry of Ayush</h1>
             <p className="text-[9px] uppercase tracking-widest text-gov-gold font-bold mt-1">Central Command Center</p>

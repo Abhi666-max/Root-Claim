@@ -1,10 +1,11 @@
 "use client"
 
 import React, { useState } from 'react'
-import { User, Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/utils/supabase'
+import Logo from '@/components/Logo'
 
 export default function CitizenLogin() {
   const router = useRouter()
@@ -46,8 +47,8 @@ export default function CitizenLogin() {
       <div className="w-full max-w-md bg-white border border-gov-light p-10 shadow-sm relative z-10">
         
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gov-blue/5 text-gov-blue mb-4">
-            <User size={32} strokeWidth={1.5} />
+          <div className="flex justify-center mb-4">
+            <Logo type="citizen" size={64} />
           </div>
           <h1 className="text-2xl font-cinzel font-bold text-gov-blue mb-2">Citizen Portal</h1>
           <p className="text-sm text-gray-500 italic">Login to submit traditional knowledge claims.</p>

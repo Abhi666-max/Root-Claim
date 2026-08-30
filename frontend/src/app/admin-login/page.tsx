@@ -1,9 +1,10 @@
 "use client"
 
 import React, { useState } from 'react'
-import { Lock, Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import Logo from '@/components/Logo'
 
 export default function AdminLogin() {
   const router = useRouter()
@@ -34,8 +35,8 @@ export default function AdminLogin() {
       <div className="w-full max-w-md bg-white border-t-4 border-gov-gold p-10 shadow-xl relative z-10">
         
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-50 text-red-700 mb-4 border border-red-100">
-            <Lock size={32} strokeWidth={1.5} />
+          <div className="flex justify-center mb-4">
+            <Logo type="admin" size={64} className="ring-2 ring-red-100" />
           </div>
           <h1 className="text-2xl font-cinzel font-bold text-gov-blue mb-2">Admin Portal</h1>
           <p className="text-sm text-gray-500 italic">Ministry of Ayush Officials Only.</p>
