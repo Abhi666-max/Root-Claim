@@ -6,6 +6,3 @@ web3
 python-multipart
 deep-translator
 python-dotenv
-easyocr
-opencv-python-headless
-sentence-transformers
