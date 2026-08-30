@@ -277,7 +277,7 @@ def api_enhance_broadcast(request: BroadcastEnhanceRequest):
     try:
         client = Groq(api_key=os.getenv("GROQ_API_KEY"))
         completion = client.chat.completions.create(
-            model="llama3-8b-8192",
+            model="llama-3.1-8b-instant",
             messages=[
                 {"role": "system", "content": "You are a Ministry of Ayush official. Rewrite the user's raw broadcast alert into a highly formal, authoritative, and concise emergency notification (max 2 sentences). Do not use introductory words like 'Here is the rewrite', output only the final text."},
                 {"role": "user", "content": request.raw_message}
