@@ -70,11 +70,6 @@ def get_rag_context(query_text: str) -> tuple[str, list]:
             
         response = query.limit(3).execute()
         matches = response.data
-        
-        # If no dynamic matches found, fallback to general patents
-        if not matches:
-            response = supabase.table("patents").select("*").limit(2).execute()
-            matches = response.data
             
         if not matches:
             return "", []

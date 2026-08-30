@@ -32,7 +32,7 @@ def generate_smart_draft(raw_text: str) -> str:
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": raw_text}
             ],
-            model="llama-3.1-8b-instant",
+            model="llama3-70b-8192",
             temperature=0.2, # Low temperature for strict, formal output
             max_tokens=2000,
         )
@@ -91,7 +91,7 @@ def query_ip_sakti(query: str, retrieved_context: str = "", jurisdiction: str = 
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
             ],
-            model="llama-3.1-8b-instant",
+            model="llama3-70b-8192",
             temperature=0.1,
             max_tokens=2000,
         )
