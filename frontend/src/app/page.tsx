@@ -29,7 +29,7 @@ export default function LandingPage() {
             <span className="hidden sm:inline">Ministry of Ayush</span>
           </div>
           <div className="flex items-center gap-4 opacity-90 font-semibold">
-            <button className="hidden sm:inline hover:text-gov-gold transition-colors">Skip to Main Content</button>
+            <a href="#main-content" className="hidden sm:inline hover:text-gov-gold transition-colors">Skip to Main Content</a>
             <span className="hidden sm:inline text-gov-gold">|</span>
             <button onClick={() => changeFontSize(-2)} className="hover:text-gov-gold transition-colors">A-</button>
             <button onClick={() => { setFontSize(16); document.documentElement.style.fontSize = "16px"; }} className="hover:text-gov-gold transition-colors">A</button>
@@ -107,7 +107,7 @@ export default function LandingPage() {
       <div className="h-28"></div>
 
       {/* SECTION 1: HERO BANNER */}
-      <section className="bg-gov-blue relative text-white border-b-4 border-gov-gold overflow-hidden">
+      <section id="main-content" className="bg-gov-blue relative text-white border-b-4 border-gov-gold overflow-hidden">
         <div className="absolute inset-0 bg-mandala opacity-10"></div>
         <div className="max-w-7xl mx-auto px-6 md:px-12 py-24 md:py-32 relative z-10 flex flex-col md:flex-row items-center gap-12">
           <div className="flex-1">

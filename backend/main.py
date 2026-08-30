@@ -67,6 +67,10 @@ def read_root():
 def health_check():
     return {"status": "healthy", "groq": bool(os.getenv("GROQ_API_KEY"))}
 
+@app.get("/health")
+def root_health_check():
+    return {"status": "ok"}
+
 @app.get("/api/v1/stats")
 def api_stats():
     """
