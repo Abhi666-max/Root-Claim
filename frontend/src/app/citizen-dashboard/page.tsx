@@ -45,7 +45,7 @@ export default function CitizenDashboard() {
 
   const fetchUserStats = async () => {
     try {
-      const res = await axios.get('http://localhost:8000/api/v1/user-stats/UID-992-881')
+      const res = await axios.get('https://root-claim.onrender.com/api/v1/user-stats/UID-992-881')
       setUserStats(res.data)
     } catch (e) {
       
@@ -89,7 +89,7 @@ export default function CitizenDashboard() {
 
   const fetchMyClaims = async () => {
     try {
-      const res = await axios.get('http://localhost:8000/api/v1/claims')
+      const res = await axios.get('https://root-claim.onrender.com/api/v1/claims')
       if (res.data.status === 'success') {
         setMyClaims(res.data.claims)
       }
@@ -168,7 +168,7 @@ export default function CitizenDashboard() {
     
     setIsCheckingRadar(true); // Reusing a loading state for simplicity
     try {
-      await axios.post('http://localhost:8000/api/v1/reports', {
+      await axios.post('https://root-claim.onrender.com/api/v1/reports', {
         user_id: "UID-992-881",
         target_url: reportUrl,
         context: reportContext,
@@ -197,7 +197,7 @@ export default function CitizenDashboard() {
     if (!combinedText.trim()) return;
     setIsDrafting(true);
     try {
-      const response = await axios.post('http://localhost:8000/api/v1/draft', { 
+      const response = await axios.post('https://root-claim.onrender.com/api/v1/draft', { 
         title: claimTitle,
         reference_text: referenceText,
         verse_sloka: verseText,
@@ -224,7 +224,7 @@ export default function CitizenDashboard() {
     }
     setIsCheckingRadar(true);
     try {
-      const response = await axios.post('http://localhost:8000/api/v1/radar', { claim_text: textToCheck });
+      const response = await axios.post('https://root-claim.onrender.com/api/v1/radar', { claim_text: textToCheck });
       setRadarResult(response.data);
     } catch (error) {
       console.error("Radar Error:", String(error));
@@ -239,7 +239,7 @@ export default function CitizenDashboard() {
     setConfirmAction({isOpen: false, type: null});
     setIsSubmitting(true);
     try {
-      await axios.post('http://localhost:8000/api/v1/claims', {
+      await axios.post('https://root-claim.onrender.com/api/v1/claims', {
         user_id: "UID-992-881",
         title: rawText.split('\n')[0].substring(0, 50) || "Untitled Knowledge",
         raw_description: rawText,
@@ -273,7 +273,7 @@ export default function CitizenDashboard() {
     setIsUploading(true);
     setOcrResult(null);
     try {
-      const response = await axios.post('http://localhost:8000/api/v1/ocr', formData, {
+      const response = await axios.post('https://root-claim.onrender.com/api/v1/ocr', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setOcrResult(response.data);
@@ -298,7 +298,7 @@ export default function CitizenDashboard() {
     setIsChatting(true);
 
     try {
-      const response = await axios.post('http://localhost:8000/api/v1/ip-sakti', { 
+      const response = await axios.post('https://root-claim.onrender.com/api/v1/ip-sakti', { 
         query: userMsg, 
         jurisdiction: jurisdiction 
       });

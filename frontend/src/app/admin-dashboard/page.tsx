@@ -53,7 +53,7 @@ export default function AdminDashboard() {
   
   const fetchClaims = async () => {
     try {
-      const res = await axios.get('http://localhost:8000/api/v1/claims');
+      const res = await axios.get('https://root-claim.onrender.com/api/v1/claims');
       if(res.data.status === 'success') {
         setClaims(res.data.claims);
         if(res.data.claims.length > 0 && !activeClaim) {
@@ -69,7 +69,7 @@ export default function AdminDashboard() {
     if(!broadcastMessage.trim()) return;
     setIsEnhancing(true);
     try {
-      const res = await axios.post('http://localhost:8000/api/v1/enhance-broadcast', {
+      const res = await axios.post('https://root-claim.onrender.com/api/v1/enhance-broadcast', {
         raw_message: broadcastMessage
       });
       setBroadcastMessage(res.data.enhanced_message);
@@ -89,14 +89,14 @@ export default function AdminDashboard() {
 
   const fetchStats = async () => {
     try {
-      const res = await axios.get('http://localhost:8000/api/v1/stats');
+      const res = await axios.get('https://root-claim.onrender.com/api/v1/stats');
       setStats(res.data);
     } catch(e) {}
   };
 
   const fetchReports = async () => {
     try {
-      const res = await axios.get('http://localhost:8000/api/v1/reports');
+      const res = await axios.get('https://root-claim.onrender.com/api/v1/reports');
       setReports(res.data.reports || []);
     } catch(e) {}
   };
@@ -104,7 +104,7 @@ export default function AdminDashboard() {
   const [patents, setPatents] = useState<any[]>([]);
   const fetchPatents = async () => {
     try {
-      const res = await axios.get('http://localhost:8000/api/v1/patents');
+      const res = await axios.get('https://root-claim.onrender.com/api/v1/patents');
       setPatents(res.data.patents || []);
     } catch (e) {}
   };
@@ -145,12 +145,12 @@ export default function AdminDashboard() {
         timestamp: new Date().toISOString()
       }
       
-      const response = await axios.post('http://localhost:8000/api/v1/anchor', {
+      const response = await axios.post('https://root-claim.onrender.com/api/v1/anchor', {
         claim_data: mockClaimData
       })
       
       if(activeClaim) {
-        await axios.patch(`http://localhost:8000/api/v1/claims/${activeClaim.id}`, { 
+        await axios.patch(`https://root-claim.onrender.com/api/v1/claims/${activeClaim.id}`, { 
           status: 'Blockchain Anchored',
           polygon_tx_hash: response.data.txHash 
         });
@@ -192,7 +192,7 @@ export default function AdminDashboard() {
   const handleStatusUpdate = async (status: string) => {
     if(!activeClaim) return;
     try {
-      await axios.patch(`http://localhost:8000/api/v1/claims/${activeClaim.id}`, { status });
+      await axios.patch(`https://root-claim.onrender.com/api/v1/claims/${activeClaim.id}`, { status });
       fetchClaims(); // refresh
       setActiveClaim({...activeClaim, status}); // optimistic update
       setShowConfirmModal({isOpen: false, action: null});
