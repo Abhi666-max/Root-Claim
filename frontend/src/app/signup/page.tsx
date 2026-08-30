@@ -69,8 +69,8 @@ export default function CitizenSignup() {
   }
 
   return (
-    <div className="min-h-screen bg-gov-ivory flex items-center justify-center p-6 relative bg-mandala font-serif">
-      <div className="w-full max-w-lg bg-white border border-gov-light p-10 shadow-sm relative z-10">
+    <div className="min-h-screen bg-gov-ivory flex items-center justify-center p-4 sm:p-6 relative bg-mandala font-serif">
+      <div className="w-full max-w-md bg-white border border-gov-light p-6 sm:p-10 shadow-sm relative z-10">
         
         <div className="text-center mb-10">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gov-blue/5 text-gov-blue mb-4">

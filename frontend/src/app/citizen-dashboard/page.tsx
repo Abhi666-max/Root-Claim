@@ -2,20 +2,21 @@
 
 import React, { useState, useEffect } from 'react'
 import { 
-  ShieldCheck, User, Download, 
+  User, Download, 
   CheckCircle, Clock, Home, FileText, 
   AlertTriangle, UploadCloud, 
-  MessageSquare, Send,
-  Sparkles, ShieldAlert, Cpu, Link as LinkIcon, Globe, Activity
+  MessageSquare, Send, Menu, X,
+  Sparkles, ShieldAlert, Cpu, Link as LinkIcon, Globe, Activity, ShieldCheck
 } from 'lucide-react'
-import Logo from '@/components/Logo'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import { supabase } from '@/utils/supabase'
+import Logo from '@/components/Logo'
 
 export default function CitizenDashboard() {
   const router = useRouter()
   const [citizenData, setCitizenData] = useState<{full_name: string, email: string} | null>(null)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   
   useEffect(() => {
     const fetchUser = async () => {
@@ -116,6 +117,226 @@ export default function CitizenDashboard() {
   const [showCertificateModal, setShowCertificateModal] = useState(false)
   const [showReportModal, setShowReportModal] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [showBroadcasts, setShowBroadcasts] = useState(false)
+
+  // Report Bio-Piracy States
+  const [reportUrl, setReportUrl] = useState('')
+  const [reportContext, setReportContext] = useState('')
+  const [reportError, setReportError] = useState('')
+  const [hasReported, setHasReported] = useState(false)
+
+  // Action Confirmation Modal
+  const [confirmAction, setConfirmAction] = useState<{isOpen: boolean, type: 'enhance' | 'submit' | 'whistleblower' | null}>({isOpen: false, type: null})
+
+  // Ministry Broadcast states
+  const [ministryAlerts, setMinistryAlerts] = useState<{msg: string, time: string}[]>([])
+  const [currentAlertIndex, setCurrentAlertIndex] = useState(0)
+  
+  const [isBroadcastMinimized, setIsBroadcastMinimized] = useState(false)
+
+  useEffect(() => {
+    // Poll for alerts broadcasted by Admin Dashboard via localStorage
+    const checkAlert = () => {
+      const alertData = localStorage.getItem('ministry_alerts_array')
+      if (alertData) {
+        try {
+          const parsed = JSON.parse(alertData)
+          setMinistryAlerts(parsed)
+        } catch(e) {}
+      }
+    }
+    checkAlert()
+    const alertInterval = setInterval(checkAlert, 2000)
+    return () => clearInterval(alertInterval)
+  }, [])
+
+  const handleReportSubmit = async () => {
+    // Basic validation to reject random gibberish (must contain spaces, be somewhat long)
+    if (!reportUrl.trim() || !reportContext.trim()) {
+      setReportError("Error: Both Patent Number/URL and Context fields are mandatory.");
+      return;
+    }
+    if (reportUrl.length < 5) {
+      setReportError("Error: Invalid Patent Number or URL. Must be at least 5 characters.");
+      return;
+    }
+    if (reportContext.length < 30 || !reportContext.includes(' ')) {
+      setReportError("Error: Please provide a proper, detailed justification with multiple words for the Ministry to investigate.");
+      return;
+    }
+    setReportError("");
+    
+    setIsCheckingRadar(true); // Reusing a loading state for simplicity
+    try {
+      await axios.post('http://localhost:8000/api/v1/reports', {
+        user_id: "UID-992-881",
+        target_url: reportUrl,
+        context: reportContext,
+        risk_level: "High" // Default or we could let them choose
+      });
+      setHasReported(true);
+      setShowReportModal(true);
+    } catch (e) {
+      
+      setErrorMsg("Failed to submit report to the Ministry.");
+    } finally {
+      setIsCheckingRadar(false);
+    }
+  }
+
+  // API Call: Feature 2 - AI Smart Draft
+  const handleAiEnhance = async () => {
+    setConfirmAction({isOpen: false, type: null});
+    const combinedText = `
+    Title: ${claimTitle}
+    Reference Text (e.g. Charaka Samhita): ${referenceText}
+    Verse/Sloka: ${verseText}
+    Key Ingredients: ${ingredients}
+    Description: ${rawText}
+    `;
+    if (!combinedText.trim()) return;
+    setIsDrafting(true);
+    try {
+      const response = await axios.post('http://localhost:8000/api/v1/draft', { 
+        title: claimTitle,
+        reference_text: referenceText,
+        verse_sloka: verseText,
+        ingredients: ingredients,
+        raw_text: rawText
+      });
+      setFormattedClaim(response.data.formatted_claim);
+      // Reset radar result when claim changes
+      setRadarResult(null);
+    } catch (error) {
+      console.error("AI Draft Error:", String(error));
+      setErrorMsg("Failed to connect to AI Engine. Make sure the backend server is running and API keys are set.");
+    } finally {
+      setIsDrafting(false);
+    }
+  }
+
+  // API Call: Feature 3 - Collision Radar Pre-Check
+  const handleRadarCheck = async () => {
+    const textToCheck = formattedClaim || rawText;
+    if (!textToCheck) {
+      setErrorMsg("Please generate a draft or enter text first.");
+      return;
+    }
+    setIsCheckingRadar(true);
+    try {
+      const response = await axios.post('http://localhost:8000/api/v1/radar', { claim_text: textToCheck });
+      setRadarResult(response.data);
+    } catch (error) {
+      console.error("Radar Error:", String(error));
+      setErrorMsg("Failed to run collision radar. Make sure the backend server is running.");
+    } finally {
+      setIsCheckingRadar(false);
+    }
+  }
+
+  // Feature: Submit to Vault
+  const handleSubmitToVault = async () => {
+    setConfirmAction({isOpen: false, type: null});
+    setIsSubmitting(true);
+    try {
+      await axios.post('http://localhost:8000/api/v1/claims', {
+        user_id: "UID-992-881",
+        title: rawText.split('\n')[0].substring(0, 50) || "Untitled Knowledge",
+        raw_description: rawText,
+        ai_formatted_claim: formattedClaim || "",
+        collision_score: radarResult ? radarResult.similarity_percentage : 0
+      });
+      // eslint-disable-next-line
+    fetchMyClaims();
+      setShowSubmitModal(true);
+      
+      // Reset form
+      setRawText('');
+      setFormattedClaim(null);
+      setRadarResult(null);
+    } catch (error) {
+      ;
+      setErrorMsg("Failed to submit claim. Database connection might be down.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  // API Call: Feature 4 - OCR Digitizer
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    setIsUploading(true);
+    setOcrResult(null);
+    try {
+      const response = await axios.post('http://localhost:8000/api/v1/ocr', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setOcrResult(response.data);
+      // Auto-fill raw text with OCR text so they can run AI Enhance
+      setRawText((prev) => prev + "\n" + response.data.raw_ocr_text);
+    } catch (error) {
+      console.error("OCR Error:", String(error));
+      setErrorMsg("Failed to process image. Make sure backend is running and file is a valid image.");
+    } finally {
+      setIsUploading(false);
+    }
+  }
+
+  // API Call: Feature 1 - IP-SAKTI Chat
+  const handleChatSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!chatInput.trim()) return;
+
+    const userMsg = chatInput;
+    setChatHistory(prev => [...prev, { role: 'user', content: userMsg }]);
+    setChatInput('');
+    setIsChatting(true);
+
+    try {
+      const response = await axios.post('http://localhost:8000/api/v1/ip-sakti', { 
+        query: userMsg, 
+        jurisdiction: jurisdiction 
+      });
+      setChatHistory(prev => [...prev, { role: 'bot', content: response.data.reply, sources: response.data.sources }]);
+    } catch (error) {
+      console.error("Chat Error:", String(error));
+      setChatHistory(prev => [...prev, { role: 'bot', content: 'Error connecting to IP-SAKTI backend.' }]);
+    } finally {
+      setIsChatting(false);
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-100 via-white to-slate-50 text-gov-text font-sans flex flex-col md:flex-row">
+      
+      {/* MOBILE TOP BAR */}
+      <div className="md:hidden flex items-center justify-between bg-[#f8f9fa] border-b border-slate-200 p-4 sticky top-0 z-50">
+        <div className="flex items-center gap-3">
+          <Logo type="citizen" size={32} />
+          <div>
+            <h1 className="font-serif-official font-bold tracking-widest uppercase text-sm text-gov-blue">Root-Claim</h1>
+            <p className="text-[8px] uppercase tracking-widest text-gov-gold font-bold">Citizen Portal</p>
+          </div>
+        </div>
+        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-gov-blue p-2">
+          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
+
+      {/* SIDEBAR NAVIGATION */}
+      <aside className={`${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-300 w-64 bg-[#f8f9fa] border-r border-slate-200 text-slate-700 flex flex-col fixed h-full z-40 md:z-20 shadow-xl print:hidden`}>
+        <div className="h-20 hidden md:flex items-center gap-3 px-6 border-b border-slate-200 bg-[#f8f9fa]">
+          <Logo type="citizen" size={36} />
+          <div>
+            <h1 className="font-serif-official font-bold tracking-widest uppercase text-sm text-gov-blue">Root-Claim</h1>
+            <p className="text-[8px] uppercase tracking-widest text-gov-gold font-bold">Citizen Portal</p>
+          </div>
+        </div>
 
         <nav className="flex-1 py-8 flex flex-col px-4 bg-[#f8f9fa]">
           <button 
@@ -174,7 +395,7 @@ export default function CitizenDashboard() {
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 ml-64 print:ml-0 flex flex-col h-screen overflow-hidden bg-transparent">
+      <main className="flex-1 md:ml-64 print:ml-0 flex flex-col md:h-screen bg-transparent">
         
         {/* Dynamic Content Body */}
         <div className="flex-1 flex flex-col p-4 pl-0 relative z-10 w-full h-full print:p-0 print:bg-white">

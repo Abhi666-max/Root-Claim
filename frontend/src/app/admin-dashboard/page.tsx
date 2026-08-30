@@ -7,28 +7,37 @@ import {
   AlertTriangle, 
   Database,
   FileText,
-  Search,
-  CheckCircle,
+  Search, 
+  RefreshCcw, 
+  Send, 
+  ShieldAlert, 
+  Cpu, 
+  Info, 
+  Server, 
+  Network, 
+  Menu, 
+  X,
   XCircle,
   Map,
   Eye,
-  LogOut,
-  Network,
   Link as LinkIcon,
-  CheckSquare,
   XSquare,
-  ShieldAlert,
-  RefreshCcw,
   Sparkles,
-  Trash2
+  Trash2,
+  CheckSquare,
+  LogOut,
+  CheckCircle
 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Head from 'next/head';
 import axios from 'axios';
 import Logo from '@/components/Logo';
 
 export default function AdminDashboard() {
   const [mounted, setMounted] = useState(false);
+  const router = useRouter();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('command_center');
   const [liveNodes, setLiveNodes] = useState(1284);
   const [threatCount, setThreatCount] = useState(14);
@@ -193,14 +202,28 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-100 via-white to-slate-50 text-gray-900 font-sans flex overflow-hidden">
+    <div className="min-h-screen bg-slate-50 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-100 via-white to-slate-50 text-gray-900 font-sans flex flex-col md:flex-row overflow-hidden">
       <Head>
         <title>Minister Command Center | Root-Claim</title>
       </Head>
 
+      {/* MOBILE TOP BAR */}
+      <div className="md:hidden flex items-center justify-between bg-[#f8f9fa] border-b border-slate-200 p-4 sticky top-0 z-50">
+        <div className="flex items-center gap-3">
+          <Logo type="admin" size={32} />
+          <div>
+            <h1 className="font-serif-official font-bold tracking-widest uppercase text-sm text-gov-blue">Ministry of Ayush</h1>
+            <p className="text-[8px] uppercase tracking-widest text-gov-gold font-bold">Central Command</p>
+          </div>
+        </div>
+        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-gov-blue p-2">
+          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
+
       {/* SIDEBAR */}
-      <aside className="w-72 bg-[#f8f9fa] border-r border-slate-200 flex flex-col shrink-0 z-20 shadow-xl relative text-slate-700">
-        <div className="h-24 flex items-center gap-4 px-8 border-b border-slate-200 bg-[#f8f9fa]">
+      <aside className={`${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-300 w-72 bg-[#f8f9fa] border-r border-slate-200 flex flex-col fixed md:relative h-full z-40 md:z-20 shadow-xl text-slate-700`}>
+        <div className="h-24 hidden md:flex items-center gap-4 px-8 border-b border-slate-200 bg-[#f8f9fa]">
           <Logo type="admin" size={48} />
           <div>
             <h1 className="font-serif-official font-bold text-gov-blue tracking-widest uppercase text-sm leading-tight">Ministry of Ayush</h1>

@@ -43,8 +43,8 @@ export default function CitizenLogin() {
   }
 
   return (
-    <div className="min-h-screen bg-gov-ivory flex items-center justify-center p-6 relative bg-mandala font-serif">
-      <div className="w-full max-w-md bg-white border border-gov-light p-10 shadow-sm relative z-10">
+    <div className="min-h-screen bg-gov-ivory flex items-center justify-center p-4 sm:p-6 relative bg-mandala font-serif">
+      <div className="w-full max-w-md bg-white border border-gov-light p-6 sm:p-10 shadow-sm relative z-10">
         
         <div className="text-center mb-10">
           <div className="flex justify-center mb-4">
