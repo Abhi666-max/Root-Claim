@@ -25,10 +25,33 @@ export default function CitizenSignup() {
     setError('')
     
     // Strict Validation
-    const nameWords = fullName.trim().split(/\s+/)
+    const nameTrim = fullName.trim().toLowerCase()
+    const nameWords = nameTrim.split(/\s+/)
+    
+    if (!/^[a-z\s]+$/.test(nameTrim)) {
+      setError("Name can only contain alphabets and spaces.")
+      return
+    }
     if (nameWords.length < 2) {
       setError("Please enter your full name (at least First and Last name).")
       return
+    }
+    for (const word of nameWords) {
+      if (word.length < 2) {
+        setError("Each part of your name must be at least 2 characters long.")
+        return
+      }
+    }
+    if (/([a-z])\1\1/.test(nameTrim)) {
+      setError("Name cannot contain 3 consecutive identical letters.")
+      return
+    }
+    const blockedWords = ['test', 'fake', 'admin', 'user', 'dummy', 'null', 'undefined', 'qwerty', 'asdf', 'abcd']
+    for (const word of nameWords) {
+      if (blockedWords.includes(word)) {
+        setError("Please enter a valid real name.")
+        return
+      }
     }
 
     if (!email.toLowerCase().endsWith('@gmail.com')) {
