@@ -25,6 +25,12 @@ export default function CitizenSignup() {
     setError('')
     
     // Strict Validation
+    const nameWords = fullName.trim().split(/\s+/)
+    if (nameWords.length < 2) {
+      setError("Please enter your full name (at least First and Last name).")
+      return
+    }
+
     if (!email.toLowerCase().endsWith('@gmail.com')) {
       setError("Only @gmail.com email addresses are allowed.")
       return
