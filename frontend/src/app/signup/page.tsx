@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from 'react'
-import { UserPlus, Eye, EyeOff, ShieldCheck } from 'lucide-react'
+import { UserPlus, Eye, EyeOff, ShieldCheck, Mail, CheckCircle2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/utils/supabase'
@@ -9,8 +9,10 @@ import { supabase } from '@/utils/supabase'
 export default function CitizenSignup() {
   const router = useRouter()
   
+  const [step, setStep] = useState<1 | 2 | 3>(1)
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
+  const [otp, setOtp] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -20,7 +22,72 @@ export default function CitizenSignup() {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
 
-  const handleSignup = async (e: React.FormEvent) => {
+  // Step 1: Send OTP
+  const handleSendOTP = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    
+    if (!email.toLowerCase().endsWith('@gmail.com')) {
+      setError("Only @gmail.com email addresses are allowed.")
+      return
+    }
+    if (fullName.trim().length < 3) {
+      setError("Please enter a valid full name.")
+      return
+    }
+
+    setLoading(true)
+    try {
+      const { error: otpError } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          shouldCreateUser: true
+        }
+      })
+
+      if (otpError) throw otpError
+
+      setStep(2)
+    } catch (err: unknown) {
+      if (err instanceof Error) setError(err.message)
+      else setError("Failed to send OTP.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Step 2: Verify OTP
+  const handleVerifyOTP = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    
+    if (otp.length !== 6) {
+      setError("OTP must be 6 digits.")
+      return
+    }
+
+    setLoading(true)
+    try {
+      const { error: verifyError } = await supabase.auth.verifyOtp({
+        email,
+        token: otp,
+        type: 'email'
+      })
+
+      if (verifyError) throw verifyError
+
+      // OTP is correct, user is temporarily logged in. Move to password setup.
+      setStep(3)
+    } catch (err: unknown) {
+      if (err instanceof Error) setError(err.message)
+      else setError("Failed to verify OTP.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Step 3: Set Password & Finalize Signup
+  const handleFinalizeSignup = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     
@@ -36,19 +103,18 @@ export default function CitizenSignup() {
 
     setLoading(true)
     try {
-      const { error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullName
-          }
+      // Update the user's password and metadata since they are already authenticated via OTP
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: password,
+        data: {
+          full_name: fullName
         }
       })
 
-      if (signUpError) {
-        throw signUpError
-      }
+      if (updateError) throw updateError
+
+      // Sign them out so they can log in normally via the login page
+      await supabase.auth.signOut()
 
       setSuccess(true)
       setTimeout(() => {
@@ -56,13 +122,8 @@ export default function CitizenSignup() {
       }, 2000)
 
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        console.error(err.message)
-        setError(err.message)
-      } else {
-        console.error(String(err))
-        setError("Failed to sign up.")
-      }
+      if (err instanceof Error) setError(err.message)
+      else setError("Failed to finalize registration.")
     } finally {
       setLoading(false)
     }
@@ -93,79 +154,128 @@ export default function CitizenSignup() {
             <p className="text-green-700 text-sm">Redirecting to login page...</p>
           </div>
         ) : (
-          <form className="space-y-6" onSubmit={handleSignup}>
-            <div>
-              <label className="block text-xs font-cinzel font-bold uppercase tracking-widest text-gov-blue mb-2">Full Name <span className="text-red-500">*</span></label>
-              <input 
-                type="text" 
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                className="w-full border-b-2 border-gov-light py-3 focus:outline-none focus:border-gov-gold transition-colors text-gov-text bg-transparent"
-                placeholder="As per official records"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-cinzel font-bold uppercase tracking-widest text-gov-blue mb-2">Email Address <span className="text-red-500">*</span></label>
-              <input 
-                type="email" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full border-b-2 border-gov-light py-3 focus:outline-none focus:border-gov-gold transition-colors text-gov-text bg-transparent"
-                placeholder="name@example.com"
-                required
-              />
-            </div>
+          <div className="space-y-6">
             
-            <div className="relative">
-              <label className="block text-xs font-cinzel font-bold uppercase tracking-widest text-gov-blue mb-2">Password <span className="text-red-500">*</span></label>
-              <div className="relative">
+            {/* EMAIL AND NAME SECTION (Always visible but disabled after step 1) */}
+            <form onSubmit={handleSendOTP} className="space-y-4">
+              <div>
+                <label className="block text-xs font-cinzel font-bold uppercase tracking-widest text-gov-blue mb-2">Full Name <span className="text-red-500">*</span></label>
                 <input 
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border-b-2 border-gov-light py-3 pr-10 focus:outline-none focus:border-gov-gold transition-colors text-gov-text bg-transparent"
-                  placeholder="••••••••"
+                  type="text" 
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  disabled={step > 1}
+                  className="w-full border-b-2 border-gov-light py-3 focus:outline-none focus:border-gov-gold transition-colors text-gov-text bg-transparent disabled:opacity-50"
+                  placeholder="As per official records"
                   required
                 />
-                <button 
-                  type="button" 
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-0 top-3 text-gray-400 hover:text-gov-blue"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
               </div>
-            </div>
 
-            <div className="relative">
-              <label className="block text-xs font-cinzel font-bold uppercase tracking-widest text-gov-blue mb-2">Confirm Password <span className="text-red-500">*</span></label>
-              <div className="relative">
-                <input 
-                  type={showConfirmPassword ? "text" : "password"}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full border-b-2 border-gov-light py-3 pr-10 focus:outline-none focus:border-gov-gold transition-colors text-gov-text bg-transparent"
-                  placeholder="••••••••"
-                  required
-                />
-                <button 
-                  type="button" 
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-0 top-3 text-gray-400 hover:text-gov-blue"
-                >
-                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
+              <div>
+                <label className="block text-xs font-cinzel font-bold uppercase tracking-widest text-gov-blue mb-2">Email Address <span className="text-red-500">*</span></label>
+                <div className="flex items-center">
+                  <input 
+                    type="email" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={step > 1}
+                    className="w-full border-b-2 border-gov-light py-3 focus:outline-none focus:border-gov-gold transition-colors text-gov-text bg-transparent disabled:opacity-50"
+                    placeholder="name@gmail.com"
+                    required
+                  />
+                </div>
+                <p className="text-[10px] text-gray-400 mt-1">* Must be a @gmail.com address</p>
               </div>
-            </div>
 
-            <div className="pt-4">
-              <button type="submit" disabled={loading} className="w-full gov-btn disabled:opacity-50">
-                {loading ? 'Processing...' : 'Register Account'}
-              </button>
-            </div>
-          </form>
+              {step === 1 && (
+                <button type="submit" disabled={loading} className="w-full gov-btn mt-4 flex items-center justify-center gap-2">
+                  <Mail size={18} />
+                  {loading ? 'Sending OTP...' : 'Verify Email'}
+                </button>
+              )}
+            </form>
+
+            {/* OTP SECTION */}
+            {step === 2 && (
+              <form onSubmit={handleVerifyOTP} className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300 border-t border-gov-light pt-6">
+                <div>
+                  <label className="block text-xs font-cinzel font-bold uppercase tracking-widest text-gov-blue mb-2">Enter OTP <span className="text-red-500">*</span></label>
+                  <p className="text-xs text-gray-500 mb-3">A 6-digit code has been sent to {email}</p>
+                  <input 
+                    type="text" 
+                    maxLength={6}
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    className="w-full border-b-2 border-gov-light py-3 text-center tracking-[1em] text-xl focus:outline-none focus:border-gov-gold transition-colors text-gov-text bg-transparent"
+                    placeholder="••••••"
+                    required
+                  />
+                </div>
+                <button type="submit" disabled={loading} className="w-full gov-btn bg-gov-gold hover:bg-yellow-600 mt-4 flex items-center justify-center gap-2">
+                  <CheckCircle2 size={18} />
+                  {loading ? 'Verifying...' : 'Verify OTP'}
+                </button>
+              </form>
+            )}
+
+            {/* PASSWORD SECTION */}
+            {step === 3 && (
+              <form onSubmit={handleFinalizeSignup} className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300 border-t border-gov-light pt-6">
+                <div className="bg-green-50 text-green-700 text-xs p-3 flex items-center gap-2 border border-green-200">
+                  <CheckCircle2 size={16} /> Email verified successfully. Please set your password.
+                </div>
+                
+                <div className="relative">
+                  <label className="block text-xs font-cinzel font-bold uppercase tracking-widest text-gov-blue mb-2">Password <span className="text-red-500">*</span></label>
+                  <div className="relative">
+                    <input 
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full border-b-2 border-gov-light py-3 pr-10 focus:outline-none focus:border-gov-gold transition-colors text-gov-text bg-transparent"
+                      placeholder="••••••••"
+                      required
+                    />
+                    <button 
+                      type="button" 
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-0 top-3 text-gray-400 hover:text-gov-blue"
+                    >
+                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <label className="block text-xs font-cinzel font-bold uppercase tracking-widest text-gov-blue mb-2">Confirm Password <span className="text-red-500">*</span></label>
+                  <div className="relative">
+                    <input 
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="w-full border-b-2 border-gov-light py-3 pr-10 focus:outline-none focus:border-gov-gold transition-colors text-gov-text bg-transparent"
+                      placeholder="••••••••"
+                      required
+                    />
+                    <button 
+                      type="button" 
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-0 top-3 text-gray-400 hover:text-gov-blue"
+                    >
+                      {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="pt-4">
+                  <button type="submit" disabled={loading} className="w-full gov-btn disabled:opacity-50">
+                    {loading ? 'Processing...' : 'Complete Registration'}
+                  </button>
+                </div>
+              </form>
+            )}
+
+          </div>
         )}
 
         <div className="mt-8 text-center space-y-4">
