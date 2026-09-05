@@ -56,6 +56,8 @@ export default function CitizenDashboard() {
       isMounted = false
       clearTimeout(timeout)
     }
+  }, [router, citizenData])
+
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleLogoutConfirm = async () => {
