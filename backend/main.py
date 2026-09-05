@@ -288,8 +288,66 @@ def update_claim_status(claim_id: str, request: ClaimUpdate):
                     "title": claim_data["title"],
                     "content": claim_data["ai_formatted_claim"] or claim_data["raw_description"]
                 }).execute()
+        else:
+            # If status changed back to Pending Review, Drafted, or Rejected, remove it from master DB if it exists
+            supabase.table("patents").delete().eq("id", claim_id).execute()
 
         return {"status": "success", "data": response.data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+class BroadcastMessageRequest(BaseModel):
+    msg: str
+    time: str
+    id: int
+
+import json
+import os
+
+BROADCASTS_FILE = "broadcasts.json"
+
+@app.get("/api/v1/broadcasts")
+def get_broadcasts():
+    try:
+        if os.path.exists(BROADCASTS_FILE):
+            with open(BROADCASTS_FILE, "r") as f:
+                return json.load(f)
+        return []
+    except Exception:
+        return []
+
+@app.post("/api/v1/broadcasts")
+def add_broadcast(request: BroadcastMessageRequest):
+    try:
+        broadcasts = []
+        if os.path.exists(BROADCASTS_FILE):
+            with open(BROADCASTS_FILE, "r") as f:
+                broadcasts = json.load(f)
+        
+        new_broadcast = {"msg": request.msg, "time": request.time, "id": request.id}
+        broadcasts.insert(0, new_broadcast)
+        
+        with open(BROADCASTS_FILE, "w") as f:
+            json.dump(broadcasts[:10], f) # keep last 10
+            
+        return {"status": "success", "broadcasts": broadcasts}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/v1/broadcasts/{id}")
+def delete_broadcast(id: int):
+    try:
+        broadcasts = []
+        if os.path.exists(BROADCASTS_FILE):
+            with open(BROADCASTS_FILE, "r") as f:
+                broadcasts = json.load(f)
+        
+        broadcasts = [b for b in broadcasts if b["id"] != id]
+        
+        with open(BROADCASTS_FILE, "w") as f:
+            json.dump(broadcasts, f)
+            
+        return {"status": "success"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

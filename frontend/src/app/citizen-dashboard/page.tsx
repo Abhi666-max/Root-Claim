@@ -59,8 +59,10 @@ export default function CitizenDashboard() {
   }, [router, citizenData])
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
-    router.push('/login')
+    if (window.confirm("Are you sure you want to securely logout?")) {
+      await supabase.auth.signOut()
+      router.push('/login')
+    }
   }
 
   const [activeTab, setActiveTab] = useState('overview')
@@ -174,14 +176,11 @@ export default function CitizenDashboard() {
 
   useEffect(() => {
     // Poll for alerts broadcasted by Admin Dashboard via localStorage
-    const checkAlert = () => {
-      const alertData = localStorage.getItem('ministry_alerts_array')
-      if (alertData) {
-        try {
-          const parsed = JSON.parse(alertData)
-          setMinistryAlerts(parsed)
-        } catch(e) {}
-      }
+    const checkAlert = async () => {
+      try {
+        const res = await axios.get('https://root-claim.onrender.com/api/v1/broadcasts');
+        setMinistryAlerts(res.data);
+      } catch(e) {}
     }
     checkAlert()
     const alertInterval = setInterval(checkAlert, 2000)

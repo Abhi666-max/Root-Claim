@@ -110,26 +110,38 @@ export default function AdminDashboard() {
     } catch (e) {}
   };
 
-  const handleBroadcast = () => {
+  useEffect(() => {
+    const fetchBroadcasts = async () => {
+      try {
+        const res = await axios.get('https://root-claim.onrender.com/api/v1/broadcasts');
+        setMinistryAlerts(res.data);
+      } catch(e) {}
+    };
+    fetchBroadcasts();
+    const interval = setInterval(fetchBroadcasts, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleBroadcast = async () => {
     if(!broadcastMessage.trim()) return;
     const newAlert = {
       msg: broadcastMessage,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       id: Date.now()
     };
-    const updated = [newAlert, ...ministryAlerts];
-    setMinistryAlerts(updated);
-    localStorage.setItem('ministry_alerts_array', JSON.stringify(updated));
-    setBroadcastSuccess(true);
-    setTimeout(() => setBroadcastSuccess(false), 3000);
-    setBroadcastMessage('');
+    try {
+      await axios.post('https://root-claim.onrender.com/api/v1/broadcasts', newAlert);
+      setBroadcastSuccess(true);
+      setTimeout(() => setBroadcastSuccess(false), 3000);
+      setBroadcastMessage('');
+    } catch(e) {}
   };
 
-  const handleDeleteAlert = (id: number) => {
-    const updated = ministryAlerts.filter(a => a.id !== id);
-    setMinistryAlerts(updated);
-    localStorage.setItem('ministry_alerts_array', JSON.stringify(updated));
-    setShowConfirmModal({isOpen: false, action: null});
+  const handleDeleteAlert = async (id: number) => {
+    try {
+      await axios.delete(`https://root-claim.onrender.com/api/v1/broadcasts/${id}`);
+      setShowConfirmModal({isOpen: false, action: null});
+    } catch(e) {}
   };
   
   const [isLocking, setIsLocking] = useState(false);
@@ -205,7 +217,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-100 via-white to-slate-50 text-gray-900 font-sans flex flex-col md:flex-row overflow-hidden">
+    <div className="h-screen bg-slate-50 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-100 via-white to-slate-50 text-gray-900 font-sans flex flex-col md:flex-row overflow-hidden">
       <Head>
         <title>Minister Command Center | Root-Claim</title>
       </Head>
@@ -281,11 +293,13 @@ export default function AdminDashboard() {
               <p className="text-sm font-bold text-gov-blue">Hon. Minister Desk</p>
             </div>
           </div>
-          <Link href="/">
-            <button className="w-full bg-white text-slate-500 border border-slate-200 py-3 rounded text-xs font-bold uppercase tracking-widest hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all duration-300 flex justify-center items-center gap-2">
-              <LogOut size={14} /> Secure Logout
-            </button>
-          </Link>
+          <button onClick={() => {
+            if (window.confirm("Are you sure you want to securely logout?")) {
+              window.location.href = "/";
+            }
+          }} className="w-full bg-white text-slate-500 border border-slate-200 py-3 rounded text-xs font-bold uppercase tracking-widest hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all duration-300 flex justify-center items-center gap-2">
+            <LogOut size={14} /> Secure Logout
+          </button>
         </div>
       </aside>
 
@@ -746,8 +760,8 @@ export default function AdminDashboard() {
                   <h3 className="font-serif-official font-bold text-gov-blue text-xs tracking-widest uppercase flex items-center gap-2">
                     <Database size={14} className="text-gov-gold"/> Immutable TKDL Master Database
                   </h3>
-                  <span className="bg-gov-blue text-white px-3 py-1 rounded text-[10px] font-bold shadow-sm flex items-center gap-2">
-                    <CheckCircle size={12} className="text-gov-gold" /> {patents.length} Real Patents Loaded
+                  <span className="bg-[#0f2136] text-white px-3 py-1 rounded-sm text-[10px] font-bold tracking-widest flex items-center gap-1.5 shadow-inner">
+                    <CheckCircle size={12} className="text-gov-gold" /> {2056 + patents.filter(p => !p.patent_number?.startsWith('US-REAL')).length} Real Patents Loaded
                   </span>
                 </div>
                 <div className="p-6 overflow-x-auto">
