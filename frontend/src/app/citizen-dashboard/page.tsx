@@ -105,7 +105,7 @@ export default function CitizenDashboard() {
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [chatHistory, setChatHistory] = useState<{role: 'user'|'bot', content: string, image?: string, sources?: any[]}[]>([
-    {role: 'bot', content: 'Namaste! I am IP-SAKTI Sahayak (A Multilingual AI Assistant). Ask me any question or upload an image or PDF/document regarding Traditional Knowledge or Patents.'}
+    {role: 'bot', content: 'Namaste! I am IP-SAKTI Sahayak (A Multilingual AI Assistant). Ask me any question or upload an image regarding Traditional Knowledge or Patents.'}
   ])
   const [isChatting, setIsChatting] = useState(false)
   const [jurisdiction, setJurisdiction] = useState<'india'|'international'>('india')
@@ -687,7 +687,14 @@ export default function CitizenDashboard() {
                       
                       {!formattedClaim.startsWith('REJECTED:') && (
                         <button 
-                          onClick={() => setRawText(formattedClaim)}
+                          onClick={() => {
+                            const withoutTitle = formattedClaim
+                              .split('\n')
+                              .filter(line => !line.trim().startsWith('TITLE:'))
+                              .join('\n')
+                              .trim();
+                            setRawText(withoutTitle);
+                          }}
                           className="bg-gov-gold text-gov-blue px-3 py-1.5 text-xs font-bold uppercase hover:bg-yellow-500 transition-colors shadow-sm"
                         >
                           Apply AI Text to Description
