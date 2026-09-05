@@ -202,7 +202,7 @@ export default function AdminDashboard() {
 
   // Modals state
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [showConfirmModal, setShowConfirmModal] = useState<{isOpen: boolean, action: 'Reject' | 'Verify' | 'Lock' | 'DeleteAlert' | 'Error' | 'Broadcast' | 'ReviewReport' | null, meta?: any}>({isOpen: false, action: null});
+  const [showConfirmModal, setShowConfirmModal] = useState<{isOpen: boolean, action: 'Reject' | 'Verify' | 'Lock' | 'DeleteAlert' | 'Error' | 'Broadcast' | 'ReviewReport' | 'Logout' | null, meta?: any}>({isOpen: false, action: null});
 
   const handleStatusUpdate = async (status: string) => {
     if(!activeClaim) return;
@@ -294,9 +294,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           <button onClick={() => {
-            if (window.confirm("Are you sure you want to securely logout?")) {
-              window.location.href = "/";
-            }
+            setShowConfirmModal({isOpen: true, action: 'Logout'});
           }} className="w-full bg-white text-slate-500 border border-slate-200 py-3 rounded text-xs font-bold uppercase tracking-widest hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all duration-300 flex justify-center items-center gap-2">
             <LogOut size={14} /> Secure Logout
           </button>
@@ -761,7 +759,7 @@ export default function AdminDashboard() {
                     <Database size={14} className="text-gov-gold"/> Immutable TKDL Master Database
                   </h3>
                   <span className="bg-[#0f2136] text-white px-3 py-1 rounded-sm text-[10px] font-bold tracking-widest flex items-center gap-1.5 shadow-inner">
-                    <CheckCircle size={12} className="text-gov-gold" /> {2056 + patents.filter(p => !p.patent_number?.startsWith('US-REAL')).length} Real Patents Loaded
+                    <CheckCircle size={12} className="text-gov-gold" /> {stats.total_patents} Real Patents Loaded
                   </span>
                 </div>
                 <div className="p-6 overflow-x-auto">
@@ -809,10 +807,11 @@ export default function AdminDashboard() {
               {showConfirmModal.action === 'Reject' && <><XSquare className="text-red-600"/> Confirm Rejection</>}
               {showConfirmModal.action === 'Verify' && <><CheckSquare className="text-green-600"/> Confirm Verification</>}
               {showConfirmModal.action === 'Lock' && <><LinkIcon className="text-gov-gold"/> Confirm Blockchain Lock</>}
-              {showConfirmModal.action === 'DeleteAlert' && <><Trash2 className="text-red-600"/> Delete Broadcast Alert</>}
+              {showConfirmModal.action === 'DeleteAlert' && <><Trash2 className="text-red-600"/> Confirm Deletion</>}
               {showConfirmModal.action === 'Broadcast' && <><Activity className="text-red-600"/> Confirm Global Broadcast</>}
+              {showConfirmModal.action === 'Logout' && <><LogOut className="text-red-600"/> Confirm Logout</>}
               {showConfirmModal.action === 'Error' && <><AlertTriangle className="text-red-600"/> System Error</>}
-              {showConfirmModal.action === 'ReviewReport' && <><ShieldAlert className="text-gov-gold"/> Review Bio-Piracy Threat</>}
+              {showConfirmModal.action === 'ReviewReport' && <><ShieldAlert className="text-gov-gold"/> Security Report Action</>}
             </h3>
             <p className="text-sm text-gray-600 mb-8 leading-relaxed">
               {showConfirmModal.action === 'Reject' && "Are you sure you want to reject this claim? This will notify the citizen and halt further processing."}
@@ -846,12 +845,14 @@ export default function AdminDashboard() {
                   else if(showConfirmModal.action === 'Lock') {
                     setShowConfirmModal({isOpen: false, action: null});
                     handleBlockchainLock();
+                  } else if(showConfirmModal.action === 'Logout') {
+                    window.location.href = "/";
                   } else if(showConfirmModal.action === 'Error' || showConfirmModal.action === 'ReviewReport') {
                     setShowConfirmModal({isOpen: false, action: null});
                   }
                 }}
                 className={`flex-1 py-3 text-white font-bold uppercase tracking-widest text-xs rounded shadow-md transition-colors ${
-                  showConfirmModal.action === 'Reject' || showConfirmModal.action === 'DeleteAlert' || showConfirmModal.action === 'Broadcast' ? 'bg-red-600 hover:bg-red-700' :
+                  showConfirmModal.action === 'Reject' || showConfirmModal.action === 'DeleteAlert' || showConfirmModal.action === 'Broadcast' || showConfirmModal.action === 'Logout' ? 'bg-red-600 hover:bg-red-700' :
                   showConfirmModal.action === 'Verify' ? 'bg-green-600 hover:bg-green-700' :
                   showConfirmModal.action === 'Error' ? 'bg-gov-blue hover:bg-[#081729]' :
                   'bg-gov-gold hover:bg-yellow-600'

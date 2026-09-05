@@ -56,13 +56,11 @@ export default function CitizenDashboard() {
       isMounted = false
       clearTimeout(timeout)
     }
-  }, [router, citizenData])
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  const handleLogout = async () => {
-    if (window.confirm("Are you sure you want to securely logout?")) {
-      await supabase.auth.signOut()
-      router.push('/login')
-    }
+  const handleLogoutConfirm = async () => {
+    await supabase.auth.signOut()
+    router.push('/login')
   }
 
   const [activeTab, setActiveTab] = useState('overview')
@@ -157,7 +155,7 @@ export default function CitizenDashboard() {
   const [showCertificateModal, setShowCertificateModal] = useState(false)
   const [showReportModal, setShowReportModal] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
-  const [showBroadcasts, setShowBroadcasts] = useState(false)
+
 
   // Report Bio-Piracy States
   const [reportUrl, setReportUrl] = useState('')
@@ -417,7 +415,7 @@ export default function CitizenDashboard() {
               <CheckCircle size={10} /> Verified TKDL Contributor
             </div>
           </div>
-          <button onClick={handleLogout} className="w-full text-left flex items-center gap-3 px-4 py-2 text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-red-600 transition-colors">
+          <button onClick={() => setShowLogoutModal(true)} className="w-full text-left flex items-center gap-3 px-4 py-2 text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-red-600 transition-colors">
             Logout &rarr;
           </button>
         </div>
@@ -442,7 +440,7 @@ export default function CitizenDashboard() {
                   <p className="text-xs text-blue-100 uppercase tracking-widest font-bold">Citizen Control Center</p>
                 </div>
                 <div className="flex items-center gap-4">
-                  {showBroadcasts && isBroadcastMinimized && ministryAlerts.length > 0 && (
+                  {isBroadcastMinimized && ministryAlerts.length > 0 && (
                     <button 
                       onClick={() => setIsBroadcastMinimized(false)}
                       className="relative p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-full transition-colors"
@@ -467,7 +465,7 @@ export default function CitizenDashboard() {
               <div className="p-8 flex-1 overflow-y-auto custom-scrollbar">
               
               {/* Ministry Broadcast Alerts (Global) */}
-              {showBroadcasts && !isBroadcastMinimized && ministryAlerts.length > 0 && (
+              {!isBroadcastMinimized && ministryAlerts.length > 0 && (
                 <div className="mb-8 bg-red-50 border-l-4 border-red-600 p-6 shadow-sm rounded-r flex items-start gap-4 relative">
                   <div className="bg-red-100 p-2 rounded-full shrink-0">
                     <AlertTriangle size={24} className="text-red-600" />
@@ -1380,6 +1378,34 @@ export default function CitizenDashboard() {
 
         </div>
       </main>
+      {/* LOGOUT CONFIRMATION MODAL */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full border-t-4 border-gov-blue">
+            <h3 className="text-xl font-bold font-serif-official mb-4 text-gov-blue flex items-center gap-3">
+              <LogOut className="text-red-600"/> Confirm Logout
+            </h3>
+            <p className="text-sm text-gray-600 mb-8 leading-relaxed">
+              Are you sure you want to securely end this session? You will need to re-authenticate to access the citizen portal.
+            </p>
+            <div className="flex gap-4">
+              <button 
+                onClick={() => setShowLogoutModal(false)}
+                className="flex-1 py-3 bg-gray-100 text-gray-700 font-bold uppercase tracking-widest text-xs rounded hover:bg-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleLogoutConfirm}
+                className="flex-1 py-3 bg-red-600 text-white font-bold uppercase tracking-widest text-xs rounded hover:bg-red-700 transition-colors shadow-md"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }
