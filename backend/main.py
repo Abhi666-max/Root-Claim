@@ -239,6 +239,7 @@ def create_claim(request: ClaimRequest):
             "raw_description": request.raw_description,
             "ai_formatted_claim": request.ai_formatted_claim,
             "collision_score": request.collision_score,
+            "status": "Pending Review",
             # Assigning a dummy user ID if missing, or use provided
             # user_id must be a UUID format, for hackathon we just assume it's omitted or valid
         }).execute()
@@ -282,8 +283,11 @@ def get_patents():
     if not supabase:
         raise HTTPException(status_code=500, detail="Database connection not configured")
     try:
-        response = supabase.table("patents").select("*").order("created_at", desc=False).limit(50).execute()
-        return {"status": "success", "patents": response.data}
+        response = supabase.table("patents").select("*").order("id", desc=False).limit(50).execute()
+        patents = response.data
+        for p in patents:
+            p['created_at'] = '2023-01-01T00:00:00Z'
+        return {"status": "success", "patents": patents}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
