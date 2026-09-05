@@ -6,7 +6,8 @@ import {
   CheckCircle, Clock, Home, FileText, 
   AlertTriangle, UploadCloud, 
   MessageSquare, Send, Menu, X,
-  Sparkles, ShieldAlert, Cpu, Link as LinkIcon, Globe, Activity, ShieldCheck
+  Sparkles, ShieldAlert, Cpu, Link as LinkIcon, Globe, Activity, ShieldCheck,
+  Paperclip, Image as ImageIcon
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
@@ -19,19 +20,39 @@ export default function CitizenDashboard() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   
   useEffect(() => {
+    let isMounted = true
     const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        router.push('/login')
-      } else {
-        setCitizenData({
-          full_name: user.user_metadata?.full_name || 'Citizen',
-          email: user.email || ''
-        })
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (isMounted) {
+          if (!user) {
+            router.push('/login')
+          } else {
+            setCitizenData({
+              full_name: user.user_metadata?.full_name || 'Citizen',
+              email: user.email || ''
+            })
+          }
+        }
+      } catch (error) {
+        if (isMounted) {
+          setCitizenData({ full_name: 'Citizen', email: 'citizen@india.gov.in' })
+        }
       }
     }
     fetchUser()
-  }, [router])
+    
+    const timeout = setTimeout(() => {
+      if (isMounted && !citizenData) {
+        setCitizenData({ full_name: 'Citizen', email: 'Session Expired' })
+      }
+    }, 5000)
+
+    return () => {
+      isMounted = false
+      clearTimeout(timeout)
+    }
+  }, [router, citizenData])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -75,13 +96,26 @@ export default function CitizenDashboard() {
 
   // State for IP-SAKTI RAG Chatbot
   const [chatInput, setChatInput] = useState('')
+  const [chatImage, setChatImage] = useState<File | null>(null)
+  const [chatImagePreview, setChatImagePreview] = useState<string | null>(null)
+  
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [chatHistory, setChatHistory] = useState<{role: 'user'|'bot', content: string, sources?: any[]}[]>([
-    {role: 'bot', content: 'Namaste! I am IP-SAKTI Sahayak (A Multilingual RAG-based AI Assistant). Ask me any question regarding Indian Intellectual Property Laws, Biopiracy, or Traditional Knowledge.'}
+  const [chatHistory, setChatHistory] = useState<{role: 'user'|'bot', content: string, image?: string, sources?: any[]}[]>([
+    {role: 'bot', content: 'Namaste! I am IP-SAKTI Sahayak (A Multilingual AI Assistant). Ask me any question or upload an image/document regarding Traditional Knowledge or Patents.'}
   ])
   const [isChatting, setIsChatting] = useState(false)
   const [jurisdiction, setJurisdiction] = useState<'india'|'international'>('india')
   const [showJurisdictionModal, setShowJurisdictionModal] = useState<{isOpen: boolean, target: 'india'|'international' | null}>({isOpen: false, target: null})
+
+  const handleChatImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setChatImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => setChatImagePreview(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  }
 
   // Real DB Claims
   const [myClaims, setMyClaims] = useState<any[]>([])
@@ -117,6 +151,7 @@ export default function CitizenDashboard() {
   const [showCertificateModal, setShowCertificateModal] = useState(false)
   const [showReportModal, setShowReportModal] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null)
   const [showBroadcasts, setShowBroadcasts] = useState(false)
 
   // Report Bio-Piracy States
@@ -277,6 +312,8 @@ export default function CitizenDashboard() {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setOcrResult(response.data);
+      setUploadedFileName(file.name);
+      setErrorMsg(null);
       // Auto-fill raw text with OCR text so they can run AI Enhance
       setRawText((prev) => prev + "\n" + response.data.raw_ocr_text);
     } catch (error) {
@@ -287,20 +324,25 @@ export default function CitizenDashboard() {
     }
   }
 
-  // API Call: Feature 1 - IP-SAKTI Chat
   const handleChatSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!chatInput.trim()) return;
+    if (!chatInput.trim() && !chatImage) return;
 
     const userMsg = chatInput;
-    setChatHistory(prev => [...prev, { role: 'user', content: userMsg }]);
+    const userImg = chatImagePreview;
+    
+    setChatHistory(prev => [...prev, { role: 'user', content: userMsg || 'Uploaded an image', image: userImg || undefined }]);
     setChatInput('');
+    setChatImage(null);
+    setChatImagePreview(null);
     setIsChatting(true);
 
     try {
+      // Send base64 image if exists to backend (Groq Vision)
       const response = await axios.post('https://root-claim.onrender.com/api/v1/ip-sakti', { 
         query: userMsg, 
-        jurisdiction: jurisdiction 
+        jurisdiction: jurisdiction,
+        image_base64: userImg // We pass it for Groq Vision backend integration
       });
       setChatHistory(prev => [...prev, { role: 'bot', content: response.data.reply, sources: response.data.sources }]);
     } catch (error) {
@@ -376,8 +418,8 @@ export default function CitizenDashboard() {
           <div className="bg-white p-4 rounded mb-4 shadow-sm border border-slate-200">
             <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-bold">Logged in as</p>
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-full bg-gov-blue text-white flex items-center justify-center font-serif-official text-xl shadow-md border-2 border-gov-gold/30">
-                {citizenData?.full_name ? citizenData.full_name.charAt(0).toUpperCase() : 'C'}
+              <div className="w-10 h-10 rounded-full bg-gov-blue text-white flex items-center justify-center font-serif-official shadow-md border-2 border-gov-gold/30">
+                <User size={20} />
               </div>
               <div>
                 <p className="text-sm font-bold text-gov-blue truncate w-32">{citizenData?.full_name || 'Loading...'}</p>
@@ -429,8 +471,8 @@ export default function CitizenDashboard() {
                       <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#64ffda]"></span>
                     </div>
                     <span className="text-[9px] font-bold uppercase tracking-[0.2em] flex flex-col leading-tight">
-                      <span className="text-gray-400">Node Status</span>
-                      Secure & Encrypted
+                      <span className="text-gray-400 mb-0.5">Node Status</span>
+                      <span>Secure & Encrypted</span>
                     </span>
                   </div>
                 </div>
@@ -495,7 +537,7 @@ export default function CitizenDashboard() {
                         <FileText size={18} />
                       </div>
                       <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-2">My Drafted Claims</p>
-                      <h3 className="text-4xl font-serif-official font-bold text-gov-blue mt-auto">{userStats.drafted < 10 ? `0${userStats.drafted}` : userStats.drafted}</h3>
+                      <h3 className="text-4xl font-serif-official font-bold text-gov-blue mt-auto">{userStats.drafted}</h3>
                     </div>
                   </div>
 
@@ -508,7 +550,7 @@ export default function CitizenDashboard() {
                         <Clock size={18} />
                       </div>
                       <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-2">Under Verification</p>
-                      <h3 className="text-4xl font-serif-official font-bold text-yellow-600 mt-auto">{userStats.under_verification < 10 ? `0${userStats.under_verification}` : userStats.under_verification}</h3>
+                      <h3 className="text-4xl font-serif-official font-bold text-yellow-600 mt-auto">{userStats.under_verification}</h3>
                     </div>
                   </div>
 
@@ -521,7 +563,7 @@ export default function CitizenDashboard() {
                         <ShieldCheck size={18} />
                       </div>
                       <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-2">My Secured Vault Items</p>
-                      <h3 className="text-4xl font-serif-official font-bold text-green-600 mt-auto">{userStats.secured < 10 ? `0${userStats.secured}` : userStats.secured}</h3>
+                      <h3 className="text-4xl font-serif-official font-bold text-green-600 mt-auto">{userStats.secured}</h3>
                     </div>
                   </div>
                 </div>
@@ -598,6 +640,19 @@ export default function CitizenDashboard() {
                     </h3>
                     <p className="text-sm text-gray-500">Describe the traditional knowledge in your own words. Our AI will automatically structure it to match international IP and botanical standards.</p>
                   </div>
+
+                  {errorMsg && (
+                    <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded shadow-sm flex items-start gap-3">
+                      <AlertTriangle className="text-red-500 shrink-0" size={20} />
+                      <div className="flex-1">
+                        <p className="text-sm font-bold text-red-700">Action Failed</p>
+                        <p className="text-xs text-red-600">{errorMsg}</p>
+                      </div>
+                      <button onClick={() => setErrorMsg(null)} className="text-red-400 hover:text-red-700">
+                        <X size={16} />
+                      </button>
+                    </div>
+                  )}
 
                 <div className="space-y-6">
                   <div>
@@ -677,6 +732,18 @@ export default function CitizenDashboard() {
                       <p className="text-sm text-gray-500 font-bold mb-1">{isUploading ? 'Extracting Text...' : 'Click to upload or drag & drop'}</p>
                       <p className="text-xs text-gray-400">AI OCR will extract text automatically (JPG, PNG)</p>
                     </label>
+                    
+                    {/* Success File UI */}
+                    {uploadedFileName && !isUploading && (
+                      <div className="mt-3 flex items-center justify-between bg-green-50 border border-green-200 p-3 rounded">
+                        <div className="flex items-center gap-2 text-green-700">
+                          <CheckCircle size={16} />
+                          <span className="text-xs font-bold font-mono truncate max-w-[200px]">{uploadedFileName}</span>
+                          <span className="text-xs">attached successfully.</span>
+                        </div>
+                        <button onClick={() => {setUploadedFileName(null); setOcrResult(null);}} className="text-green-500 hover:text-green-700 text-xs font-bold uppercase tracking-widest">Remove</button>
+                      </div>
+                    )}
                   </div>
 
                   {/* OCR Result UI */}
@@ -1007,56 +1074,96 @@ export default function CitizenDashboard() {
                   </div>
                 )}
                 {chatHistory.map((msg, idx) => (
-                  <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[80%] p-4 text-sm rounded shadow-sm ${
-                      msg.role === 'user' 
-                        ? 'bg-gov-blue text-white rounded-br-none' 
-                        : 'bg-white border border-gray-200 text-gray-800 rounded-bl-none font-serif'
-                    }`}>
-                      {msg.role === 'bot' && <strong className="block text-xs uppercase tracking-widest text-gov-gold mb-2">IP-SAKTI Assistant</strong>}
-                      <p className="leading-relaxed">{msg.content}</p>
-                      
-                      {msg.sources && msg.sources.length > 0 && (
-                        <div className="mt-4 pt-3 border-t border-gray-100/50 flex flex-col gap-2">
-                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1">
-                            <LinkIcon size={10} /> Verified TKDL Sources Cited
-                          </p>
-                          <div className="grid grid-cols-1 gap-2">
-                            {msg.sources.map((src, sIdx) => (
-                              <div key={sIdx} className="bg-white border border-gray-100 hover:border-gov-gold/50 hover:shadow-sm p-2 rounded flex items-center justify-between text-xs transition-all cursor-pointer">
-                                <span className="text-gov-blue font-bold truncate pr-4">{src.title}</span>
-                                <span className="shrink-0 bg-green-50 text-green-700 px-2 py-0.5 rounded text-[10px] font-mono font-bold border border-green-100 flex items-center gap-1">
-                                  <CheckCircle size={10} /> {src.confidence}% Match
-                                </span>
-                              </div>
-                            ))}
+                  <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} w-full`}>
+                    <div className={`flex gap-3 max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                      {/* Avatar */}
+                      <div className="shrink-0 mt-1">
+                        {msg.role === 'user' ? (
+                          <div className="w-8 h-8 rounded-full bg-gov-blue text-white flex items-center justify-center font-bold text-xs shadow-md">
+                            {citizenData?.full_name ? citizenData.full_name.charAt(0).toUpperCase() : 'U'}
                           </div>
-                        </div>
-                      )}
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gov-gold to-yellow-600 text-white flex items-center justify-center shadow-md border border-yellow-200">
+                            <Sparkles size={14} />
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Message Bubble */}
+                      <div className={`p-4 text-sm rounded-2xl shadow-sm ${
+                        msg.role === 'user' 
+                          ? 'bg-gov-blue text-white rounded-tr-sm' 
+                          : 'bg-white border border-gray-200 text-gray-800 rounded-tl-sm font-sans'
+                      }`}>
+                        {msg.role === 'bot' && <strong className="block text-[10px] uppercase tracking-widest text-gov-gold mb-2">IP-SAKTI Assistant</strong>}
+                        
+                        {msg.image && (
+                          <img src={msg.image} alt="User Upload" className="w-48 h-auto rounded-lg mb-3 border border-white/20 shadow-sm" />
+                        )}
+                        
+                        <div className="leading-relaxed whitespace-pre-wrap">{msg.content}</div>
+                        
+                        {msg.sources && msg.sources.length > 0 && (
+                          <div className="mt-4 pt-3 border-t border-gray-100/50 flex flex-col gap-2">
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1">
+                              <LinkIcon size={10} /> Verified TKDL Sources Cited
+                            </p>
+                            <div className="grid grid-cols-1 gap-2">
+                              {msg.sources.map((src, sIdx) => (
+                                <div key={sIdx} className="bg-gray-50 border border-gray-100 hover:border-gov-gold/50 hover:shadow-sm p-2 rounded flex items-center justify-between text-xs transition-all cursor-pointer">
+                                  <span className="text-gov-blue font-bold truncate pr-4">{src.title}</span>
+                                  <span className="shrink-0 bg-green-50 text-green-700 px-2 py-0.5 rounded text-[10px] font-mono font-bold border border-green-100 flex items-center gap-1">
+                                    <CheckCircle size={10} /> {src.confidence}% Match
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
                 {isChatting && (
-                  <div className="flex justify-start">
-                    <div className="bg-white border border-gray-200 p-4 text-sm rounded shadow-sm rounded-bl-none italic text-gray-500">
-                      IP-SAKTI is searching the legal database...
+                  <div className="flex justify-start w-full">
+                    <div className="flex gap-3 max-w-[85%]">
+                      <div className="shrink-0 mt-1 w-8 h-8 rounded-full bg-gradient-to-br from-gov-gold to-yellow-600 text-white flex items-center justify-center shadow-md">
+                        <Sparkles size={14} className="animate-spin" />
+                      </div>
+                      <div className="bg-white border border-gray-200 p-4 text-sm rounded-2xl shadow-sm rounded-tl-sm flex items-center gap-2">
+                        <span className="w-2 h-2 bg-gray-300 rounded-full animate-bounce"></span>
+                        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></span>
+                        <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></span>
+                      </div>
                     </div>
                   </div>
                 )}
               </div>
 
-              <div className="p-4 bg-white border-t border-gray-200">
+              <div className="p-4 bg-white border-t border-gray-200 relative">
+                {chatImagePreview && (
+                  <div className="absolute bottom-full mb-2 left-4 bg-white border border-gray-200 p-2 rounded shadow-lg flex items-start gap-2">
+                    <img src={chatImagePreview} alt="Preview" className="w-16 h-16 object-cover rounded border border-gray-100" />
+                    <button onClick={() => {setChatImage(null); setChatImagePreview(null);}} className="text-red-500 hover:bg-red-50 p-1 rounded">
+                      <X size={14} />
+                    </button>
+                  </div>
+                )}
                 <form onSubmit={handleChatSubmit} className="flex gap-2">
+                  <label className="bg-gray-50 border border-gray-300 text-gray-500 p-4 hover:bg-gray-100 transition-colors flex justify-center items-center cursor-pointer">
+                    <input type="file" accept="image/*" className="hidden" onChange={handleChatImageUpload} />
+                    <Paperclip size={20} />
+                  </label>
                   <input 
                     type="text" 
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
-                    placeholder="Ask about IP Laws, Patents, or Bio-Piracy (English/Hindi)..." 
+                    placeholder="Ask about IP Laws, Patents, or upload an image..." 
                     className="flex-1 border border-gray-300 p-4 focus:outline-none focus:border-gov-gold text-sm bg-gray-50"
                   />
                   <button 
                     type="submit"
-                    disabled={isChatting || !chatInput.trim()}
+                    disabled={isChatting || (!chatInput.trim() && !chatImage)}
                     className="bg-gov-gold text-white px-8 py-4 font-bold uppercase tracking-widest text-xs hover:bg-[#9a7b3b] transition-colors flex justify-center items-center gap-2 shadow-sm disabled:opacity-50"
                   >
                     <Send size={18} />

@@ -26,7 +26,8 @@ import {
   Trash2,
   CheckSquare,
   LogOut,
-  CheckCircle
+  CheckCircle,
+  User
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -83,7 +84,7 @@ export default function AdminDashboard() {
   
   const [ministryAlerts, setMinistryAlerts] = useState<{msg: string, time: string, id: number}[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [stats, setStats] = useState<any>({ total_patents: '...', active_threats: '...', system_health: '99.9' });
+  const [stats, setStats] = useState<any>({ total_patents: 0, active_threats: 0, system_health: '99.9' });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [reports, setReports] = useState<any[]>([]);
 
@@ -168,7 +169,8 @@ export default function AdminDashboard() {
 
   // Real-time simulation & Fetching
   useEffect(() => {
-    // eslint-disable-next-line`n    setMounted(true);
+    // eslint-disable-next-line
+    setMounted(true);
     fetchClaims();
     fetchStats();
     fetchReports();
@@ -227,7 +229,7 @@ export default function AdminDashboard() {
           <Logo type="admin" size={48} />
           <div>
             <h1 className="font-serif-official font-bold text-gov-blue tracking-widest uppercase text-sm leading-tight">Ministry of Ayush</h1>
-            <p className="text-[9px] uppercase tracking-widest text-gov-gold font-bold mt-1">Central Command Center</p>
+            <p className="text-[9px] uppercase tracking-widest text-gov-gold font-bold mt-1">Central Command</p>
           </div>
         </div>
 
@@ -270,7 +272,9 @@ export default function AdminDashboard() {
 
         <div className="p-6 border-t border-slate-200 bg-[#f8f9fa] relative z-10">
           <div className="flex items-center gap-3 mb-6 bg-white p-3 rounded shadow-sm border border-slate-200">
-            <div className="w-10 h-10 rounded-full bg-gov-blue flex items-center justify-center text-white font-bold border-2 border-gov-gold shadow-[0_0_10px_rgba(212,175,55,0.2)] shrink-0">M</div>
+            <div className="w-10 h-10 rounded-full bg-gov-blue flex items-center justify-center text-white font-bold border-2 border-gov-gold shadow-[0_0_10px_rgba(212,175,55,0.2)] shrink-0">
+              <User size={20} />
+            </div>
             <div>
               <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Authorized User</p>
               <p className="text-sm font-bold text-gov-blue">Hon. Minister Desk</p>
@@ -304,7 +308,7 @@ export default function AdminDashboard() {
                 <div className="flex gap-4">
                   <div className="bg-[#07162b] border border-[#152e4d] rounded p-2 px-4 text-right shadow-sm">
                     <p className="text-[9px] text-gray-400 uppercase tracking-widest mb-0.5 font-bold">Network Nodes</p>
-                    <p className="text-lg font-mono text-gov-gold font-bold">{stats.total_patents ? stats.total_patents.toLocaleString() : liveNodes.toLocaleString()}</p>
+                    <p className="text-lg font-mono text-gov-gold font-bold">{stats.total_patents > 0 ? stats.total_patents.toLocaleString() : liveNodes.toLocaleString()}</p>
                   </div>
                   <div className="bg-[#07162b] border border-[#152e4d] rounded p-2 px-4 text-right shadow-sm">
                     <p className="text-[9px] text-gray-400 uppercase tracking-widest mb-0.5 font-bold">Secured Claims</p>
