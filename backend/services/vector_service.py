@@ -54,7 +54,7 @@ def run_collision_radar(claim_text: str) -> dict:
         if not matched_patents:
             for kw in keywords:
                 try:
-                    response = supabase.table("patents").select("*").ilike("description", f"%{kw}%").limit(3).execute()
+                    response = supabase.table("patents").select("*").ilike("content", f"%{kw}%").limit(3).execute()
                     if response.data:
                         matched_patents.extend(response.data)
                 except Exception:
@@ -72,7 +72,7 @@ def run_collision_radar(claim_text: str) -> dict:
         # Step 3: AI scores actual similarity if matches found
         if unique_patents:
             best_match = unique_patents[0]
-            patent_text = f"{best_match.get('title', '')} {best_match.get('description', '')}"
+            patent_text = f"{best_match.get('title', '')} {best_match.get('content', '')}"
 
             scoring_prompt = (
                 "You are a patent examiner. Score the similarity between this traditional knowledge "
@@ -146,7 +146,7 @@ def get_rag_context(query_text: str) -> tuple[str, list]:
         for match in matches:
             # Generate a realistic looking dynamic confidence score
             confidence = round(random.uniform(78.5, 96.2), 1)
-            context += f"Document: {match.get('title', 'Unknown')} - Content: {match.get('description', '')}\n\n"
+            context += f"Document: {match.get('title', 'Unknown')} - Content: {match.get('content', '')}\n\n"
             metadata_list.append({
                 "title": match.get('title', 'Unknown'),
                 "id": str(match.get('id', 'N/A')),
