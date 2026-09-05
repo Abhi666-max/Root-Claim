@@ -194,6 +194,19 @@ def api_ip_sakti(request: ChatRequest):
     if not request.query and not request.image_base64:
         raise HTTPException(status_code=400, detail="Query or Image is required.")
     
+    processed_image = request.image_base64
+    if processed_image and processed_image.startswith("data:application/pdf;base64,"):
+        pdf_b64 = processed_image.split(",")[1]
+        pdf_bytes = base64.b64decode(pdf_b64)
+        doc = fitz.open(stream=pdf_bytes, filetype="pdf")
+        if len(doc) > 0:
+            page = doc.load_page(0)
+            pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
+            jpg_bytes = pix.tobytes("jpeg")
+            jpg_b64 = base64.b64encode(jpg_bytes).decode('utf-8')
+            processed_image = f"data:image/jpeg;base64,{jpg_b64}"
+        doc.close()
+
     # Real RAG Execution: Fetch context from Supabase Vector DB (skip if only image provided without text query)
     retrieved_context = ""
     sources = []
@@ -201,7 +214,7 @@ def api_ip_sakti(request: ChatRequest):
         retrieved_context, sources = get_rag_context(request.query)
     
     # Pass both the user query and the retrieved context to Groq, along with jurisdiction and image
-    answer = query_ip_sakti(request.query, retrieved_context=retrieved_context, jurisdiction=request.jurisdiction, image_base64=request.image_base64)
+    answer = query_ip_sakti(request.query, retrieved_context=retrieved_context, jurisdiction=request.jurisdiction, image_base64=processed_image)
     return {"reply": answer, "sources": sources}
 
 class ClaimRequest(BaseModel):

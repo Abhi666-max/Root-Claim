@@ -6,3 +6,5 @@ web3
 python-multipart
 deep-translator
 python-dotenv
+
+pymupdf
