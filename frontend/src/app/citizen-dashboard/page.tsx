@@ -725,7 +725,7 @@ export default function CitizenDashboard() {
 
                   {/* Multi-Media Upload */}
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-widest text-gov-blue mb-2">Upload Historical Proof (Manuscripts, Images, PDFs)</label>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-gov-blue mb-2">Upload Historical Proof (Manuscripts, Images)</label>
                     <label className="border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center hover:bg-gray-100 transition-colors cursor-pointer flex flex-col items-center justify-center relative">
                       <input type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleFileUpload} disabled={isUploading} />
                       <UploadCloud className={`mx-auto text-gray-400 mb-3 ${isUploading ? 'animate-bounce text-gov-gold' : ''}`} size={32} />
@@ -1178,27 +1178,6 @@ export default function CitizenDashboard() {
           {/* MODALS */}
           {/* ====================================================== */}
           
-          {/* Error Modal */}
-          {errorMsg && (
-            <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-              <div className="bg-white max-w-md w-full p-8 shadow-2xl relative border-t-4 border-red-600">
-                <div className="flex flex-col items-center text-center">
-                  <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
-                    <AlertTriangle className="text-red-600" size={32} />
-                  </div>
-                  <h2 className="font-serif-official text-2xl font-bold text-gov-blue mb-2">Notice</h2>
-                  <p className="text-sm text-gray-600 mb-6">{errorMsg}</p>
-                  <button 
-                    onClick={() => setErrorMsg(null)}
-                    className="w-full bg-gov-blue text-white py-3 text-xs font-bold uppercase tracking-widest hover:bg-[#081729]"
-                  >
-                    Dismiss
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Submit Success Modal */}
           {showSubmitModal && (
             <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
