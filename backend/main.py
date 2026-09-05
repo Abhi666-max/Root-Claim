@@ -107,15 +107,17 @@ def api_user_stats(user_id: str):
         return {"drafted": 0, "under_verification": 0, "secured": 0}
         
     try:
-        # Get all claims for the user
-        res = supabase.table("claims").select("status").eq("user_id", user_id).execute()
+        # Get all claims for the demo user
+        res = supabase.table("claims").select("status").execute()
         claims = res.data
         
-        drafted = len(claims)
+        drafted = len([c for c in claims if c["status"] == "Drafted"])
         under_verification = len([c for c in claims if c["status"] in ["Pending Review", "In Progress"]])
         secured = len([c for c in claims if c["status"] in ["Verified", "Blockchain Anchored"]])
+        total_submissions = len(claims)
         
         return {
+            "total_submissions": total_submissions,
             "drafted": drafted,
             "under_verification": under_verification,
             "secured": secured
@@ -271,6 +273,20 @@ def update_claim_status(claim_id: str, request: ClaimUpdate):
             update_data["polygon_tx_hash"] = request.polygon_tx_hash
         
         response = supabase.table("claims").update(update_data).eq("id", claim_id).execute()
+        
+        # If it's verified or anchored, make sure it's in the master DB
+        if request.status in ['Verified', 'Blockchain Anchored'] and response.data:
+            claim_data = response.data[0]
+            # Try to see if it's already in patents to avoid duplicates
+            existing = supabase.table("patents").select("id").eq("id", claim_data['id']).execute()
+            if not existing.data:
+                supabase.table("patents").insert({
+                    "id": claim_data["id"],
+                    "patent_number": f"TK-{claim_data['id'][:8]}",
+                    "title": claim_data["title"],
+                    "content": claim_data["ai_formatted_claim"] or claim_data["raw_description"]
+                }).execute()
+
         return {"status": "success", "data": response.data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -283,11 +299,29 @@ def get_patents():
     if not supabase:
         raise HTTPException(status_code=500, detail="Database connection not configured")
     try:
-        response = supabase.table("patents").select("*").order("id", desc=False).limit(50).execute()
+        response = supabase.table("patents").select("*").limit(50).execute()
         patents = response.data
         for p in patents:
             p['created_at'] = '2023-01-01T00:00:00Z'
-        return {"status": "success", "patents": patents}
+            
+        # Also fetch claims that are anchored and prepend them so they show at the top
+        claims_res = supabase.table("claims").select("*").in_("status", ["Verified", "Blockchain Anchored"]).order("created_at", desc=True).execute()
+        anchored_claims = []
+        for c in claims_res.data:
+            anchored_claims.append({
+                "id": c["id"],
+                "patent_number": f"TK-{c['id'][:8]}",
+                "title": c["title"],
+                "content": c["ai_formatted_claim"] or c["raw_description"],
+                "created_at": c["created_at"]
+            })
+            
+        # Merge, avoiding duplicates by id
+        existing_ids = {c["id"] for c in anchored_claims}
+        filtered_patents = [p for p in patents if p["id"] not in existing_ids]
+        
+        final_list = anchored_claims + filtered_patents
+        return {"status": "success", "patents": final_list}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
