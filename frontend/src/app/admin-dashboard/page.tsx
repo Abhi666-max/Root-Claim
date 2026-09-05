@@ -153,8 +153,9 @@ export default function AdminDashboard() {
       if(activeClaim) {
         await axios.patch(`https://root-claim.onrender.com/api/v1/claims/${activeClaim.id}`, { 
           status: 'Blockchain Anchored',
-          polygon_tx_hash: response.data.txHash 
+          polygon_tx_hash: response.data.polygon_tx_hash 
         });
+        setActiveClaim({...activeClaim, status: 'Blockchain Anchored', polygon_tx_hash: response.data.polygon_tx_hash});
         fetchClaims();
       }
       

@@ -183,10 +183,12 @@ def api_smart_draft(request: DraftRequest):
     formatted_claim = generate_smart_draft(combined_input)
     return {"formatted_claim": formatted_claim}
 
+from typing import Optional
+
 class ChatRequest(BaseModel):
     query: str = ""
     jurisdiction: str = "India"
-    image_base64: str = None
+    image_base64: Optional[str] = None
 
 @app.post("/api/v1/ip-sakti")
 def api_ip_sakti(request: ChatRequest):
@@ -261,7 +263,7 @@ def get_claims():
 
 class ClaimUpdate(BaseModel):
     status: str
-    polygon_tx_hash: str = None
+    polygon_tx_hash: Optional[str] = None
 
 @app.patch("/api/v1/claims/{claim_id}")
 def update_claim_status(claim_id: str, request: ClaimUpdate):
@@ -299,7 +301,7 @@ def get_patents():
     if not supabase:
         raise HTTPException(status_code=500, detail="Database connection not configured")
     try:
-        response = supabase.table("patents").select("*").limit(50).execute()
+        response = supabase.table("patents").select("*").limit(3000).execute()
         patents = response.data
         for p in patents:
             p['created_at'] = '2023-01-01T00:00:00Z'
