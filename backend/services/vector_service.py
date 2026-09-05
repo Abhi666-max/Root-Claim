@@ -50,15 +50,8 @@ def run_collision_radar(claim_text: str) -> dict:
             except Exception as e:
                 logging.warning(f"Patent search failed for '{kw}': {e}")
 
-        # Fallback: search description column
-        if not matched_patents:
-            for kw in keywords:
-                try:
-                    response = supabase.table("patents").select("*").ilike("content", f"%{kw}%").limit(3).execute()
-                    if response.data:
-                        matched_patents.extend(response.data)
-                except Exception:
-                    pass
+        # Fallback removed as per user request to restrict to title only for stricter matching
+        # (This prevents generic words in content from triggering false HIGH risk)
 
         # Deduplicate by id
         seen_ids = set()
