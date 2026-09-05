@@ -34,7 +34,7 @@ def generate_smart_draft(raw_text: str) -> str:
             ],
             model="qwen/qwen3.8-27b",
             temperature=0.2, # Low temperature for strict, formal output
-            max_tokens=2000,
+            max_tokens=800,
         )
         return chat_completion.choices[0].message.content
     except Exception as e:
@@ -104,7 +104,7 @@ def query_ip_sakti(query: str, retrieved_context: str = "", jurisdiction: str = 
             messages=messages,
             model="qwen/qwen3.8-27b",
             temperature=0.1,
-            max_tokens=2000,
+            max_tokens=800,
         )
         return chat_completion.choices[0].message.content
     except Exception as e:
@@ -118,7 +118,7 @@ def query_ip_sakti(query: str, retrieved_context: str = "", jurisdiction: str = 
                 messages=messages,
                 model="qwen/qwen3.8-27b",
                 temperature=0.1,
-                max_tokens=2000,
+                max_tokens=800,
             )
             return fallback.choices[0].message.content
         return "I apologize, but I encountered an error processing your request. Please try again with text only."

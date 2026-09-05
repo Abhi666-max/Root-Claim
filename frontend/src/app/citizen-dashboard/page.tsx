@@ -1133,7 +1133,7 @@ export default function CitizenDashboard() {
                 )}
                 <form onSubmit={handleChatSubmit} className="flex gap-2">
                   <label className="bg-gray-50 border border-gray-300 text-gray-500 p-4 hover:bg-gray-100 transition-colors flex justify-center items-center cursor-pointer">
-                    <input type="file" accept="image/*, application/pdf" className="hidden" onChange={handleChatImageUpload} />
+                    <input type="file" accept="image/*" className="hidden" onChange={handleChatImageUpload} />
                     <Paperclip size={20} />
                   </label>
                   <input 
