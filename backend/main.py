@@ -182,22 +182,26 @@ def api_smart_draft(request: DraftRequest):
     return {"formatted_claim": formatted_claim}
 
 class ChatRequest(BaseModel):
-    query: str
+    query: str = ""
     jurisdiction: str = "India"
+    image_base64: str = None
 
 @app.post("/api/v1/ip-sakti")
 def api_ip_sakti(request: ChatRequest):
     """
     Feature 1: IP-SAKTI Core (Strict-Citation RAG Assistant)
     """
-    if not request.query:
-        raise HTTPException(status_code=400, detail="Query is required.")
+    if not request.query and not request.image_base64:
+        raise HTTPException(status_code=400, detail="Query or Image is required.")
     
-    # Real RAG Execution: Fetch context from Supabase Vector DB
-    retrieved_context, sources = get_rag_context(request.query)
+    # Real RAG Execution: Fetch context from Supabase Vector DB (skip if only image provided without text query)
+    retrieved_context = ""
+    sources = []
+    if request.query:
+        retrieved_context, sources = get_rag_context(request.query)
     
-    # Pass both the user query and the retrieved context to Groq, along with jurisdiction
-    answer = query_ip_sakti(request.query, retrieved_context=retrieved_context, jurisdiction=request.jurisdiction)
+    # Pass both the user query and the retrieved context to Groq, along with jurisdiction and image
+    answer = query_ip_sakti(request.query, retrieved_context=retrieved_context, jurisdiction=request.jurisdiction, image_base64=request.image_base64)
     return {"reply": answer, "sources": sources}
 
 class ClaimRequest(BaseModel):

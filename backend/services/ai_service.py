@@ -39,10 +39,10 @@ def generate_smart_draft(raw_text: str) -> str:
         return chat_completion.choices[0].message.content
     except Exception as e:
         return f"Error generating draft: {str(e)}"
-def query_ip_sakti(query: str, retrieved_context: str = "", jurisdiction: str = "India") -> str:
+def query_ip_sakti(query: str, retrieved_context: str = "", jurisdiction: str = "India", image_base64: str = None) -> str:
     """
     Feature 1: IP-SAKTI Core (Strict-Citation RAG Assistant)
-    Answers legal queries based strictly on provided IP law context.
+    Answers legal queries based strictly on provided IP law context, with optional image support.
     """
     if jurisdiction.lower() == "india":
         system_prompt = """
@@ -85,12 +85,20 @@ def query_ip_sakti(query: str, retrieved_context: str = "", jurisdiction: str = 
     
     User Query: {query}
     """
+    
+    if image_base64:
+        user_content = [
+            {"type": "text", "text": user_prompt},
+            {"type": "image_url", "image_url": {"url": image_base64}}
+        ]
+    else:
+        user_content = user_prompt
 
     try:
         chat_completion = groq_client.chat.completions.create(
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
+                {"role": "user", "content": user_content}
             ],
             model="qwen/qwen3.8-27b",
             temperature=0.1,

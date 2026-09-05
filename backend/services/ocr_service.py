@@ -44,7 +44,7 @@ def extract_and_structure_text(image_bytes: bytes) -> dict:
                     ],
                 }
             ],
-            model="llama-3.2-90b-vision-preview",
+            model="qwen/qwen3.8-27b",
             temperature=0.1,
             response_format={"type": "json_object"}
         )
