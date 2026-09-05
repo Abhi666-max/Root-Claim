@@ -93,17 +93,32 @@ def query_ip_sakti(query: str, retrieved_context: str = "", jurisdiction: str = 
         ]
     else:
         user_content = user_prompt
+    
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_content}
+    ]
 
     try:
         chat_completion = groq_client.chat.completions.create(
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_content}
-            ],
+            messages=messages,
             model="qwen/qwen3.8-27b",
             temperature=0.1,
             max_tokens=2000,
         )
         return chat_completion.choices[0].message.content
     except Exception as e:
-        return f"Error querying IP-SAKTI: {str(e)}"
+        logging.error(f"IP-SAKTI Chat Error: {e}")
+        if image_base64:
+            # Fallback without image
+            messages = [m for m in messages if not any(isinstance(c, dict) and c.get('type') == 'image_url' for c in (m.get('content') if isinstance(m.get('content'), list) else []))]
+            messages.append({"role": "system", "content": "[Image processing failed. Respond based on text only.]"})
+            
+            fallback = groq_client.chat.completions.create(
+                messages=messages,
+                model="qwen/qwen3.8-27b",
+                temperature=0.1,
+                max_tokens=2000,
+            )
+            return fallback.choices[0].message.content
+        return "I apologize, but I encountered an error processing your request. Please try again with text only."

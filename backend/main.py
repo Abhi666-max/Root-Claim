@@ -196,16 +196,21 @@ def api_ip_sakti(request: ChatRequest):
     
     processed_image = request.image_base64
     if processed_image and processed_image.startswith("data:application/pdf;base64,"):
-        pdf_b64 = processed_image.split(",")[1]
-        pdf_bytes = base64.b64decode(pdf_b64)
-        doc = fitz.open(stream=pdf_bytes, filetype="pdf")
-        if len(doc) > 0:
-            page = doc.load_page(0)
-            pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
-            jpg_bytes = pix.tobytes("jpeg")
-            jpg_b64 = base64.b64encode(jpg_bytes).decode('utf-8')
-            processed_image = f"data:image/jpeg;base64,{jpg_b64}"
-        doc.close()
+        try:
+            pdf_b64 = processed_image.split(",")[1]
+            pdf_bytes = base64.b64decode(pdf_b64)
+            doc = fitz.open(stream=pdf_bytes, filetype="pdf")
+            if len(doc) > 0:
+                page = doc.load_page(0)
+                pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
+                jpg_bytes = pix.tobytes("jpeg")
+                jpg_b64 = base64.b64encode(jpg_bytes).decode('utf-8')
+                processed_image = f"data:image/jpeg;base64,{jpg_b64}"
+            doc.close()
+        except Exception as e:
+            logging.error(f"PDF conversion failed: {e}")
+            # If PDF conversion fails, clear the image to avoid breaking the chat
+            processed_image = None
 
     # Real RAG Execution: Fetch context from Supabase Vector DB (skip if only image provided without text query)
     retrieved_context = ""

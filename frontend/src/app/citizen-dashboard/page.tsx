@@ -94,8 +94,8 @@ export default function CitizenDashboard() {
   const [isCheckingRadar, setIsCheckingRadar] = useState(false)
 
   // State for OCR Digitizer
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [ocrResult, setOcrResult] = useState<any>(null)
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null)
+  const [proofFiles, setProofFiles] = useState<File[]>([])
   const [isUploading, setIsUploading] = useState(false)
 
   // State for IP-SAKTI RAG Chatbot
@@ -155,7 +155,6 @@ export default function CitizenDashboard() {
   const [showCertificateModal, setShowCertificateModal] = useState(false)
   const [showReportModal, setShowReportModal] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
-  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null)
   const [showBroadcasts, setShowBroadcasts] = useState(false)
 
   // Report Bio-Piracy States
@@ -301,31 +300,16 @@ export default function CitizenDashboard() {
     }
   }
 
-  // API Call: Feature 4 - OCR Digitizer
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append('file', file);
-    
-    setIsUploading(true);
-    setOcrResult(null);
-    try {
-      const response = await axios.post('https://root-claim.onrender.com/api/v1/ocr', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      setOcrResult(response.data);
-      setUploadedFileName(file.name);
-      setErrorMsg(null);
-      // Auto-fill raw text with OCR text so they can run AI Enhance
-      setRawText((prev) => prev + "\n" + response.data.raw_ocr_text);
-    } catch (error) {
-      console.error("OCR Error:", String(error));
-      setErrorMsg("Failed to process image. Make sure backend is running and file is a valid image.");
-    } finally {
-      setIsUploading(false);
-    }
+  // Handle Multiple Proofs
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    if (files.length === 0) return;
+    setProofFiles(prev => [...prev, ...files]);
+    setErrorMsg(null);
+  }
+  
+  const removeProof = (index: number) => {
+    setProofFiles(prev => prev.filter((_, i) => i !== index));
   }
 
   const handleChatSubmit = async (e: React.FormEvent) => {
@@ -729,48 +713,30 @@ export default function CitizenDashboard() {
 
                   {/* Multi-Media Upload */}
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-widest text-gov-blue mb-2">Upload Historical Proof (Manuscripts, Images)</label>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-gov-blue mb-2">Upload Proofs (PDFs, Manuscripts, Images)</label>
                     <label className="border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center hover:bg-gray-100 transition-colors cursor-pointer flex flex-col items-center justify-center relative">
-                      <input type="file" accept="image/*, application/pdf" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleFileUpload} disabled={isUploading} />
-                      <UploadCloud className={`mx-auto text-gray-400 mb-3 ${isUploading ? 'animate-bounce text-gov-gold' : ''}`} size={32} />
-                      <p className="text-sm text-gray-500 font-bold mb-1">{isUploading ? 'Extracting Text...' : 'Click to upload or drag & drop'}</p>
-                      <p className="text-xs text-gray-400">AI OCR will extract text automatically (JPG, PNG)</p>
+                      <input type="file" multiple accept="image/*, application/pdf" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleFileUpload} />
+                      <UploadCloud className="mx-auto text-gray-400 mb-3" size={32} />
+                      <p className="text-sm text-gray-500 font-bold mb-1">Click to upload or drag & drop multiple files</p>
+                      <p className="text-xs text-gray-400">Attach PDFs, Images, or Documents as evidence</p>
                     </label>
                     
                     {/* Success File UI */}
-                    {uploadedFileName && !isUploading && (
-                      <div className="mt-3 flex items-center justify-between bg-green-50 border border-green-200 p-3 rounded">
-                        <div className="flex items-center gap-2 text-green-700">
-                          <CheckCircle size={16} />
-                          <span className="text-xs font-bold font-mono truncate max-w-[200px]">{uploadedFileName}</span>
-                          <span className="text-xs">attached successfully.</span>
-                        </div>
-                        <button onClick={() => {setUploadedFileName(null); setOcrResult(null);}} className="text-green-500 hover:text-green-700 text-xs font-bold uppercase tracking-widest">Remove</button>
+                    {proofFiles.length > 0 && (
+                      <div className="mt-3 space-y-2">
+                        {proofFiles.map((file, idx) => (
+                          <div key={idx} className="flex items-center justify-between bg-green-50 border border-green-200 p-3 rounded">
+                            <div className="flex items-center gap-2 text-green-700">
+                              <CheckCircle size={16} />
+                              <span className="text-xs font-bold font-mono truncate max-w-[200px]">{file.name}</span>
+                              <span className="text-xs">attached successfully.</span>
+                            </div>
+                            <button type="button" onClick={() => removeProof(idx)} className="text-green-500 hover:text-green-700 text-xs font-bold uppercase tracking-widest">Remove</button>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>
-
-                  {/* OCR Result UI */}
-                  {ocrResult && !ocrResult.error && (
-                    <div className="bg-white border border-gov-gold p-4 mt-4 shadow-sm">
-                      <h4 className="text-xs font-bold uppercase tracking-widest text-gov-gold mb-2 flex items-center gap-2">
-                        <FileText size={14}/> Digitized Manuscript Data
-                      </h4>
-                      <div className="grid grid-cols-2 gap-4 text-xs">
-                        <div>
-                          <p className="font-bold text-gray-700">Identified Herbs</p>
-                          <p className="text-gray-600">{ocrResult.identified_herbs?.join(", ") || "None"}</p>
-                        </div>
-                        <div>
-                          <p className="font-bold text-gray-700">Symptoms</p>
-                          <p className="text-gray-600">{ocrResult.symptoms_targeted?.join(", ") || "None"}</p>
-                        </div>
-                        <div className="col-span-2">
-                          <p className="font-bold text-gray-700">Raw OCR Text Added to Description Above</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
 
                   <div className="flex gap-4 pt-4 border-t border-gray-100">
                     <button 
