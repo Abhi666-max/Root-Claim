@@ -80,9 +80,6 @@ export default function AdminDashboard() {
       const res = await axios.get('https://root-claim.onrender.com/api/v1/claims');
       if(res.data.status === 'success') {
         setClaims(res.data.claims);
-        if(res.data.claims.length > 0 && !activeClaim) {
-          setActiveClaim(res.data.claims[0]);
-        }
       }
     } catch (e) {
       console.error(e);
@@ -688,8 +685,8 @@ export default function AdminDashboard() {
               <div className="lg:w-1/3 h-full flex flex-col gap-4">
                 
                 <div className="flex gap-2">
-                  <button onClick={() => setActiveSubTab('pending')} className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-widest rounded transition-colors ${activeSubTab === 'pending' ? 'bg-gov-gold text-white shadow-md' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>Pending ({claims.filter(c => c.status === 'Pending Review').length})</button>
-                  <button onClick={() => setActiveSubTab('verified')} className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-widest rounded transition-colors ${activeSubTab === 'verified' ? 'bg-green-600 text-white shadow-md' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>Verified ({claims.filter(c => c.status === 'Verified' || c.status === 'Blockchain Anchored').length})</button>
+                  <button onClick={() => { setActiveSubTab('pending'); setActiveClaim(null); }} className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-widest rounded transition-colors ${activeSubTab === 'pending' ? 'bg-gov-gold text-white shadow-md' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>Pending ({claims.filter(c => c.status === 'Pending Review').length})</button>
+                  <button onClick={() => { setActiveSubTab('verified'); setActiveClaim(null); }} className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-widest rounded transition-colors ${activeSubTab === 'verified' ? 'bg-green-600 text-white shadow-md' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>Verified ({claims.filter(c => c.status === 'Verified' || c.status === 'Blockchain Anchored').length})</button>
                 </div>
 
                 <div className="bg-white/80 backdrop-blur-md border-t-4 border-gov-gold rounded-2xl shadow-xl flex-1 flex flex-col overflow-hidden">
