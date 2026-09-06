@@ -598,10 +598,10 @@ export default function AdminDashboard() {
                   <p className="text-xs text-blue-100 uppercase tracking-widest font-bold">Verify and anchor citizen IP claims</p>
                 </div>
               </div>
-              <div className="p-6 flex-1 overflow-y-auto flex flex-col lg:flex-row gap-8 custom-scrollbar">
+              <div className="p-6 flex-1 flex flex-col lg:flex-row gap-8 overflow-hidden">
               
               {/* LEFT COLUMN: Pending Queue */}
-              <div className="lg:w-1/3 flex flex-col gap-6">
+              <div className="lg:w-1/3 h-full flex flex-col gap-6">
                 <div className="bg-white/80 backdrop-blur-md border-t-4 border-gov-gold rounded-2xl shadow-xl flex-1 flex flex-col overflow-hidden">
                   <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                     <h3 className="font-serif-official font-bold text-gov-blue text-xs tracking-widest uppercase flex items-center gap-2">
@@ -640,7 +640,7 @@ export default function AdminDashboard() {
               </div>
 
               {/* RIGHT COLUMN: Action & Radar */}
-              <div className="lg:w-2/3 flex flex-col gap-6">
+              <div className="lg:w-2/3 h-full overflow-y-auto custom-scrollbar flex flex-col gap-6 pr-2 pb-6">
                 {activeClaim ? (
                   <>
                   {/* Claim Details */}
