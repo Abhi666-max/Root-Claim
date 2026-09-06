@@ -30,38 +30,6 @@ export default function CitizenDashboard() {
   useEffect(() => {
     let isMounted = true
     const fetchUser = async () => {
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @next/next/no-img-element */
-"use client"
-
-import React, { useState, useEffect } from 'react'
-import { 
-  User, Download, 
-  CheckCircle, Clock, Home, FileText, 
-  AlertTriangle, UploadCloud, 
-  MessageSquare, Send, Menu, X,
-  Sparkles, ShieldAlert, Cpu, Link as LinkIcon, Globe, Activity, ShieldCheck,
-  Paperclip, Image as ImageIcon, LogOut
-} from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import axios from 'axios'
-import { toPng } from 'html-to-image'
-import { jsPDF } from 'jspdf'
-import { supabase } from '@/utils/supabase'
-import Logo from '@/components/Logo'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-
-export default function CitizenDashboard() {
-  const router = useRouter()
-  const [citizenData, setCitizenData] = useState<{full_name: string, email: string, id: string, age?: string, gender?: string, mobile?: string} | null>(null)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  
-  useEffect(() => {
-    let isMounted = true
-    const fetchUser = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser()
         if (isMounted) {
@@ -721,7 +689,7 @@ export default function CitizenDashboard() {
                     <label className="block text-xs font-bold uppercase tracking-widest text-gov-blue mb-2">Your Raw Description (Method of Preparation & Use)</label>
                     <textarea 
                       className="w-full border border-gray-300 p-3 focus:outline-none focus:border-gov-gold text-sm h-32" 
-                      placeholder="Explain the method of preparation and traditional use case (Hinglish/English)..."
+                      placeholder="Explain the method of preparation and traditional use case (Hindi/English)..."
                       value={rawText}
                       onChange={(e) => setRawText(e.target.value)}
                     ></textarea>

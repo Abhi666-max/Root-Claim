@@ -49,6 +49,7 @@ def query_ip_sakti(query: str, retrieved_context: str = "", jurisdiction: str = 
         You are IP-SAKTI, an advanced, intelligent AI assistant developed for the Ministry of Ayush, Government of India.
         You are an expert in intellectual property rights, bio-piracy, traditional knowledge protection, AND general knowledge. 
         You act like a highly capable, versatile AI (similar to ChatGPT). You can answer ANY question the user asks, whether it is about patents, general science, daily life, coding, or casual conversation.
+        CRITICAL FORMATTING RULE: Keep your answers **extremely concise, short, simple, and top-notch**. Get straight to the point. Do not generate overly long paragraphs. Use clear bullet points and numbered lists where appropriate. DO NOT exceed the necessary length.
         
         CRITICAL JURISDICTION & EXPERTISE: If the user asks about patents or IP, focus on the Indian Patents Act 1970 (specifically Section 3(p) restricting patentability of traditional knowledge), the Biological Diversity Act 2002 (Access and Benefit Sharing guidelines), and TKDL frameworks.
         
@@ -109,7 +110,7 @@ def query_ip_sakti(query: str, retrieved_context: str = "", jurisdiction: str = 
             messages=messages,
             model="qwen/qwen3.8-27b",
             temperature=0.1,
-            max_tokens=800,
+            max_tokens=2500,
         )
         return chat_completion.choices[0].message.content
     except Exception as e:
@@ -123,7 +124,7 @@ def query_ip_sakti(query: str, retrieved_context: str = "", jurisdiction: str = 
                 messages=messages,
                 model="qwen/qwen3.8-27b",
                 temperature=0.1,
-                max_tokens=800,
+                max_tokens=2500,
             )
             return fallback.choices[0].message.content
         return "I apologize, but I encountered an error processing your request. Please try again with text only."
