@@ -9,7 +9,7 @@ export default function RightToInformation() {
       <header className="bg-white border-b border-gov-light shrink-0 px-6 py-4 flex items-center justify-between shadow-sm sticky top-0 z-10">
         <div className="flex items-center gap-6">
           <Link href="/" className="hover:opacity-80 transition-opacity">
-            <Logo />
+            <Logo type="citizen" size={32} />
           </Link>
         </div>
         <Link href="/" className="text-xs font-bold text-gov-blue uppercase tracking-widest flex items-center gap-2 hover:bg-blue-50 px-3 py-2 rounded transition-colors">
