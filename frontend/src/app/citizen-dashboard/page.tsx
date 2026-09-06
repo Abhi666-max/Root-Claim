@@ -593,7 +593,7 @@ export default function CitizenDashboard() {
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 to-gov-blue p-5 rounded-lg text-white group cursor-pointer" onClick={() => setActiveTab('chat')}>
+                    <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 to-gov-blue p-5 rounded-lg text-white group cursor-pointer" onClick={() => setActiveTab('ip-sakti')}>
                       <MessageSquare className="text-gov-gold mb-3 opacity-80 group-hover:scale-110 transition-transform" size={24} />
                       <h4 className="font-bold text-sm tracking-wide mb-1">IP-SAKTI Chatbot</h4>
                       <p className="text-xs text-gray-400 font-mono mb-4">Strict-Citation RAG</p>
@@ -604,12 +604,12 @@ export default function CitizenDashboard() {
                     </div>
                     
                     <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 to-gov-blue p-5 rounded-lg text-white group cursor-pointer" onClick={() => setActiveTab('submit')}>
-                      <Cpu className="text-blue-400 mb-3 opacity-80 group-hover:scale-110 transition-transform" size={24} />
-                      <h4 className="font-bold text-sm tracking-wide mb-1">Collision Radar</h4>
-                      <p className="text-xs text-gray-400 font-mono mb-4">EPO / USPTO Scanner</p>
+                      <FileText className="text-blue-400 mb-3 opacity-80 group-hover:scale-110 transition-transform" size={24} />
+                      <h4 className="font-bold text-sm tracking-wide mb-1">Submit Knowledge</h4>
+                      <p className="text-xs text-gray-400 font-mono mb-4">Draft & AI Pre-Check</p>
                       <div className="flex justify-between items-center text-[10px] font-mono border-t border-white/10 pt-3">
-                        <span className="text-blue-400">● ACTIVE</span>
-                        <span className="text-gray-500">1.2M Scans/sec</span>
+                        <span className="text-blue-400">● READY</span>
+                        <span className="text-gray-500">Scan Engine Active</span>
                       </div>
                     </div>
 
@@ -1053,27 +1053,45 @@ export default function CitizenDashboard() {
               
               <div className="flex-1 p-6 overflow-y-auto bg-gray-50 flex flex-col gap-4">
                 {chatHistory.length === 1 && (
-                  <div className="flex flex-col items-center justify-center my-8 text-center text-gray-500 opacity-70">
-                    <ShieldCheck size={48} className="mb-4 text-gov-gold" />
-                    <p className="text-sm font-bold uppercase tracking-widest mb-2">Suggested Queries for {jurisdiction === 'india' ? 'TKDL (India)' : 'WIPO/EPO (International)'}</p>
-                    <div className="flex flex-col gap-2 text-xs">
+                  <div className="flex flex-col items-center justify-center my-8 text-center">
+                    <ShieldCheck size={48} className="mb-4 text-gov-gold opacity-90" />
+                    <p className="text-sm font-bold uppercase tracking-widest mb-4 text-gov-blue">Suggested Queries for {jurisdiction === 'india' ? 'TKDL (India)' : 'WIPO/EPO (International)'}</p>
+                    <div className="flex flex-col gap-3 text-xs w-full max-w-md">
                       {jurisdiction === 'india' ? (
                         <>
-                          <button onClick={() => setChatInput("What is TKDL and why is it important?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-gov-gold transition-colors">&quot;What is TKDL and why is it important?&quot;</button>
-                          <button onClick={() => setChatInput("Classify Formulation (Ayurvedic/Unani/Siddha)")} className="bg-white px-4 py-2 border border-gov-blue text-gov-blue hover:bg-gov-blue hover:text-white transition-colors flex items-center justify-center gap-2">
-                            <Activity size={14}/> Classify Formulation (Ayush Standards)
+                          <button onClick={() => setChatInput("What is TKDL and why is it important?")} className="bg-white px-5 py-3 rounded-lg border border-gray-200 text-gray-700 font-medium hover:border-gov-gold hover:text-gov-blue hover:shadow-md transition-all text-left flex items-center justify-between group">
+                            <span>"What is TKDL and why is it important?"</span>
+                            <span className="text-gov-gold opacity-0 group-hover:opacity-100 transition-opacity">→</span>
                           </button>
-                          <button onClick={() => setChatInput("How does India protect Turmeric from foreign patents?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-gov-gold transition-colors">&quot;How does India protect Turmeric from foreign patents?&quot;</button>
-                          <button onClick={() => setChatInput("Can I patent an Ayurvedic herbal extract in India?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-gov-gold transition-colors">&quot;Can I patent an Ayurvedic herbal extract in India?&quot;</button>
+                          <button onClick={() => setChatInput("Classify Formulation (Ayurvedic/Unani/Siddha)")} className="bg-gov-blue px-5 py-3 rounded-lg border border-gov-blue text-white font-medium hover:bg-[#081729] hover:shadow-md transition-all text-left flex items-center gap-3">
+                            <Activity size={16} className="text-gov-gold"/> Classify Formulation (Ayush Standards)
+                          </button>
+                          <button onClick={() => setChatInput("How does India protect Turmeric from foreign patents?")} className="bg-white px-5 py-3 rounded-lg border border-gray-200 text-gray-700 font-medium hover:border-gov-gold hover:text-gov-blue hover:shadow-md transition-all text-left flex items-center justify-between group">
+                            <span>"How does India protect Turmeric from foreign patents?"</span>
+                            <span className="text-gov-gold opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                          </button>
+                          <button onClick={() => setChatInput("Can I patent an Ayurvedic herbal extract in India?")} className="bg-white px-5 py-3 rounded-lg border border-gray-200 text-gray-700 font-medium hover:border-gov-gold hover:text-gov-blue hover:shadow-md transition-all text-left flex items-center justify-between group">
+                            <span>"Can I patent an Ayurvedic herbal extract in India?"</span>
+                            <span className="text-gov-gold opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                          </button>
                         </>
                       ) : (
                         <>
-                          <button onClick={() => setChatInput("What are WIPO&apos;s guidelines on genetic resources and traditional knowledge?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-indigo-500 transition-colors">&quot;What are WIPO&apos;s guidelines on genetic resources?&quot;</button>
-                          <button onClick={() => setChatInput("Classify Formulation (International Patent Classification)")} className="bg-white px-4 py-2 border border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-colors flex items-center justify-center gap-2">
-                            <Activity size={14}/> Classify Formulation (IPC Standards)
+                          <button onClick={() => setChatInput("What are WIPO's guidelines on genetic resources and traditional knowledge?")} className="bg-white px-5 py-3 rounded-lg border border-gray-200 text-gray-700 font-medium hover:border-indigo-500 hover:text-indigo-700 hover:shadow-md transition-all text-left flex items-center justify-between group">
+                            <span>"What are WIPO's guidelines on genetic resources?"</span>
+                            <span className="text-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
                           </button>
-                          <button onClick={() => setChatInput("How to challenge a foreign patent on Indian knowledge (Prior Art)?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-indigo-500 transition-colors">&quot;How to challenge a foreign patent on Indian knowledge?&quot;</button>
-                          <button onClick={() => setChatInput("EPO vs USPTO rules on Traditional Knowledge?")} className="bg-white px-4 py-2 border border-gray-200 hover:border-indigo-500 transition-colors">&quot;EPO vs USPTO rules on Traditional Knowledge?&quot;</button>
+                          <button onClick={() => setChatInput("Classify Formulation (International Patent Classification)")} className="bg-indigo-600 px-5 py-3 rounded-lg border border-indigo-600 text-white font-medium hover:bg-indigo-800 hover:shadow-md transition-all text-left flex items-center gap-3">
+                            <Activity size={16} className="text-indigo-300"/> Classify Formulation (IPC Standards)
+                          </button>
+                          <button onClick={() => setChatInput("How to challenge a foreign patent on Indian knowledge (Prior Art)?")} className="bg-white px-5 py-3 rounded-lg border border-gray-200 text-gray-700 font-medium hover:border-indigo-500 hover:text-indigo-700 hover:shadow-md transition-all text-left flex items-center justify-between group">
+                            <span>"How to challenge a foreign patent on Indian knowledge?"</span>
+                            <span className="text-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                          </button>
+                          <button onClick={() => setChatInput("EPO vs USPTO rules on Traditional Knowledge?")} className="bg-white px-5 py-3 rounded-lg border border-gray-200 text-gray-700 font-medium hover:border-indigo-500 hover:text-indigo-700 hover:shadow-md transition-all text-left flex items-center justify-between group">
+                            <span>"EPO vs USPTO rules on Traditional Knowledge?"</span>
+                            <span className="text-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                          </button>
                         </>
                       )}
                     </div>
@@ -1495,128 +1513,162 @@ export default function CitizenDashboard() {
 
       {/* Profile Edit Modal */}
       {showProfileEdit && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl border-t-4 border-gov-gold relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gov-gold/10 rounded-bl-full -z-10"></div>
-            <button onClick={() => setShowProfileEdit(false)} className="absolute top-5 right-5 text-gray-400 hover:text-gray-900 transition-colors bg-white/50 rounded-full p-1 backdrop-blur-sm">
-              <X size={20} />
-            </button>
-            <h3 className="text-2xl font-bold text-gov-blue mb-1 font-serif-official">Citizen Profile</h3>
-            <p className="text-[10px] text-gray-500 mb-6 uppercase tracking-[0.2em] font-bold">Your official identity details</p>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-in fade-in duration-300">
+          <div className="bg-white rounded-3xl w-full max-w-lg shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-t-8 border-gov-gold relative overflow-hidden flex flex-col">
             
-            <div className="space-y-4 mb-8">
-              <div>
-                <label className="block text-[10px] font-bold text-gov-blue uppercase tracking-widest mb-1.5 ml-1">Full Legal Name</label>
-                {isEditingProfile ? (
-                  <input 
-                    type="text" 
-                    value={editProfileData.full_name}
-                    onChange={(e) => setEditProfileData({...editProfileData, full_name: e.target.value})}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gov-blue font-bold focus:outline-none focus:ring-2 focus:ring-gov-gold/50 transition-shadow"
-                    placeholder="Enter your real name"
-                  />
-                ) : (
-                  <div className="w-full px-4 py-3 bg-gray-50 rounded-xl text-sm text-gray-800 font-bold border border-transparent">
-                    {citizenData?.full_name || 'Not provided'}
-                  </div>
-                )}
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[10px] font-bold text-gov-blue uppercase tracking-widest mb-1.5 ml-1">Age</label>
-                  {isEditingProfile ? (
-                    <input 
-                      type="number" 
-                      value={editProfileData.age}
-                      onChange={(e) => setEditProfileData({...editProfileData, age: e.target.value})}
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gov-blue font-bold focus:outline-none focus:ring-2 focus:ring-gov-gold/50 transition-shadow"
-                      placeholder="e.g. 35"
-                    />
-                  ) : (
-                    <div className="w-full px-4 py-3 bg-gray-50 rounded-xl text-sm text-gray-800 font-bold border border-transparent">
-                      {citizenData?.age || 'Not provided'}
-                    </div>
-                  )}
+            {/* Top Pattern / Official Header */}
+            <div className="bg-gradient-to-r from-gov-blue via-[#0c223c] to-gov-blue p-6 relative">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-white opacity-5 rounded-full -mr-10 -mt-10 blur-xl"></div>
+              <button onClick={() => setShowProfileEdit(false)} className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors bg-black/20 hover:bg-black/40 rounded-full p-1.5 backdrop-blur-sm z-10">
+                <X size={20} />
+              </button>
+              
+              <div className="flex items-center gap-4 relative z-10">
+                <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-lg border-2 border-gov-gold shrink-0">
+                  <span className="text-gov-blue text-2xl font-bold font-serif-official">
+                    {citizenData?.full_name ? citizenData.full_name.charAt(0).toUpperCase() : 'U'}
+                  </span>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gov-blue uppercase tracking-widest mb-1.5 ml-1">Gender</label>
-                  {isEditingProfile ? (
-                    <select 
-                      value={editProfileData.gender}
-                      onChange={(e) => setEditProfileData({...editProfileData, gender: e.target.value})}
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gov-blue font-bold focus:outline-none focus:ring-2 focus:ring-gov-gold/50 transition-shadow appearance-none"
-                    >
-                      <option value="">Select</option>
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  ) : (
-                    <div className="w-full px-4 py-3 bg-gray-50 rounded-xl text-sm text-gray-800 font-bold border border-transparent">
-                      {citizenData?.gender || 'Not provided'}
-                    </div>
-                  )}
+                  <h3 className="text-2xl font-bold text-white mb-1 font-serif-official tracking-wide shadow-black drop-shadow-md">
+                    Citizen Profile
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <span className="bg-gov-gold text-gov-blue text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-widest">Official</span>
+                    <p className="text-[10px] text-blue-200 uppercase tracking-[0.15em] font-medium">Digital Identity Record</p>
+                  </div>
                 </div>
-              </div>
-              <div>
-                <label className="block text-[10px] font-bold text-gov-blue uppercase tracking-widest mb-1.5 ml-1">Mobile Number</label>
-                {isEditingProfile ? (
-                  <div className="flex">
-                    <span className="inline-flex items-center px-4 rounded-l-xl border border-r-0 border-gray-200 bg-gray-100 text-gray-500 text-sm font-bold">
-                      +91
-                    </span>
-                    <input 
-                      type="tel" 
-                      value={editProfileData.mobile.replace(/^\+91/, '')}
-                      onChange={(e) => {
-                        const val = e.target.value.replace(/\D/g, '').substring(0, 10);
-                        setEditProfileData({...editProfileData, mobile: val ? `+91${val}` : ''})
-                      }}
-                      className="flex-1 w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-r-xl text-sm text-gov-blue font-bold focus:outline-none focus:ring-2 focus:ring-gov-gold/50 transition-shadow"
-                      placeholder="10 digit number"
-                    />
-                  </div>
-                ) : (
-                  <div className="w-full px-4 py-3 bg-gray-50 rounded-xl text-sm text-gray-800 font-bold border border-transparent">
-                    {citizenData?.mobile || 'Not provided'}
-                  </div>
-                )}
               </div>
             </div>
+            
+            <div className="p-8 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-gray-50">
+              <div className="space-y-5 mb-8">
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">Full Legal Name</label>
+                  {isEditingProfile ? (
+                    <input 
+                      type="text" 
+                      value={editProfileData.full_name}
+                      onChange={(e) => setEditProfileData({...editProfileData, full_name: e.target.value})}
+                      className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-sm text-gov-blue font-bold focus:outline-none focus:ring-2 focus:ring-gov-gold/70 transition-shadow shadow-sm"
+                      placeholder="Enter your real name"
+                    />
+                  ) : (
+                    <div className="w-full px-4 py-3 bg-white shadow-sm border border-gray-100 rounded-xl text-sm text-gov-blue font-bold flex items-center gap-3">
+                      <User size={16} className="text-gov-gold opacity-80" />
+                      {citizenData?.full_name || 'Not provided'}
+                    </div>
+                  )}
+                </div>
+                
+                <div className="grid grid-cols-2 gap-5">
+                  <div>
+                    <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">Age</label>
+                    {isEditingProfile ? (
+                      <input 
+                        type="number" 
+                        value={editProfileData.age}
+                        onChange={(e) => setEditProfileData({...editProfileData, age: e.target.value})}
+                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-sm text-gov-blue font-bold focus:outline-none focus:ring-2 focus:ring-gov-gold/70 transition-shadow shadow-sm"
+                        placeholder="e.g. 35"
+                      />
+                    ) : (
+                      <div className="w-full px-4 py-3 bg-white shadow-sm border border-gray-100 rounded-xl text-sm text-gov-blue font-bold flex items-center gap-3">
+                        <Calendar size={16} className="text-gov-gold opacity-80" />
+                        {citizenData?.age || 'N/A'}
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">Gender</label>
+                    {isEditingProfile ? (
+                      <select 
+                        value={editProfileData.gender}
+                        onChange={(e) => setEditProfileData({...editProfileData, gender: e.target.value})}
+                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-sm text-gov-blue font-bold focus:outline-none focus:ring-2 focus:ring-gov-gold/70 transition-shadow appearance-none shadow-sm"
+                      >
+                        <option value="">Select</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    ) : (
+                      <div className="w-full px-4 py-3 bg-white shadow-sm border border-gray-100 rounded-xl text-sm text-gov-blue font-bold flex items-center gap-3">
+                        <Activity size={16} className="text-gov-gold opacity-80" />
+                        {citizenData?.gender || 'N/A'}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">Mobile Number</label>
+                  {isEditingProfile ? (
+                    <div className="flex shadow-sm rounded-xl">
+                      <span className="inline-flex items-center px-4 rounded-l-xl border border-r-0 border-gray-300 bg-gray-100 text-gray-600 text-sm font-bold">
+                        +91
+                      </span>
+                      <input 
+                        type="tel" 
+                        value={editProfileData.mobile.replace(/^\+91/, '')}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, '').substring(0, 10);
+                          setEditProfileData({...editProfileData, mobile: val ? `+91${val}` : ''})
+                        }}
+                        className="flex-1 w-full px-4 py-3 bg-white border border-gray-300 rounded-r-xl text-sm text-gov-blue font-bold focus:outline-none focus:ring-2 focus:ring-gov-gold/70 transition-shadow"
+                        placeholder="10 digit number"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-full px-4 py-3 bg-white shadow-sm border border-gray-100 rounded-xl text-sm text-gov-blue font-bold flex items-center gap-3">
+                      <Lock size={16} className="text-gov-gold opacity-80" />
+                      {citizenData?.mobile || 'Not provided'}
+                    </div>
+                  )}
+                </div>
+              </div>
 
-            <div className="flex gap-4">
-              {isEditingProfile ? (
-                <button 
-                  onClick={async () => {
-                    if (citizenData && editProfileData.full_name.trim()) {
-                      const newData = {...citizenData, ...editProfileData};
-                      setCitizenData(newData);
-                      try {
-                        await supabase.auth.updateUser({ 
-                          data: { 
-                            full_name: editProfileData.full_name,
-                            age: editProfileData.age,
-                            gender: editProfileData.gender,
-                            mobile: editProfileData.mobile
-                          } 
-                        });
-                      } catch (e) {
-                        // ignore error
+              <div className="flex gap-4 mt-10">
+                {isEditingProfile ? (
+                  <button 
+                    onClick={async () => {
+                      if (citizenData && editProfileData.full_name.trim()) {
+                        const newData = {...citizenData, ...editProfileData};
+                        setCitizenData(newData);
+                        try {
+                          await supabase.auth.updateUser({ 
+                            data: { 
+                              full_name: editProfileData.full_name,
+                              age: editProfileData.age,
+                              gender: editProfileData.gender,
+                              mobile: editProfileData.mobile
+                            } 
+                          });
+                        } catch (e) {
+                          // ignore error
+                        }
                       }
-                    }
-                    setIsEditingProfile(false);
-                  }}
-                  className="w-full py-3.5 text-white font-bold uppercase tracking-widest text-[11px] rounded-xl bg-gov-blue hover:bg-[#081729] hover:shadow-lg transition-all"
-                >
-                  Secure & Save Changes
-                </button>
-              ) : (
-                <button 
-                  onClick={() => setIsEditingProfile(true)}
-                  className="w-full py-3.5 text-gov-blue font-bold uppercase tracking-widest text-[11px] rounded-xl border-2 border-gov-blue hover:bg-gov-blue hover:text-white hover:shadow-lg transition-all"
-                >
-                  Edit Profile
-                </button>
+                      setIsEditingProfile(false);
+                    }}
+                    className="w-full py-4 text-gov-blue font-bold uppercase tracking-widest text-xs rounded-xl bg-gov-gold hover:bg-[#d4af37] hover:shadow-[0_10px_20px_rgba(218,165,32,0.3)] hover:-translate-y-0.5 transition-all"
+                  >
+                    Secure & Save Changes
+                  </button>
+                ) : (
+                  <button 
+                    onClick={() => setIsEditingProfile(true)}
+                    className="w-full py-4 text-white font-bold uppercase tracking-widest text-xs rounded-xl bg-gov-blue hover:bg-[#081729] shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
+                  >
+                    <Edit3 size={16} /> Edit Identity Data
+                  </button>
+                )}
+              </div>
+              
+              {!isEditingProfile && (
+                <div className="mt-6 flex items-center justify-center gap-2 opacity-50">
+                  <ShieldCheck size={14} className="text-green-600" />
+                  <span className="text-[9px] uppercase tracking-widest font-bold text-gray-500">Verified by Ministry of Ayush</span>
+                </div>
               )}
             </div>
           </div>
