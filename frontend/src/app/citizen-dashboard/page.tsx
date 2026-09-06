@@ -1256,8 +1256,34 @@ export default function CitizenDashboard() {
                 <div className="mt-4 flex justify-center bg-gray-50 p-4 border border-gray-200 print:hidden">
                   <button 
                     onClick={() => {
+                      const cert = document.getElementById('printable-certificate');
+                      let dynamicStyle: HTMLStyleElement | null = null;
+                      
+                      if (cert) {
+                        const rect = cert.getBoundingClientRect();
+                        const w = Math.ceil(rect.width);
+                        const h = Math.ceil(rect.height);
+                        
+                        dynamicStyle = document.createElement('style');
+                        dynamicStyle.innerHTML = `
+                          @media print {
+                            @page { size: ${w}px ${h}px !important; margin: 0 !important; }
+                            #printable-certificate { width: 100vw !important; height: 100vh !important; max-width: none !important; margin: 0 !important; transform: none !important; }
+                            #print-modal-wrapper { width: 100vw !important; height: 100vh !important; }
+                          }
+                        `;
+                        document.head.appendChild(dynamicStyle);
+                      }
+
+                      const oldTitle = document.title;
+                      document.title = "Ministry_of_Ayush_IP_Certificate_of_Authorship";
+                      
                       setTimeout(() => {
                         window.print();
+                        document.title = oldTitle;
+                        if (dynamicStyle && dynamicStyle.parentNode) {
+                          dynamicStyle.parentNode.removeChild(dynamicStyle);
+                        }
                       }, 100);
                     }}
                     className="bg-gov-blue text-white px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-[#081729] flex items-center gap-2 shadow-md transition-all"
