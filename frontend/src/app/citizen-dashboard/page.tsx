@@ -71,6 +71,7 @@ export default function CitizenDashboard() {
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [editProfileData, setEditProfileData] = useState({full_name: '', age: '', gender: '', mobile: ''});
 
   const handleLogoutConfirm = async () => {
@@ -425,9 +426,10 @@ export default function CitizenDashboard() {
               gender: citizenData?.gender || '',
               mobile: citizenData?.mobile || ''
             });
+            setIsEditingProfile(false);
             setShowProfileEdit(true);
           }}>
-            <div className="w-10 h-10 rounded-full bg-gov-blue text-white flex items-center justify-center font-bold text-lg shadow-inner">
+            <div className="w-10 h-10 shrink-0 rounded-full bg-gov-blue text-white flex items-center justify-center font-bold text-lg shadow-inner">
               {citizenData?.full_name ? citizenData.full_name.charAt(0).toUpperCase() : 'U'}
             </div>
             <div>
@@ -591,7 +593,7 @@ export default function CitizenDashboard() {
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 to-gov-blue p-5 rounded-lg text-white group">
+                    <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 to-gov-blue p-5 rounded-lg text-white group cursor-pointer" onClick={() => setActiveTab('chat')}>
                       <MessageSquare className="text-gov-gold mb-3 opacity-80 group-hover:scale-110 transition-transform" size={24} />
                       <h4 className="font-bold text-sm tracking-wide mb-1">IP-SAKTI Chatbot</h4>
                       <p className="text-xs text-gray-400 font-mono mb-4">Strict-Citation RAG</p>
@@ -601,7 +603,7 @@ export default function CitizenDashboard() {
                       </div>
                     </div>
                     
-                    <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 to-gov-blue p-5 rounded-lg text-white group">
+                    <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 to-gov-blue p-5 rounded-lg text-white group cursor-pointer" onClick={() => setActiveTab('submit')}>
                       <Cpu className="text-blue-400 mb-3 opacity-80 group-hover:scale-110 transition-transform" size={24} />
                       <h4 className="font-bold text-sm tracking-wide mb-1">Collision Radar</h4>
                       <p className="text-xs text-gray-400 font-mono mb-4">EPO / USPTO Scanner</p>
@@ -611,7 +613,7 @@ export default function CitizenDashboard() {
                       </div>
                     </div>
 
-                    <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 to-gov-blue p-5 rounded-lg text-white group">
+                    <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 to-gov-blue p-5 rounded-lg text-white group cursor-pointer" onClick={() => setActiveTab('vault')}>
                       <LinkIcon className="text-purple-400 mb-3 opacity-80 group-hover:scale-110 transition-transform" size={24} />
                         <h4 className="font-bold text-sm tracking-wide mb-1">Polygon Vault</h4>
                         <p className="text-xs text-gray-400 font-mono mb-4">Cryptographic Anchoring</p>
@@ -1105,7 +1107,11 @@ export default function CitizenDashboard() {
                           <img src={msg.image} alt="User Upload" className="w-48 h-auto rounded-lg mb-3 border border-white/20 shadow-sm" />
                         )}
                         
-                        {msg.content.includes("DISCLAIMER:") ? (
+                        {msg.role === 'user' ? (
+                          <div className="leading-relaxed whitespace-pre-wrap text-white">
+                            {msg.content}
+                          </div>
+                        ) : msg.content.includes("DISCLAIMER:") ? (
                           <>
                             <div className="leading-relaxed prose prose-sm max-w-none text-gray-800">
                               <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -1496,81 +1502,122 @@ export default function CitizenDashboard() {
               <X size={20} />
             </button>
             <h3 className="text-2xl font-bold text-gov-blue mb-1 font-serif-official">Citizen Profile</h3>
-            <p className="text-[10px] text-gray-500 mb-6 uppercase tracking-[0.2em] font-bold">Update your official identity details</p>
+            <p className="text-[10px] text-gray-500 mb-6 uppercase tracking-[0.2em] font-bold">Your official identity details</p>
             
             <div className="space-y-4 mb-8">
               <div>
                 <label className="block text-[10px] font-bold text-gov-blue uppercase tracking-widest mb-1.5 ml-1">Full Legal Name</label>
-                <input 
-                  type="text" 
-                  value={editProfileData.full_name}
-                  onChange={(e) => setEditProfileData({...editProfileData, full_name: e.target.value})}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gov-blue font-bold focus:outline-none focus:ring-2 focus:ring-gov-gold/50 transition-shadow"
-                  placeholder="Enter your real name"
-                />
+                {isEditingProfile ? (
+                  <input 
+                    type="text" 
+                    value={editProfileData.full_name}
+                    onChange={(e) => setEditProfileData({...editProfileData, full_name: e.target.value})}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gov-blue font-bold focus:outline-none focus:ring-2 focus:ring-gov-gold/50 transition-shadow"
+                    placeholder="Enter your real name"
+                  />
+                ) : (
+                  <div className="w-full px-4 py-3 bg-gray-50 rounded-xl text-sm text-gray-800 font-bold border border-transparent">
+                    {citizenData?.full_name || 'Not provided'}
+                  </div>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[10px] font-bold text-gov-blue uppercase tracking-widest mb-1.5 ml-1">Age</label>
-                  <input 
-                    type="number" 
-                    value={editProfileData.age}
-                    onChange={(e) => setEditProfileData({...editProfileData, age: e.target.value})}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gov-blue font-bold focus:outline-none focus:ring-2 focus:ring-gov-gold/50 transition-shadow"
-                    placeholder="e.g. 35"
-                  />
+                  {isEditingProfile ? (
+                    <input 
+                      type="number" 
+                      value={editProfileData.age}
+                      onChange={(e) => setEditProfileData({...editProfileData, age: e.target.value})}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gov-blue font-bold focus:outline-none focus:ring-2 focus:ring-gov-gold/50 transition-shadow"
+                      placeholder="e.g. 35"
+                    />
+                  ) : (
+                    <div className="w-full px-4 py-3 bg-gray-50 rounded-xl text-sm text-gray-800 font-bold border border-transparent">
+                      {citizenData?.age || 'Not provided'}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold text-gov-blue uppercase tracking-widest mb-1.5 ml-1">Gender</label>
-                  <select 
-                    value={editProfileData.gender}
-                    onChange={(e) => setEditProfileData({...editProfileData, gender: e.target.value})}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gov-blue font-bold focus:outline-none focus:ring-2 focus:ring-gov-gold/50 transition-shadow appearance-none"
-                  >
-                    <option value="">Select</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                  </select>
+                  {isEditingProfile ? (
+                    <select 
+                      value={editProfileData.gender}
+                      onChange={(e) => setEditProfileData({...editProfileData, gender: e.target.value})}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gov-blue font-bold focus:outline-none focus:ring-2 focus:ring-gov-gold/50 transition-shadow appearance-none"
+                    >
+                      <option value="">Select</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  ) : (
+                    <div className="w-full px-4 py-3 bg-gray-50 rounded-xl text-sm text-gray-800 font-bold border border-transparent">
+                      {citizenData?.gender || 'Not provided'}
+                    </div>
+                  )}
                 </div>
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-gov-blue uppercase tracking-widest mb-1.5 ml-1">Mobile Number</label>
-                <input 
-                  type="tel" 
-                  value={editProfileData.mobile}
-                  onChange={(e) => setEditProfileData({...editProfileData, mobile: e.target.value})}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gov-blue font-bold focus:outline-none focus:ring-2 focus:ring-gov-gold/50 transition-shadow"
-                  placeholder="+91 XXXXX XXXXX"
-                />
+                {isEditingProfile ? (
+                  <div className="flex">
+                    <span className="inline-flex items-center px-4 rounded-l-xl border border-r-0 border-gray-200 bg-gray-100 text-gray-500 text-sm font-bold">
+                      +91
+                    </span>
+                    <input 
+                      type="tel" 
+                      value={editProfileData.mobile.replace(/^\+91/, '')}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '').substring(0, 10);
+                        setEditProfileData({...editProfileData, mobile: val ? `+91${val}` : ''})
+                      }}
+                      className="flex-1 w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-r-xl text-sm text-gov-blue font-bold focus:outline-none focus:ring-2 focus:ring-gov-gold/50 transition-shadow"
+                      placeholder="10 digit number"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-full px-4 py-3 bg-gray-50 rounded-xl text-sm text-gray-800 font-bold border border-transparent">
+                    {citizenData?.mobile || 'Not provided'}
+                  </div>
+                )}
               </div>
             </div>
 
             <div className="flex gap-4">
-              <button 
-                onClick={async () => {
-                  if (citizenData && editProfileData.full_name.trim()) {
-                    const newData = {...citizenData, ...editProfileData};
-                    setCitizenData(newData);
-                    try {
-                      await supabase.auth.updateUser({ 
-                        data: { 
-                          full_name: editProfileData.full_name,
-                          age: editProfileData.age,
-                          gender: editProfileData.gender,
-                          mobile: editProfileData.mobile
-                        } 
-                      });
-                    } catch (e) {
-                      // ignore error
+              {isEditingProfile ? (
+                <button 
+                  onClick={async () => {
+                    if (citizenData && editProfileData.full_name.trim()) {
+                      const newData = {...citizenData, ...editProfileData};
+                      setCitizenData(newData);
+                      try {
+                        await supabase.auth.updateUser({ 
+                          data: { 
+                            full_name: editProfileData.full_name,
+                            age: editProfileData.age,
+                            gender: editProfileData.gender,
+                            mobile: editProfileData.mobile
+                          } 
+                        });
+                      } catch (e) {
+                        // ignore error
+                      }
                     }
-                  }
-                  setShowProfileEdit(false);
-                }}
-                className="w-full py-3.5 text-white font-bold uppercase tracking-widest text-[11px] rounded-xl bg-gov-blue hover:bg-[#081729] hover:shadow-lg transition-all"
-              >
-                Secure & Save Changes
-              </button>
+                    setIsEditingProfile(false);
+                  }}
+                  className="w-full py-3.5 text-white font-bold uppercase tracking-widest text-[11px] rounded-xl bg-gov-blue hover:bg-[#081729] hover:shadow-lg transition-all"
+                >
+                  Secure & Save Changes
+                </button>
+              ) : (
+                <button 
+                  onClick={() => setIsEditingProfile(true)}
+                  className="w-full py-3.5 text-gov-blue font-bold uppercase tracking-widest text-[11px] rounded-xl border-2 border-gov-blue hover:bg-gov-blue hover:text-white hover:shadow-lg transition-all"
+                >
+                  Edit Profile
+                </button>
+              )}
             </div>
           </div>
         </div>
