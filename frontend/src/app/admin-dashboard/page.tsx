@@ -741,31 +741,36 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                     
-                    {/* Scrollable Content */}
-                    <div className="flex-1 overflow-y-auto custom-scrollbar p-8">
-                      <div className="mb-8">
-                        <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Formulation Details</h4>
-                        <p className="text-sm text-gray-700 leading-relaxed bg-gray-50 p-4 border border-gray-200 rounded shadow-inner whitespace-pre-wrap">
-                          {activeClaim.raw_description}
-                        </p>
+                    {/* Content Body */}
+                    <div className="flex-1 flex flex-col p-6 overflow-hidden gap-6">
+                      <div className="flex-1 flex flex-col min-h-0 bg-gray-50 border border-gray-200 rounded-lg shadow-inner overflow-hidden">
+                        <div className="bg-gray-200/50 px-4 py-2 border-b border-gray-200 shrink-0">
+                          <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Formulation Details</h4>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+                          <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+                            {activeClaim.raw_description}
+                          </p>
+                        </div>
                       </div>
 
                       {/* AI COLLISION RADAR (The core tech) */}
-                      <div className={`${activeClaim.collision_score > 50 ? 'bg-red-50 border-red-100' : 'bg-green-50 border-green-100'} border rounded-lg p-6 mb-8 relative overflow-hidden`}>
-                        <div className={`absolute right-0 top-0 pointer-events-none ${activeClaim.collision_score > 50 ? 'text-red-500/10' : 'text-green-500/10'}`}>
+                      <div className={`${['Verified', 'Blockchain Anchored'].includes(activeClaim.status) ? 'bg-green-50 border-green-200' : activeClaim.collision_score > 50 ? 'bg-red-50 border-red-200' : 'bg-blue-50 border-blue-200'} border rounded-lg p-6 relative overflow-hidden shrink-0 shadow-sm`}>
+                        <div className={`absolute right-0 top-0 pointer-events-none ${['Verified', 'Blockchain Anchored'].includes(activeClaim.status) ? 'text-green-500/10' : activeClaim.collision_score > 50 ? 'text-red-500/10' : 'text-blue-500/10'}`}>
                           <Network size={160} />
                         </div>
-                        <h4 className={`text-xs font-bold uppercase tracking-widest mb-4 flex items-center gap-2 ${activeClaim.collision_score > 50 ? 'text-red-700' : 'text-green-700'}`}>
-                          {activeClaim.collision_score > 50 ? <ShieldAlert size={14} /> : <CheckCircle size={14} />} AI Collision Radar Analysis
+                        <h4 className={`text-xs font-bold uppercase tracking-widest mb-4 flex items-center gap-2 ${['Verified', 'Blockchain Anchored'].includes(activeClaim.status) ? 'text-green-700' : activeClaim.collision_score > 50 ? 'text-red-700' : 'text-blue-700'}`}>
+                          {['Verified', 'Blockchain Anchored'].includes(activeClaim.status) ? <CheckCircle size={14} /> : activeClaim.collision_score > 50 ? <ShieldAlert size={14} /> : <CheckCircle size={14} />} 
+                          {['Verified', 'Blockchain Anchored'].includes(activeClaim.status) ? 'Threat Neutralized (Secured)' : 'AI Collision Radar Analysis'}
                         </h4>
                         
                         <div className="bg-white p-4 border border-gray-200 rounded mb-4 shadow-sm relative z-10">
                           <div className="flex justify-between items-center mb-2">
                             <span className="text-xs font-bold text-gray-700">USPTO Database Match</span>
-                            <span className={`text-xs font-black ${activeClaim.collision_score > 50 ? 'text-red-600' : 'text-green-600'}`}>{activeClaim.collision_score}% SIMILARITY</span>
+                            <span className={`text-xs font-black ${['Verified', 'Blockchain Anchored'].includes(activeClaim.status) ? 'text-green-600' : activeClaim.collision_score > 50 ? 'text-red-600' : 'text-blue-600'}`}>{activeClaim.collision_score}% SIMILARITY</span>
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
-                            <div className={`${activeClaim.collision_score > 50 ? 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.5)]' : 'bg-green-500 shadow-[0_0_5px_rgba(34,197,94,0.5)]'} h-2 rounded-full`} style={{width: `${activeClaim.collision_score}%`}}></div>
+                            <div className={`${['Verified', 'Blockchain Anchored'].includes(activeClaim.status) ? 'bg-green-500 shadow-[0_0_5px_rgba(34,197,94,0.5)]' : activeClaim.collision_score > 50 ? 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.5)]' : 'bg-blue-500 shadow-[0_0_5px_rgba(59,130,246,0.5)]'} h-2 rounded-full`} style={{width: `${activeClaim.collision_score}%`}}></div>
                           </div>
                         </div>
                       </div>
