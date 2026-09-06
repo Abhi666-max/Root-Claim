@@ -154,10 +154,10 @@ export default function CitizenDashboard() {
     return () => clearInterval(interval)
   }, [])
 
-  // Modal States
   const [showSubmitModal, setShowSubmitModal] = useState(false)
   const [showCertificateModal, setShowCertificateModal] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
+  const [certError, setCertError] = useState<string | null>(null)
   const [showReportModal, setShowReportModal] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
@@ -1256,11 +1256,25 @@ export default function CitizenDashboard() {
                   <button onClick={() => setShowCertificateModal(false)} className="bg-black/50 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold transition-colors">✕</button>
                 </div>
                 
+                {certError && (
+                  <div className="m-4 mb-0 bg-red-50 border-l-4 border-red-500 p-4 rounded shadow-sm flex items-start gap-3 print:hidden">
+                    <AlertTriangle className="text-red-500 shrink-0" size={20} />
+                    <div className="flex-1">
+                      <p className="text-sm font-bold text-red-700">PDF Generation Failed</p>
+                      <p className="text-xs text-red-600">{certError}</p>
+                    </div>
+                    <button onClick={() => setCertError(null)} className="text-red-400 hover:text-red-700">
+                      <X size={16} />
+                    </button>
+                  </div>
+                )}
+                
                 <div className="mt-4 flex justify-center bg-gray-50 p-4 border border-gray-200 print:hidden">
                   <button 
                     onClick={async () => {
                       if (isDownloading) return;
                       setIsDownloading(true);
+                      setCertError(null);
                       try {
                         const cert = document.getElementById('printable-certificate');
                         if (!cert) return;
@@ -1274,22 +1288,24 @@ export default function CitizenDashboard() {
                         
                         const imgData = canvas.toDataURL('image/png', 1.0);
                         
+                        const w = Math.round(canvas.width);
+                        const h = Math.round(canvas.height);
+                        
                         const pdf = new jsPDF({
-                          orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
+                          orientation: w > h ? 'landscape' : 'portrait',
                           unit: 'px',
-                          format: [canvas.width, canvas.height],
-                          hotfixes: ["px_scaling"]
+                          format: [w, h]
                         });
                         
-                        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+                        pdf.addImage(imgData, 'PNG', 0, 0, w, h);
                         
                         const claimIdMatch = formattedClaim ? formattedClaim.match(/TK-[A-Za-z0-9]+/) : null;
                         const claimId = claimIdMatch ? claimIdMatch[0] : 'Unknown';
                         
                         pdf.save(`Ministry_of_Ayush_IP_Certificate_${claimId}.pdf`);
-                      } catch (err) {
+                      } catch (err: any) {
                         console.error("PDF generation error: ", err);
-                        setErrorMsg("Failed to generate PDF. Please try again.");
+                        setCertError(err.message || "Unknown error occurred while generating PDF.");
                       } finally {
                         setIsDownloading(false);
                       }
