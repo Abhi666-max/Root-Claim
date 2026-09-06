@@ -295,13 +295,20 @@ export default function AdminDashboard() {
         </nav>
 
         <div className="p-6 border-t border-slate-200 bg-[#f8f9fa] relative z-10">
-          <div className="flex items-center gap-3 mb-6 bg-white p-3 rounded shadow-sm border border-slate-200">
-            <div className="w-10 h-10 rounded-full bg-gov-blue flex items-center justify-center text-white font-bold border-2 border-gov-gold shadow-[0_0_10px_rgba(212,175,55,0.2)] shrink-0">
-              <User size={20} />
+          <div className="flex items-center gap-4 mb-6 bg-gradient-to-r from-gov-blue to-[#0c223c] p-4 rounded-xl shadow-lg border-l-4 border-gov-gold relative overflow-hidden group">
+            <div className="absolute right-0 top-0 opacity-10 group-hover:scale-110 transition-transform duration-500">
+              <ShieldCheck size={80} className="text-white -mt-4 -mr-4" />
             </div>
-            <div>
-              <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Authorized User</p>
-              <p className="text-sm font-bold text-gov-blue">Hon. Minister Desk</p>
+            <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-gov-blue font-bold border-2 border-gov-gold shadow-[0_0_15px_rgba(212,175,55,0.4)] shrink-0 relative z-10">
+              <span className="font-serif-official text-xl">M</span>
+            </div>
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 mb-0.5">
+                <ShieldCheck size={12} className="text-gov-gold" />
+                <p className="text-[9px] text-gov-gold uppercase tracking-widest font-bold">Government of India</p>
+              </div>
+              <p className="text-sm font-bold text-white font-serif-official tracking-wide">Hon. Minister Desk</p>
+              <p className="text-[9px] text-blue-200 uppercase tracking-[0.2em] font-medium mt-0.5">Ministry of Ayush</p>
             </div>
           </div>
           <button onClick={() => {
@@ -650,47 +657,50 @@ export default function AdminDashboard() {
               </div>
 
               {/* RIGHT COLUMN: Action & Radar */}
-              <div className="lg:w-2/3 h-full overflow-y-auto custom-scrollbar pr-2 pb-6">
+              <div className="lg:w-2/3 h-full flex flex-col pr-2 pb-6">
                 {activeClaim ? (
-                  <div className="flex flex-col gap-6 min-h-max pb-10">
-                  {/* Claim Details */}
-                  <div className="bg-white/80 backdrop-blur-md border border-white/60 rounded-2xl shadow-xl p-8">
-                    <div className="flex justify-between items-start mb-6 border-b border-gray-100 pb-4">
+                  <div className="bg-white/90 backdrop-blur-md border border-white/60 rounded-2xl shadow-xl flex flex-col h-full overflow-hidden">
+                    
+                    {/* Sticky Header */}
+                    <div className="flex justify-between items-start border-b border-gray-100 p-6 shrink-0 bg-white/50 shadow-sm z-10">
                       <div>
                         <h2 className="text-2xl font-serif-official font-bold text-gray-900 mb-2">{activeClaim.title}</h2>
                         <p className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Citizen ID: {activeClaim.user_id} &bull; Date: {new Date(activeClaim.created_at).toLocaleDateString()}</p>
                       </div>
                     </div>
                     
-                    <div className="mb-8">
-                      <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Formulation Details</h4>
-                      <p className="text-sm text-gray-700 leading-relaxed bg-gray-50 p-4 border border-gray-200 rounded shadow-inner whitespace-pre-wrap">
-                        {activeClaim.raw_description}
-                      </p>
+                    {/* Scrollable Content */}
+                    <div className="flex-1 overflow-y-auto custom-scrollbar p-8">
+                      <div className="mb-8">
+                        <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Formulation Details</h4>
+                        <p className="text-sm text-gray-700 leading-relaxed bg-gray-50 p-4 border border-gray-200 rounded shadow-inner whitespace-pre-wrap">
+                          {activeClaim.raw_description}
+                        </p>
+                      </div>
+
+                      {/* AI COLLISION RADAR (The core tech) */}
+                      <div className={`${activeClaim.collision_score > 50 ? 'bg-red-50 border-red-100' : 'bg-green-50 border-green-100'} border rounded-lg p-6 mb-8 relative overflow-hidden`}>
+                        <div className={`absolute right-0 top-0 pointer-events-none ${activeClaim.collision_score > 50 ? 'text-red-500/10' : 'text-green-500/10'}`}>
+                          <Network size={160} />
+                        </div>
+                        <h4 className={`text-xs font-bold uppercase tracking-widest mb-4 flex items-center gap-2 ${activeClaim.collision_score > 50 ? 'text-red-700' : 'text-green-700'}`}>
+                          {activeClaim.collision_score > 50 ? <ShieldAlert size={14} /> : <CheckCircle size={14} />} AI Collision Radar Analysis
+                        </h4>
+                        
+                        <div className="bg-white p-4 border border-gray-200 rounded mb-4 shadow-sm relative z-10">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-xs font-bold text-gray-700">USPTO Database Match</span>
+                            <span className={`text-xs font-black ${activeClaim.collision_score > 50 ? 'text-red-600' : 'text-green-600'}`}>{activeClaim.collision_score}% SIMILARITY</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
+                            <div className={`${activeClaim.collision_score > 50 ? 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.5)]' : 'bg-green-500 shadow-[0_0_5px_rgba(34,197,94,0.5)]'} h-2 rounded-full`} style={{width: `${activeClaim.collision_score}%`}}></div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
-                    {/* AI COLLISION RADAR (The core tech) */}
-                    <div className={`${activeClaim.collision_score > 50 ? 'bg-red-50 border-red-100' : 'bg-green-50 border-green-100'} border rounded-lg p-6 mb-8 relative overflow-hidden`}>
-                      <div className={`absolute right-0 top-0 pointer-events-none ${activeClaim.collision_score > 50 ? 'text-red-500/10' : 'text-green-500/10'}`}>
-                        <Network size={160} />
-                      </div>
-                      <h4 className={`text-xs font-bold uppercase tracking-widest mb-4 flex items-center gap-2 ${activeClaim.collision_score > 50 ? 'text-red-700' : 'text-green-700'}`}>
-                        {activeClaim.collision_score > 50 ? <ShieldAlert size={14} /> : <CheckCircle size={14} />} AI Collision Radar Analysis
-                      </h4>
-                      
-                      <div className="bg-white p-4 border border-gray-200 rounded mb-4 shadow-sm relative z-10">
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-xs font-bold text-gray-700">USPTO Database Match</span>
-                          <span className={`text-xs font-black ${activeClaim.collision_score > 50 ? 'text-red-600' : 'text-green-600'}`}>{activeClaim.collision_score}% SIMILARITY</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
-                          <div className={`${activeClaim.collision_score > 50 ? 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.5)]' : 'bg-green-500 shadow-[0_0_5px_rgba(34,197,94,0.5)]'} h-2 rounded-full`} style={{width: `${activeClaim.collision_score}%`}}></div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Verification Actions */}
-                    <div className="border-t border-gray-100 pt-6">
+                    {/* Sticky Footer (Actions & Cryptography) */}
+                    <div className="border-t border-gray-100 bg-gray-50/80 backdrop-blur-md p-6 shrink-0 shadow-[0_-5px_15px_rgba(0,0,0,0.02)] relative z-20">
                       <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Ministry Actions</h4>
                       {activeClaim.status === 'Pending Review' ? (
                         <div className="flex gap-4">
@@ -702,47 +712,47 @@ export default function AdminDashboard() {
                           </button>
                         </div>
                       ) : (
-                        <div className="flex justify-between items-center bg-gray-50 p-4 border border-gray-200 rounded">
+                        <div className="flex justify-between items-center bg-white p-4 border border-gray-200 rounded shadow-sm">
                           <p className="text-sm font-bold text-gray-700">Current Status: <span className={activeClaim.status === 'Verified' ? 'text-green-600' : activeClaim.status === 'Rejected' ? 'text-red-600' : 'text-blue-600'}>{activeClaim.status}</span></p>
-                          <button onClick={() => handleStatusUpdate('Pending Review')} className="text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors bg-white border border-gray-300 px-4 py-2 rounded shadow-sm">
+                          <button onClick={() => handleStatusUpdate('Pending Review')} className="text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors bg-gray-50 border border-gray-300 px-4 py-2 rounded shadow-sm">
                             Undo Action
                           </button>
                         </div>
                       )}
-                    </div>
 
-                  </div>
+                      {/* BLOCKCHAIN VAULT */}
+                      {activeClaim.status === 'Verified' && (
+                        <div className="bg-white border border-gov-gold shadow-lg rounded-xl p-6 relative overflow-hidden group mt-4">
+                          <div className="absolute right-0 top-0 text-gov-gold/10 pointer-events-none group-hover:scale-110 transition-transform duration-1000">
+                            <LinkIcon size={120} />
+                          </div>
+                          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                              <h3 className="text-sm font-serif-official font-bold mb-1 flex items-center gap-2 text-gov-blue">
+                                <AlertTriangle size={14} className="text-gov-gold"/> Cryptographic Lock
+                              </h3>
+                              <p className="text-[10px] text-gray-600 max-w-sm leading-relaxed">
+                                Anchoring this claim to Polygon is irreversible and establishes sovereign IP.
+                              </p>
+                            </div>
+                            <button 
+                              onClick={() => setShowConfirmModal({isOpen: true, action: 'Lock'})}
+                              disabled={isLocking}
+                              className="px-6 py-3 rounded font-black uppercase tracking-widest text-[10px] transition-all bg-gov-gold text-white hover:bg-yellow-600 shadow-md hover:shadow-lg disabled:opacity-50 whitespace-nowrap shrink-0"
+                            >
+                              {isLocking ? 'Anchoring...' : 'Lock on Blockchain'}
+                            </button>
+                          </div>
+                        </div>
+                      )}
 
-                  {/* BLOCKCHAIN VAULT */}
-                  {activeClaim.status === 'Verified' && (
-                    <div className="bg-white/80 backdrop-blur-md border border-gov-gold shadow-xl rounded-2xl p-8 relative overflow-hidden group mt-6">
-                      <div className="absolute right-0 top-0 text-gov-gold/10 pointer-events-none group-hover:scale-110 transition-transform duration-1000">
-                        <LinkIcon size={200} />
-                      </div>
-                      <div className="relative z-10">
-                        <h3 className="text-lg font-serif-official font-bold mb-2 flex items-center gap-2 text-gov-blue">
-                          <AlertTriangle size={18} className="text-gov-gold"/> Cryptographic Lock
-                        </h3>
-                        <p className="text-xs text-gray-600 mb-6 max-w-xl leading-relaxed">
-                          Warning: Anchoring this claim to the Polygon blockchain is an irreversible action. It will permanently establish this formulation as the sovereign IP of the Government of India.
-                        </p>
-                        <button 
-                          onClick={() => setShowConfirmModal({isOpen: true, action: 'Lock'})}
-                          disabled={isLocking}
-                          className="px-8 py-3 rounded font-black uppercase tracking-widest text-xs transition-all bg-gov-gold text-white hover:bg-yellow-600 shadow-md hover:shadow-lg disabled:opacity-50"
-                        >
-                          {isLocking ? 'Anchoring to Polygon...' : 'Lock on Blockchain Now'}
-                        </button>
-                      </div>
+                      {activeClaim.polygon_tx_hash && (
+                        <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded text-[10px] font-mono shadow-sm">
+                          <p className="text-green-700 mb-1 font-bold text-xs flex items-center gap-2"><CheckCircle size={14}/> Immutable Proof Generated</p>
+                          <p className="mb-0"><span className="text-gray-500">Tx Hash:</span> <span className="text-blue-600 break-all">{activeClaim.polygon_tx_hash}</span></p>
+                        </div>
+                      )}
                     </div>
-                  )}
-
-                  {activeClaim.polygon_tx_hash && (
-                    <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded text-[10px] font-mono shadow-sm">
-                      <p className="text-green-700 mb-2 font-bold text-xs flex items-center gap-2"><CheckCircle size={14}/> Immutable Proof Generated</p>
-                      <p className="mb-1"><span className="text-gray-500">Tx Hash:</span> <span className="text-blue-600 break-all">{activeClaim.polygon_tx_hash}</span></p>
-                    </div>
-                  )}
                   </div>
                 ) : (
                   <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-12 text-center text-gray-400 flex flex-col items-center justify-center">
