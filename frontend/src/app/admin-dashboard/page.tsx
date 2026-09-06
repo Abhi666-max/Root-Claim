@@ -640,9 +640,9 @@ export default function AdminDashboard() {
               </div>
 
               {/* RIGHT COLUMN: Action & Radar */}
-              <div className="lg:w-2/3 h-full overflow-y-auto custom-scrollbar flex flex-col gap-6 pr-2 pb-6">
+              <div className="lg:w-2/3 h-full overflow-y-auto custom-scrollbar pr-2 pb-6">
                 {activeClaim ? (
-                  <>
+                  <div className="flex flex-col gap-6 min-h-max pb-10">
                   {/* Claim Details */}
                   <div className="bg-white/80 backdrop-blur-md border border-white/60 rounded-2xl shadow-xl p-8">
                     <div className="flex justify-between items-start mb-6 border-b border-gray-100 pb-4">
@@ -733,7 +733,7 @@ export default function AdminDashboard() {
                       <p className="mb-1"><span className="text-gray-500">Tx Hash:</span> <span className="text-blue-600 break-all">{activeClaim.polygon_tx_hash}</span></p>
                     </div>
                   )}
-                  </>
+                  </div>
                 ) : (
                   <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-12 text-center text-gray-400 flex flex-col items-center justify-center">
                     <Database size={48} className="mb-4 text-gray-200" />
