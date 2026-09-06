@@ -11,7 +11,7 @@ import {
   AlertTriangle, UploadCloud, 
   MessageSquare, Send, Menu, X,
   Sparkles, ShieldAlert, Cpu, Link as LinkIcon, Globe, Activity, ShieldCheck,
-  Paperclip, Image as ImageIcon
+  Paperclip, Image as ImageIcon, LogOut
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
