@@ -43,7 +43,31 @@ export default function AdminDashboard() {
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('command_center');
+  const [activeTabState, setActiveTabState] = useState('command_center');
+  const activeTab = activeTabState;
+  const setActiveTab = (tab: string) => {
+    setActiveTabState(tab);
+    if (typeof window !== 'undefined') localStorage.setItem('adm_activeTab', tab);
+  }
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('adm_activeTab');
+      if (saved) setActiveTabState(saved);
+    }
+  }, []);
+
+  const [actionedReports, setActionedReports] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('adm_actionedReports');
+      if (saved) {
+        try { setActionedReports(JSON.parse(saved)); } catch(e) {}
+      }
+    }
+  }, []);
+
   const [liveNodes, setLiveNodes] = useState(1284);
   const [threatCount, setThreatCount] = useState(14);
   const [claimsSecured, setClaimsSecured] = useState(84725);
@@ -143,6 +167,12 @@ export default function AdminDashboard() {
 
   const handleReviewReport = async (reportId: string) => {
     try {
+      const report = reports.find((r: any) => r.id === reportId);
+      if (report) {
+        const updatedActioned = [{...report, action_time: new Date().toISOString()}, ...actionedReports];
+        setActionedReports(updatedActioned);
+        if (typeof window !== 'undefined') localStorage.setItem('adm_actionedReports', JSON.stringify(updatedActioned));
+      }
       await axios.delete(`https://root-claim.onrender.com/api/v1/reports/${reportId}`);
       fetchReports();
     } catch(e) {}
@@ -600,6 +630,39 @@ export default function AdminDashboard() {
                    </table>
                  </div>
                </div>
+
+               {/* Actioned Reports History */}
+               {actionedReports.length > 0 && (
+                 <div className="bg-white/80 backdrop-blur-md border border-gray-200 rounded-2xl p-8 shadow-sm overflow-hidden mt-6 opacity-75">
+                   <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-6 border-b border-gray-100 pb-4">
+                     Resolved Threat Intelligence (History)
+                   </h3>
+                   <div className="overflow-x-auto">
+                     <table className="w-full text-left">
+                       <thead>
+                         <tr className="border-b border-gray-200 text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-gray-50">
+                           <th className="py-4 pl-4 rounded-tl-lg">Citizen ID</th>
+                           <th className="py-4">Target Patent/URL</th>
+                           <th className="py-4">Action Time</th>
+                           <th className="py-4 rounded-tr-lg">Status</th>
+                         </tr>
+                       </thead>
+                       <tbody className="text-sm">
+                         {actionedReports.map((report, idx) => (
+                           <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                             <td className="py-4 pl-4 font-mono text-[10px] text-gray-500">{report.user_id}</td>
+                             <td className="py-4 font-bold text-gray-700 text-sm max-w-[200px] truncate">{report.target_url}</td>
+                             <td className="py-4 text-gray-500 text-xs truncate max-w-[250px]">{new Date(report.action_time).toLocaleString()}</td>
+                             <td className="py-4">
+                               <span className="bg-green-100 text-green-700 border border-green-200 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest inline-block">Action Taken</span>
+                             </td>
+                           </tr>
+                         ))}
+                       </tbody>
+                     </table>
+                   </div>
+                 </div>
+               )}
              </div>
              </div>
            )}

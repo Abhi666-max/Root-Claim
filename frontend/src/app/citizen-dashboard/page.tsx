@@ -79,7 +79,19 @@ export default function CitizenDashboard() {
     router.push('/login')
   }
 
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTabState, setActiveTabState] = useState('overview')
+  const activeTab = activeTabState;
+  const setActiveTab = (tab: string) => {
+    setActiveTabState(tab);
+    if (typeof window !== 'undefined') localStorage.setItem('cit_activeTab', tab);
+  }
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('cit_activeTab');
+      if (saved) setActiveTabState(saved);
+    }
+  }, []);
   
   // User Stats State
   const [userStats, setUserStats] = useState({ drafted: 0, under_verification: 0, secured: 0 })
@@ -205,8 +217,8 @@ export default function CitizenDashboard() {
 
   useEffect(() => {
     if (myClaims) {
-      const under = myClaims.filter(c => c.status === 'Pending Review').length;
-      const secured = myClaims.filter(c => c.status === 'Verified').length;
+      const under = myClaims.filter(c => c.status === 'Pending Review' || c.status?.toLowerCase().includes('pending')).length;
+      const secured = myClaims.filter(c => c.status === 'Verified' || c.status === 'Blockchain Anchored').length;
       setUserStats({ drafted: myClaims.length, under_verification: under, secured: secured });
     }
   }, [myClaims]);
@@ -239,21 +251,19 @@ export default function CitizenDashboard() {
     }
     setReportError("");
     
-    setIsCheckingRadar(true); // Reusing a loading state for simplicity
+    setIsCheckingRadar(true); 
     try {
       await axios.post('https://root-claim.onrender.com/api/v1/reports', {
-        user_id: "UID-992-881",
+        user_id: citizenData?.id || "UID-992-881",
         target_url: reportUrl,
         context: reportContext,
-        risk_level: "High" // Default or we could let them choose
+        risk_level: "High" 
       });
       await fetchMyReports();
       setShowReportForm(false);
       setReportUrl('');
       setReportContext('');
-      setShowReportModal(true);
     } catch (e) {
-      
       setErrorMsg("Failed to submit report to the Ministry.");
     } finally {
       setIsCheckingRadar(false);
@@ -408,32 +418,32 @@ export default function CitizenDashboard() {
 
         <nav className="flex-1 py-8 flex flex-col px-4 bg-[#f8f9fa]">
           <button 
-            onClick={() => setActiveTab('overview')}
+            onClick={() => { setActiveTab('overview'); localStorage.setItem('activeTab', 'overview'); }}
             className={`flex items-center gap-3 px-4 py-3 rounded-r text-xs font-bold uppercase tracking-widest transition-colors mb-2 ${activeTab === 'overview' ? 'bg-white text-gov-blue border-l-4 border-gov-blue shadow-sm' : 'text-slate-500 hover:bg-slate-200 hover:text-gov-blue border-l-4 border-transparent'}`}
           >
             <Home size={16} /> Overview
           </button>
           <button 
-            onClick={() => setActiveTab('ip-sakti')}
+            onClick={() => { setActiveTab('ip-sakti'); localStorage.setItem('activeTab', 'ip-sakti'); }}
             className={`flex items-center gap-3 px-4 py-3 rounded-r text-xs font-bold uppercase tracking-widest transition-colors mb-2 ${activeTab === 'ip-sakti' ? 'bg-white text-gov-blue border-l-4 border-gov-blue shadow-sm' : 'text-slate-500 hover:bg-slate-200 hover:text-gov-blue border-l-4 border-transparent'}`}
           >
             <MessageSquare size={16} /> IP-SAKTI Sahayak
           </button>
           <button 
-            onClick={() => setActiveTab('submit')}
+            onClick={() => { setActiveTab('submit'); localStorage.setItem('activeTab', 'submit'); }}
             className={`flex items-center gap-3 px-4 py-3 rounded-r text-xs font-bold uppercase tracking-widest transition-colors mb-2 ${activeTab === 'submit' ? 'bg-white text-gov-blue border-l-4 border-gov-blue shadow-sm' : 'text-slate-500 hover:bg-slate-200 hover:text-gov-blue border-l-4 border-transparent'}`}
           >
             <FileText size={16} /> Submit Knowledge
           </button>
 
           <button 
-            onClick={() => setActiveTab('vault')}
+            onClick={() => { setActiveTab('vault'); localStorage.setItem('activeTab', 'vault'); }}
             className={`flex items-center gap-3 px-4 py-3 rounded-r text-xs font-bold uppercase tracking-widest transition-colors mb-2 ${activeTab === 'vault' ? 'bg-white text-gov-blue border-l-4 border-gov-blue shadow-sm' : 'text-slate-500 hover:bg-slate-200 hover:text-gov-blue border-l-4 border-transparent'}`}
           >
             <ShieldCheck size={16} /> My Digital Vault
           </button>
           <button 
-            onClick={() => setActiveTab('whistleblower')}
+            onClick={() => { setActiveTab('whistleblower'); localStorage.setItem('activeTab', 'whistleblower'); }}
             className={`flex items-center gap-3 px-4 py-3 rounded-r text-xs font-bold uppercase tracking-widest transition-colors mb-2 ${activeTab === 'whistleblower' ? 'bg-white text-red-600 border-l-4 border-red-600 shadow-sm' : 'text-slate-500 hover:bg-slate-200 hover:text-red-600 border-l-4 border-transparent'}`}
           >
             <ShieldAlert size={16} /> Report Bio-Piracy
