@@ -293,7 +293,7 @@ export default function CitizenDashboard() {
     try {
       await axios.post('https://root-claim.onrender.com/api/v1/claims', {
         user_id: citizenData?.id || "UID-992-881",
-        title: rawText.split('\n')[0].substring(0, 50) || "Untitled Knowledge",
+        title: claimTitle.trim() || rawText.split('\n')[0].substring(0, 100) || "Untitled Knowledge",
         raw_description: rawText,
         ai_formatted_claim: formattedClaim || "",
         collision_score: radarResult ? radarResult.similarity_percentage : 0
