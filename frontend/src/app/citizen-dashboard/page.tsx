@@ -16,7 +16,7 @@ import {
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import html2canvas from 'html2canvas'
-import jsPDF from 'jspdf'
+import { jsPDF } from 'jspdf'
 import { supabase } from '@/utils/supabase'
 import Logo from '@/components/Logo'
 
@@ -1289,7 +1289,7 @@ export default function CitizenDashboard() {
                         pdf.save(`Ministry_of_Ayush_IP_Certificate_${claimId}.pdf`);
                       } catch (err) {
                         console.error("PDF generation error: ", err);
-                        alert("Failed to generate PDF. Please try again.");
+                        setErrorMsg("Failed to generate PDF. Please try again.");
                       } finally {
                         setIsDownloading(false);
                       }
