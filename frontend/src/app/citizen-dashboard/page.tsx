@@ -234,6 +234,9 @@ export default function CitizenDashboard() {
 
   useEffect(() => {
     fetchMyReports();
+    if (citizenData?.id) {
+      fetchMyClaims(citizenData.id);
+    }
   }, [citizenData]);
 
   const handleReportSubmit = async () => {

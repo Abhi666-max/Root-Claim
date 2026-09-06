@@ -59,6 +59,10 @@ export default function AdminDashboard() {
 
   const [actionedReports, setActionedReports] = useState<any[]>([]);
 
+  // Sub-tab states
+  const [activeThreatTab, setActiveThreatTab] = useState<'active'|'resolved'>('active');
+  const [activeSubTab, setActiveSubTab] = useState<'pending'|'verified'>('pending');
+
   const [liveNodes, setLiveNodes] = useState(1284);
   const [threatCount, setThreatCount] = useState(14);
   const [claimsSecured, setClaimsSecured] = useState(84725);
@@ -572,66 +576,74 @@ export default function AdminDashboard() {
                   <p className="text-xs text-blue-100 uppercase tracking-widest font-bold">Review incoming citizen whistleblower reports</p>
                 </div>
               </div>
-              <div className="p-6 flex-1 overflow-y-auto space-y-6 custom-scrollbar">
-               <div className="bg-white/80 backdrop-blur-md border-t-4 border-red-600 rounded-2xl p-8 shadow-xl overflow-hidden">
-                 <h3 className="text-sm font-bold text-red-700 uppercase tracking-widest mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
-                   <AlertTriangle size={16} /> Incoming Citizen Reports
-                 </h3>
+               <div className="p-6 flex-1 flex flex-col custom-scrollbar overflow-hidden">
                  
-                 <div className="overflow-x-auto">
-                   <table className="w-full text-left">
-                     <thead>
-                       <tr className="border-b border-gray-200 text-[10px] font-bold text-gray-500 uppercase tracking-widest bg-gray-50">
-                         <th className="py-4 pl-4 rounded-tl-lg">Citizen ID</th>
-                         <th className="py-4">Target Patent/URL</th>
-                         <th className="py-4">Report Context snippet</th>
-                         <th className="py-4">Risk Level</th>
-                         <th className="py-4 rounded-tr-lg">Action</th>
-                       </tr>
-                     </thead>
-                     <tbody className="text-sm">
-                       {reports.map((report) => (
-                         <tr key={report.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                           <td className="py-4 pl-4 font-mono text-[10px] text-gray-600">{report.user_id}</td>
-                           <td className="py-4 font-bold text-gray-900 text-sm max-w-[200px] truncate">{report.target_url}</td>
-                           <td className="py-4 text-gray-600 text-xs truncate max-w-[250px]">{report.context}</td>
-                           <td className="py-4">
-                             <span className="bg-red-100 text-red-700 border border-red-200 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest animate-pulse inline-block">{report.risk_level}</span>
-                           </td>
-                           <td className="py-4">
-                            <button 
-                              onClick={() => setShowConfirmModal({isOpen: true, action: 'ReviewReport', meta: report})}
-                              className="bg-white hover:bg-gray-50 text-gov-blue border border-gray-300 px-4 py-2 rounded text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center gap-2 shadow-sm"
-                            >
-                              <Eye size={12} /> Review
-                            </button>
-                           </td>
-                         </tr>
-                       ))}
-                       {reports.length === 0 && (
-                         <tr>
-                           <td colSpan={5} className="py-8 text-center text-gray-400 text-sm italic">No active threat reports.</td>
-                         </tr>
-                       )}
-                     </tbody>
-                   </table>
+                 <div className="flex gap-2 mb-6">
+                   <button onClick={() => setActiveThreatTab('active')} className={`px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-full transition-colors ${activeThreatTab === 'active' ? 'bg-red-600 text-white shadow-md' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>Active Threats ({reports.length})</button>
+                   <button onClick={() => setActiveThreatTab('resolved')} className={`px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-full transition-colors ${activeThreatTab === 'resolved' ? 'bg-green-600 text-white shadow-md' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>Resolved History ({actionedReports.length})</button>
                  </div>
-               </div>
 
-               {/* Actioned Reports History */}
-               {actionedReports.length > 0 && (
-                 <div className="bg-white/80 backdrop-blur-md border border-gray-200 rounded-2xl p-8 shadow-sm overflow-hidden mt-6 opacity-75">
-                   <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-6 border-b border-gray-100 pb-4">
-                     Resolved Threat Intelligence (History)
+                 {activeThreatTab === 'active' && (
+                 <div className="bg-white/80 backdrop-blur-md border-t-4 border-red-600 rounded-2xl p-8 shadow-xl flex-1 flex flex-col overflow-hidden">
+                   <h3 className="text-sm font-bold text-red-700 uppercase tracking-widest mb-6 flex items-center gap-2 border-b border-gray-100 pb-4 shrink-0">
+                     <AlertTriangle size={16} /> Incoming Citizen Reports
                    </h3>
-                   <div className="overflow-x-auto">
+                   
+                   <div className="overflow-auto flex-1 custom-scrollbar">
+                     <table className="w-full text-left">
+                       <thead>
+                         <tr className="border-b border-gray-200 text-[10px] font-bold text-gray-500 uppercase tracking-widest bg-gray-50">
+                           <th className="py-4 pl-4 rounded-tl-lg sticky top-0 bg-gray-50">Citizen ID</th>
+                           <th className="py-4 sticky top-0 bg-gray-50">Target Patent/URL</th>
+                           <th className="py-4 sticky top-0 bg-gray-50">Report Context snippet</th>
+                           <th className="py-4 sticky top-0 bg-gray-50">Risk Level</th>
+                           <th className="py-4 rounded-tr-lg sticky top-0 bg-gray-50">Action</th>
+                         </tr>
+                       </thead>
+                       <tbody className="text-sm">
+                         {reports.map((report) => (
+                           <tr key={report.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                             <td className="py-4 pl-4 font-mono text-[10px] text-gray-600">{report.user_id}</td>
+                             <td className="py-4 font-bold text-gray-900 text-sm max-w-[200px] truncate">{report.target_url}</td>
+                             <td className="py-4 text-gray-600 text-xs truncate max-w-[250px]">{report.context}</td>
+                             <td className="py-4">
+                               <span className="bg-red-100 text-red-700 border border-red-200 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest animate-pulse inline-block">{report.risk_level}</span>
+                             </td>
+                             <td className="py-4">
+                              <button 
+                                onClick={() => setShowConfirmModal({isOpen: true, action: 'ReviewReport', meta: report})}
+                                className="bg-white hover:bg-gray-50 text-gov-blue border border-gray-300 px-4 py-2 rounded text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center gap-2 shadow-sm"
+                              >
+                                <Eye size={12} /> Review
+                              </button>
+                             </td>
+                           </tr>
+                         ))}
+                         {reports.length === 0 && (
+                           <tr>
+                             <td colSpan={5} className="py-12 text-center text-gray-400 text-sm italic border-b border-gray-100">No active threat reports.</td>
+                           </tr>
+                         )}
+                       </tbody>
+                     </table>
+                   </div>
+                 </div>
+                 )}
+
+                 {/* Actioned Reports History */}
+                 {activeThreatTab === 'resolved' && (
+                 <div className="bg-white/80 backdrop-blur-md border border-green-200 rounded-2xl p-8 shadow-sm flex-1 flex flex-col overflow-hidden opacity-90">
+                   <h3 className="text-sm font-bold text-green-700 uppercase tracking-widest mb-6 border-b border-green-100 pb-4 shrink-0 flex items-center gap-2">
+                     <CheckCircle size={16} /> Resolved Threat Intelligence (History)
+                   </h3>
+                   <div className="overflow-auto flex-1 custom-scrollbar">
                      <table className="w-full text-left">
                        <thead>
                          <tr className="border-b border-gray-200 text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-gray-50">
-                           <th className="py-4 pl-4 rounded-tl-lg">Citizen ID</th>
-                           <th className="py-4">Target Patent/URL</th>
-                           <th className="py-4">Action Time</th>
-                           <th className="py-4 rounded-tr-lg">Status</th>
+                           <th className="py-4 pl-4 rounded-tl-lg sticky top-0 bg-gray-50">Citizen ID</th>
+                           <th className="py-4 sticky top-0 bg-gray-50">Target Patent/URL</th>
+                           <th className="py-4 sticky top-0 bg-gray-50">Action Time</th>
+                           <th className="py-4 rounded-tr-lg sticky top-0 bg-gray-50">Status</th>
                          </tr>
                        </thead>
                        <tbody className="text-sm">
@@ -641,16 +653,21 @@ export default function AdminDashboard() {
                              <td className="py-4 font-bold text-gray-700 text-sm max-w-[200px] truncate">{report.target_url}</td>
                              <td className="py-4 text-gray-500 text-xs truncate max-w-[250px]">{new Date(report.action_time).toLocaleString()}</td>
                              <td className="py-4">
-                               <span className="bg-green-100 text-green-700 border border-green-200 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest inline-block">Action Taken</span>
+                               <span className="bg-green-100 text-green-700 border border-green-200 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest inline-block shadow-sm">Action Taken</span>
                              </td>
                            </tr>
                          ))}
+                         {actionedReports.length === 0 && (
+                           <tr>
+                             <td colSpan={4} className="py-12 text-center text-gray-400 text-sm italic border-b border-gray-100">No resolved reports history available.</td>
+                           </tr>
+                         )}
                        </tbody>
                      </table>
                    </div>
                  </div>
-               )}
-             </div>
+                 )}
+               </div>
              </div>
            )}
 
@@ -668,17 +685,22 @@ export default function AdminDashboard() {
               <div className="p-6 flex-1 flex flex-col lg:flex-row gap-8 overflow-hidden">
               
               {/* LEFT COLUMN: Pending Queue */}
-              <div className="lg:w-1/3 h-full flex flex-col gap-6">
+              <div className="lg:w-1/3 h-full flex flex-col gap-4">
+                
+                <div className="flex gap-2">
+                  <button onClick={() => setActiveSubTab('pending')} className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-widest rounded transition-colors ${activeSubTab === 'pending' ? 'bg-gov-gold text-white shadow-md' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>Pending ({claims.filter(c => c.status === 'Pending Review').length})</button>
+                  <button onClick={() => setActiveSubTab('verified')} className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-widest rounded transition-colors ${activeSubTab === 'verified' ? 'bg-green-600 text-white shadow-md' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>Verified ({claims.filter(c => c.status === 'Verified' || c.status === 'Blockchain Anchored').length})</button>
+                </div>
+
                 <div className="bg-white/80 backdrop-blur-md border-t-4 border-gov-gold rounded-2xl shadow-xl flex-1 flex flex-col overflow-hidden">
                   <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                     <h3 className="font-serif-official font-bold text-gov-blue text-xs tracking-widest uppercase flex items-center gap-2">
-                      <Database size={14} className="text-gov-gold"/> Pending Verification
+                      <Database size={14} className="text-gov-gold"/> {activeSubTab === 'pending' ? 'Pending Verification' : 'Verified Claims'}
                     </h3>
-                    <span className="bg-gov-gold text-white px-2 py-0.5 rounded text-[9px] font-bold shadow-sm">{claims.filter(c => c.status === 'Pending Review').length} IN QUEUE</span>
                   </div>
-                  <div className="overflow-y-auto flex-1 divide-y divide-gray-100">
+                  <div className="overflow-y-auto flex-1 divide-y divide-gray-100 custom-scrollbar">
                     
-                    {claims.map(claim => (
+                    {claims.filter(c => activeSubTab === 'pending' ? c.status === 'Pending Review' : (c.status === 'Verified' || c.status === 'Blockchain Anchored')).map(claim => (
                       <div 
                         key={claim.id} 
                         onClick={() => setActiveClaim(claim)}
@@ -690,9 +712,9 @@ export default function AdminDashboard() {
                         </div>
                         <h4 className={`font-bold text-sm mb-1 leading-snug ${activeClaim?.id === claim.id ? 'text-gray-900' : 'text-gray-600'}`}>{claim.title}</h4>
                         <div className="flex justify-between items-center mt-2">
-                          <p className="text-xs text-gray-500 line-clamp-1">{claim.raw_description}</p>
-                          <span className={`text-[8px] font-bold px-2 py-0.5 rounded uppercase tracking-widest ml-2 shrink-0 ${claim.status === 'Pending Review' ? 'bg-yellow-100 text-yellow-700' : claim.status === 'Verified' ? 'bg-green-100 text-green-700' : claim.status === 'Rejected' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}`}>
-                            {claim.status}
+                          <p className="text-xs text-gray-500 line-clamp-1 flex-1 pr-2">{claim.raw_description}</p>
+                          <span className={`text-[8px] font-bold px-2 py-0.5 rounded uppercase tracking-widest shrink-0 ${claim.status === 'Pending Review' ? 'bg-yellow-100 text-yellow-700' : claim.status === 'Verified' ? 'bg-green-100 text-green-700' : claim.status === 'Rejected' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}`}>
+                            {claim.status === 'Blockchain Anchored' ? 'ANCHORED' : claim.status}
                           </span>
                         </div>
                       </div>
