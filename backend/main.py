@@ -38,6 +38,7 @@ def save_report(report_data):
     reports = get_all_reports()
     report_data["id"] = len(reports) + 1
     reports.insert(0, report_data) # prepend
+    reports = reports[:100] # Restrict to 100 to prevent memory bloat
     with open(REPORTS_FILE, "w") as f:
         json.dump(reports, f, indent=4)
     return report_data
@@ -201,6 +202,7 @@ def api_ip_sakti(request: ChatRequest):
     processed_image = request.image_base64
     if processed_image and processed_image.startswith("data:application/pdf;base64,"):
         try:
+            import gc
             pdf_b64 = processed_image.split(",")[1]
             pdf_bytes = base64.b64decode(pdf_b64)
             doc = fitz.open(stream=pdf_bytes, filetype="pdf")
@@ -210,7 +212,15 @@ def api_ip_sakti(request: ChatRequest):
                 jpg_bytes = pix.tobytes("jpeg")
                 jpg_b64 = base64.b64encode(jpg_bytes).decode('utf-8')
                 processed_image = f"data:image/jpeg;base64,{jpg_b64}"
+                
+                # Free uncompressed C-buffers to prevent OOM
+                del pix
+                del page
+                
             doc.close()
+            del doc
+            del pdf_bytes
+            gc.collect()
         except Exception as e:
             logging.error(f"PDF conversion failed: {e}")
             # If PDF conversion fails, clear the image to avoid breaking the chat
@@ -256,7 +266,7 @@ def get_claims():
     if not supabase:
         raise HTTPException(status_code=500, detail="Database connection not configured")
     try:
-        response = supabase.table("claims").select("*").order("created_at", desc=True).execute()
+        response = supabase.table("claims").select("*").order("created_at", desc=True).limit(100).execute()
         return {"status": "success", "claims": response.data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -359,7 +369,7 @@ def get_patents():
     if not supabase:
         raise HTTPException(status_code=500, detail="Database connection not configured")
     try:
-        response = supabase.table("patents").select("*").limit(3000).execute()
+        response = supabase.table("patents").select("*").limit(100).execute()
         patents = response.data
         for p in patents:
             p['created_at'] = '2023-01-01T00:00:00Z'
