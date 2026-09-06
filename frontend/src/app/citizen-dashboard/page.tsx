@@ -15,7 +15,7 @@ import {
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
-import html2canvas from 'html2canvas'
+import { toPng } from 'html-to-image'
 import { jsPDF } from 'jspdf'
 import { supabase } from '@/utils/supabase'
 import Logo from '@/components/Logo'
@@ -1279,17 +1279,16 @@ export default function CitizenDashboard() {
                         const cert = document.getElementById('printable-certificate');
                         if (!cert) return;
                         
-                        const canvas = await html2canvas(cert, {
-                          scale: 3, // High resolution
-                          useCORS: true,
-                          logging: false,
-                          backgroundColor: '#fdfbf7'
+                        const imgData = await toPng(cert, {
+                          quality: 1.0,
+                          pixelRatio: 3,
+                          backgroundColor: '#fdfbf7',
+                          style: { transform: 'scale(1)' } // Prevent any weird scaling issues
                         });
                         
-                        const imgData = canvas.toDataURL('image/png', 1.0);
-                        
-                        const w = Math.round(canvas.width);
-                        const h = Math.round(canvas.height);
+                        // toPng returns a base64 string directly
+                        const w = Math.round(cert.offsetWidth);
+                        const h = Math.round(cert.offsetHeight);
                         
                         const pdf = new jsPDF({
                           orientation: w > h ? 'landscape' : 'portrait',
