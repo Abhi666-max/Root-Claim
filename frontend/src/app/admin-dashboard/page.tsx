@@ -141,6 +141,13 @@ export default function AdminDashboard() {
     } catch(e) {}
   };
 
+  const handleReviewReport = async (reportId: string) => {
+    try {
+      await axios.delete(`https://root-claim.onrender.com/api/v1/reports/${reportId}`);
+      fetchReports();
+    } catch(e) {}
+  };
+
   const handleDeleteAlert = async (id: number) => {
     try {
       await axios.delete(`https://root-claim.onrender.com/api/v1/broadcasts/${id}`);
@@ -568,9 +575,12 @@ export default function AdminDashboard() {
                              <span className="bg-red-100 text-red-700 border border-red-200 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest animate-pulse inline-block">{report.risk_level}</span>
                            </td>
                            <td className="py-4">
-                             <button className="bg-white hover:bg-gray-50 text-gov-blue border border-gray-300 px-4 py-2 rounded text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center gap-2 shadow-sm">
-                               <Eye size={12} /> Review
-                             </button>
+                            <button 
+                              onClick={() => setShowConfirmModal({isOpen: true, action: 'ReviewReport', meta: report})}
+                              className="bg-white hover:bg-gray-50 text-gov-blue border border-gray-300 px-4 py-2 rounded text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center gap-2 shadow-sm"
+                            >
+                              <Eye size={12} /> Review
+                            </button>
                            </td>
                          </tr>
                        ))}
@@ -825,7 +835,12 @@ export default function AdminDashboard() {
               {showConfirmModal.action === 'Broadcast' && "You are about to push a high-priority alert to all connected Citizen Dashboards globally. Ensure the message is accurate and verified."}
               {showConfirmModal.action === 'Error' && showConfirmModal.meta}
               {showConfirmModal.action === 'ReviewReport' && (
-                <span className="block border-l-4 border-gov-gold pl-4 bg-yellow-50 p-4 font-mono text-xs">{showConfirmModal.meta}</span>
+                <span className="block border-l-4 border-gov-gold pl-4 bg-yellow-50 p-4 rounded text-left">
+                  <span className="text-xs text-gray-500 font-bold uppercase tracking-widest mb-1 block">Target Domain/URL</span>
+                  <span className="font-mono text-sm text-gray-800 mb-4 block">{showConfirmModal.meta?.target_url}</span>
+                  <span className="text-xs text-gray-500 font-bold uppercase tracking-widest mb-1 block">Context Evidence</span>
+                  <span className="text-sm text-gray-700 italic block">{showConfirmModal.meta?.context}</span>
+                </span>
               )}
             </p>
             <div className="flex gap-4">
@@ -851,7 +866,10 @@ export default function AdminDashboard() {
                     handleBlockchainLock();
                   } else if(showConfirmModal.action === 'Logout') {
                     window.location.href = "/";
-                  } else if(showConfirmModal.action === 'Error' || showConfirmModal.action === 'ReviewReport') {
+                  } else if(showConfirmModal.action === 'ReviewReport') {
+                    handleReviewReport(showConfirmModal.meta?.id);
+                    setShowConfirmModal({isOpen: false, action: null});
+                  } else if(showConfirmModal.action === 'Error') {
                     setShowConfirmModal({isOpen: false, action: null});
                   }
                 }}
@@ -862,7 +880,7 @@ export default function AdminDashboard() {
                   'bg-gov-gold hover:bg-yellow-600'
                 }`}
               >
-                {showConfirmModal.action === 'Error' ? 'Dismiss' : showConfirmModal.action === 'ReviewReport' ? 'Dismiss Review' : `Confirm ${showConfirmModal.action === 'DeleteAlert' ? 'Deletion' : showConfirmModal.action === 'Broadcast' ? 'Broadcast' : showConfirmModal.action}`}
+                {showConfirmModal.action === 'Error' ? 'Dismiss' : showConfirmModal.action === 'ReviewReport' ? 'Mark Action Taken' : `Confirm ${showConfirmModal.action === 'DeleteAlert' ? 'Deletion' : showConfirmModal.action === 'Broadcast' ? 'Broadcast' : showConfirmModal.action}`}
               </button>
             </div>
           </div>

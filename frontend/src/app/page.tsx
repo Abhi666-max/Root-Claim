@@ -298,9 +298,6 @@ export default function LandingPage() {
           <p className="text-[10px] text-gray-500 font-semibold">
             &copy; {new Date().getFullYear()} Ministry of Ayush, Government of India. All rights reserved.
           </p>
-          <p className="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-bold">
-            Designed & Developed by <span className="text-gov-gold">Abhijeet Kangane</span>
-          </p>
         </div>
       </footer>
     </div>

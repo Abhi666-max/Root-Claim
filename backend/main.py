@@ -148,13 +148,24 @@ def submit_report(request: ReportRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.delete("/api/v1/reports/{report_id}")
+def delete_report(report_id: str):
+    try:
+        reports = get_all_reports()
+        reports = [r for r in reports if str(r.get("id")) != report_id]
+        with open(REPORTS_FILE, "w") as f:
+            json.dump(reports, f, indent=4)
+        return {"status": "success"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/api/v1/claims/{user_id}")
 def get_user_claims(user_id: str):
     if not supabase:
         raise HTTPException(status_code=500, detail="Database connection not configured")
     try:
-        res = supabase.table("claims").select("*").eq("user_id", user_id).execute()
-        return {"claims": res.data}
+        res = supabase.table("claims").select("*").eq("user_id", user_id).order("created_at", desc=True).limit(100).execute()
+        return {"status": "success", "claims": res.data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -248,14 +259,20 @@ def create_claim(request: ClaimRequest):
     if not supabase:
         raise HTTPException(status_code=500, detail="Database connection not configured")
     try:
+        if request.user_id:
+            try:
+                # Upsert user into public.users to prevent Foreign Key constraints from failing
+                supabase.table("users").upsert({"id": request.user_id, "email": f"{request.user_id}@citizen.local", "role": "Citizen"}).execute()
+            except Exception:
+                pass
+                
         data, _ = supabase.table("claims").insert({
+            "user_id": request.user_id if request.user_id else None,
             "title": request.title,
             "raw_description": request.raw_description,
             "ai_formatted_claim": request.ai_formatted_claim,
             "collision_score": request.collision_score,
             "status": "Pending Review",
-            # Assigning a dummy user ID if missing, or use provided
-            # user_id must be a UUID format, for hackathon we just assume it's omitted or valid
         }).execute()
         return {"status": "success", "data": data[1] if data and len(data) > 1 else data}
     except Exception as e:

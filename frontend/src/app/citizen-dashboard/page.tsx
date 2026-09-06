@@ -22,7 +22,7 @@ import Logo from '@/components/Logo'
 
 export default function CitizenDashboard() {
   const router = useRouter()
-  const [citizenData, setCitizenData] = useState<{full_name: string, email: string} | null>(null)
+  const [citizenData, setCitizenData] = useState<{full_name: string, email: string, id: string} | null>(null)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   
   useEffect(() => {
@@ -34,15 +34,19 @@ export default function CitizenDashboard() {
           if (!user) {
             router.push('/login')
           } else {
-            setCitizenData({
+            const data = {
               full_name: user.user_metadata?.full_name || 'Citizen',
-              email: user.email || ''
-            })
+              email: user.email || '',
+              id: user.id
+            };
+            setCitizenData(data)
+            fetchMyClaims(data.id)
           }
         }
       } catch (error) {
         if (isMounted) {
-          setCitizenData({ full_name: 'Citizen', email: 'citizen@india.gov.in' })
+          setCitizenData({ full_name: 'Citizen', email: 'citizen@india.gov.in', id: 'UID-992-881' })
+          fetchMyClaims('UID-992-881')
         }
       }
     }
@@ -50,7 +54,7 @@ export default function CitizenDashboard() {
     
     const timeout = setTimeout(() => {
       if (isMounted && !citizenData) {
-        setCitizenData({ full_name: 'Citizen', email: 'Session Expired' })
+        setCitizenData({ full_name: 'Citizen', email: 'Session Expired', id: 'UID-992-881' })
       }
     }, 5000)
 
@@ -61,6 +65,8 @@ export default function CitizenDashboard() {
   }, [router, citizenData])
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showProfileEdit, setShowProfileEdit] = useState(false);
+  const [editProfileName, setEditProfileName] = useState('');
 
   const handleLogoutConfirm = async () => {
     await supabase.auth.signOut()
@@ -128,10 +134,11 @@ export default function CitizenDashboard() {
   // Real DB Claims
   const [myClaims, setMyClaims] = useState<any[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [activeCertClaim, setActiveCertClaim] = useState<any>(null)
 
-  const fetchMyClaims = async () => {
+  const fetchMyClaims = async (userId: string) => {
     try {
-      const res = await axios.get('https://root-claim.onrender.com/api/v1/claims')
+      const res = await axios.get(`https://root-claim.onrender.com/api/v1/claims/${userId}`)
       if (res.data.status === 'success') {
         setMyClaims(res.data.claims)
       }
@@ -142,12 +149,11 @@ export default function CitizenDashboard() {
 
   useEffect(() => {
     // eslint-disable-next-line
-    fetchMyClaims()
     fetchUserStats()
     
     const interval = setInterval(() => {
       // eslint-disable-next-line
-    fetchMyClaims()
+      if (citizenData?.id) fetchMyClaims(citizenData.id)
       fetchUserStats()
     }, 5000)
     
@@ -280,14 +286,14 @@ export default function CitizenDashboard() {
     setIsSubmitting(true);
     try {
       await axios.post('https://root-claim.onrender.com/api/v1/claims', {
-        user_id: "UID-992-881",
+        user_id: citizenData?.id || "UID-992-881",
         title: rawText.split('\n')[0].substring(0, 50) || "Untitled Knowledge",
         raw_description: rawText,
         ai_formatted_claim: formattedClaim || "",
         collision_score: radarResult ? radarResult.similarity_percentage : 0
       });
       // eslint-disable-next-line
-    fetchMyClaims();
+      if (citizenData?.id) fetchMyClaims(citizenData.id);
       setShowSubmitModal(true);
       
       // Reset form
@@ -407,15 +413,18 @@ export default function CitizenDashboard() {
         <div className="p-4 border-t border-slate-200 bg-[#f8f9fa]">
           <div className="bg-white p-4 rounded mb-4 shadow-sm border border-slate-200">
             <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-bold">Logged in as</p>
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-full bg-gov-blue text-white flex items-center justify-center font-serif-official shadow-md border-2 border-gov-gold/30">
-                <User size={20} />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-gov-blue truncate w-32">{citizenData?.full_name || 'Loading...'}</p>
-                <p className="text-[10px] text-gray-500 truncate w-32">{citizenData?.email || 'Loading...'}</p>
-              </div>
+            <div className="flex items-center gap-3 mb-3 hover:bg-slate-50 p-2 rounded-lg transition-colors cursor-pointer" onClick={() => {
+            setEditProfileName(citizenData?.full_name || '');
+            setShowProfileEdit(true);
+          }}>
+            <div className="w-10 h-10 rounded-full bg-gov-blue text-white flex items-center justify-center font-bold text-lg shadow-inner">
+              {citizenData?.full_name ? citizenData.full_name.charAt(0).toUpperCase() : 'U'}
             </div>
+            <div>
+              <p className="text-sm font-bold text-gov-blue truncate w-32 group-hover:text-gov-gold transition-colors">{citizenData?.full_name || 'Loading...'}</p>
+              <p className="text-[10px] text-gray-500 truncate w-32">{citizenData?.email || 'Loading...'}</p>
+            </div>
+          </div>
             <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-green-50 border border-green-200 rounded text-[9px] text-green-700 font-bold uppercase tracking-widest w-full justify-center">
               <CheckCircle size={10} /> Verified TKDL Contributor
             </div>
@@ -855,7 +864,10 @@ export default function CitizenDashboard() {
                           <td className="p-5 pr-8 text-right">
                             {claim.status === 'Blockchain Anchored' ? (
                               <button 
-                                onClick={() => setShowCertificateModal(true)}
+                                onClick={() => {
+                                  setActiveCertClaim(claim);
+                                  setShowCertificateModal(true);
+                                }}
                                 className="bg-gov-blue text-white border border-gov-blue px-4 py-2 text-[10px] font-bold tracking-widest uppercase hover:bg-[#081729] transition-colors ml-auto flex items-center gap-2 justify-center"
                               >
                                 <Download size={12} /> View Certificate
@@ -1219,10 +1231,10 @@ export default function CitizenDashboard() {
                     <h2 className="text-xs md:text-sm font-bold text-gov-gold uppercase tracking-[0.2em] mb-6 md:mb-10 border-b border-gov-gold pb-4 inline-block px-4 md:px-12">Ministry of Ayush • Government of India</h2>
                     
                     <p className="text-md md:text-lg text-gray-700 italic mb-2 font-serif-official">This is to officially certify that</p>
-                    <h3 className="text-xl md:text-2xl font-bold text-gov-blue mb-4 md:mb-6 uppercase tracking-wider underline decoration-gov-gold decoration-2 underline-offset-8">Abhijeet Kangane</h3>
+                    <h3 className="text-xl md:text-2xl font-bold text-gov-blue mb-4 md:mb-6 uppercase tracking-wider underline decoration-gov-gold decoration-2 underline-offset-8">{citizenData?.full_name || 'Citizen'}</h3>
                     
                     <p className="text-md md:text-lg text-gray-700 italic mb-2 font-serif-official">has successfully documented the traditional knowledge claim titled:</p>
-                    <h3 className="text-lg md:text-xl font-bold text-gov-blue mb-6 md:mb-10 px-4 md:px-8 leading-snug">&quot;{formattedClaim ? formattedClaim.split('\n')[0].replace('TITLE:', '').trim() : 'Traditional Ayurvedic Botanical Formulation'}&quot;</h3>
+                    <h3 className="text-lg md:text-xl font-bold text-gov-blue mb-6 md:mb-10 px-4 md:px-8 leading-snug">&quot;{activeCertClaim?.title || (formattedClaim ? formattedClaim.split('\n')[0].replace('TITLE:', '').trim() : 'Traditional Ayurvedic Botanical Formulation')}&quot;</h3>
                     
                     <p className="text-xs md:text-sm text-gray-600 italic mb-8 md:mb-12 font-serif-official max-w-2xl px-4 md:px-12 leading-relaxed">
                       This formulation has been digitally verified, cryptographically hashed, and securely anchored to the decentralized vault under the Traditional Knowledge Digital Library (TKDL) framework to protect against bio-piracy.
@@ -1231,7 +1243,7 @@ export default function CitizenDashboard() {
                     <div className="w-full flex justify-between items-end mt-auto border-t-2 border-gray-200 pt-6 md:pt-8 px-4 md:px-8">
                       <div className="text-left">
                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Registration ID</p>
-                        <p className="font-mono text-md font-bold text-gov-blue tracking-wider">TK-2026-8472</p>
+                        <p className="font-mono text-md font-bold text-gov-blue tracking-wider">TK-{(activeCertClaim?.id || '2026-8472').substring(0, 8)}</p>
                       </div>
                       
                       {/* Premium CSS Seal */}
@@ -1245,7 +1257,7 @@ export default function CitizenDashboard() {
                       
                       <div className="text-right">
                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Date of Registry</p>
-                        <p className="font-mono text-md font-bold text-gov-blue tracking-wider">AUG 26, 2026</p>
+                        <p className="font-mono text-md font-bold text-gov-blue tracking-wider">{activeCertClaim?.created_at ? new Date(activeCertClaim.created_at).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'}).toUpperCase() : 'AUG 26, 2026'}</p>
                       </div>
                     </div>
                   </div>
@@ -1263,7 +1275,7 @@ export default function CitizenDashboard() {
                       <p className="text-sm font-bold text-red-700">PDF Generation Failed</p>
                       <p className="text-xs text-red-600">{certError}</p>
                     </div>
-                    <button onClick={() => setCertError(null)} className="text-red-400 hover:text-red-700">
+                    <button onClick={() => setErrorMsg(null)} className="text-red-400 hover:text-red-700">
                       <X size={16} />
                     </button>
                   </div>
@@ -1430,26 +1442,25 @@ export default function CitizenDashboard() {
 
         </div>
       </main>
-      {/* LOGOUT CONFIRMATION MODAL */}
+      {/* Logout Modal */}
       {showLogoutModal && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full border-t-4 border-gov-blue">
-            <h3 className="text-xl font-bold font-serif-official mb-4 text-gov-blue flex items-center gap-3">
-              <LogOut className="text-red-600"/> Confirm Logout
-            </h3>
-            <p className="text-sm text-gray-600 mb-8 leading-relaxed">
-              Are you sure you want to securely end this session? You will need to re-authenticate to access the citizen portal.
-            </p>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl border-t-4 border-red-600">
+            <h3 className="text-xl font-bold text-gov-blue mb-4">Logout Confirmation</h3>
+            <p className="text-sm text-gray-600 mb-8">Are you sure you want to log out of the IP-SAKTI Citizen Portal?</p>
             <div className="flex gap-4">
               <button 
                 onClick={() => setShowLogoutModal(false)}
-                className="flex-1 py-3 bg-gray-100 text-gray-700 font-bold uppercase tracking-widest text-xs rounded hover:bg-gray-200 transition-colors"
+                className="flex-1 py-3 text-gov-blue font-bold uppercase tracking-widest text-xs rounded border border-gray-200 hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>
               <button 
-                onClick={handleLogoutConfirm}
-                className="flex-1 py-3 bg-red-600 text-white font-bold uppercase tracking-widest text-xs rounded hover:bg-red-700 transition-colors shadow-md"
+                onClick={async () => {
+                  await supabase.auth.signOut();
+                  router.push('/');
+                }}
+                className="flex-1 py-3 text-white font-bold uppercase tracking-widest text-xs rounded bg-red-600 hover:bg-red-700 transition-colors shadow-md"
               >
                 Logout
               </button>
@@ -1458,10 +1469,48 @@ export default function CitizenDashboard() {
         </div>
       )}
 
+      {/* Profile Edit Modal */}
+      {showProfileEdit && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl border-t-4 border-gov-gold relative">
+            <button onClick={() => setShowProfileEdit(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-900 transition-colors">
+              <X size={20} />
+            </button>
+            <h3 className="text-xl font-bold text-gov-blue mb-2">Edit Profile</h3>
+            <p className="text-xs text-gray-500 mb-6 uppercase tracking-widest font-bold">Update your official certificate name</p>
+            
+            <div className="mb-6">
+              <label className="block text-xs font-bold text-gov-blue uppercase tracking-widest mb-2">Full Name</label>
+              <input 
+                type="text" 
+                value={editProfileName}
+                onChange={(e) => setEditProfileName(e.target.value)}
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded text-sm text-gov-blue font-bold focus:outline-none focus:ring-2 focus:ring-gov-gold/50"
+                placeholder="Enter your real name"
+              />
+            </div>
+
+            <div className="flex gap-4">
+              <button 
+                onClick={async () => {
+                  if (citizenData && editProfileName.trim()) {
+                    setCitizenData({...citizenData, full_name: editProfileName});
+                    try {
+                      await supabase.auth.updateUser({ data: { full_name: editProfileName } });
+                    } catch (e) {
+                      // ignore error
+                    }
+                  }
+                  setShowProfileEdit(false);
+                }}
+                className="flex-1 py-3 text-white font-bold uppercase tracking-widest text-xs rounded bg-gov-blue hover:bg-[#081729] transition-colors shadow-md"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
-
-
-
-
