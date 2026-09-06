@@ -1193,11 +1193,11 @@ export default function CitizenDashboard() {
 
           {/* Certificate Modal */}
           {showCertificateModal && (
-            <div className="fixed inset-0 bg-black/60 z-50 flex items-start justify-center p-4 overflow-y-auto pt-10 pb-20 print:static print:bg-white print:p-0 print:m-0 print:h-screen print:w-full print:block print:z-50">
-              <div className="bg-white max-w-3xl w-full p-2 shadow-2xl relative border border-gray-200 my-8 shrink-0 print:shadow-none print:border-none print:m-0 print:p-0 print:w-full print:max-w-none">
+            <div id="print-modal-wrapper" className="fixed inset-0 bg-black/60 z-50 flex items-start justify-center p-4 overflow-y-auto pt-10 pb-20">
+              <div className="bg-white max-w-3xl w-full p-2 shadow-2xl relative border border-gray-200 my-8 shrink-0">
                 
                 {/* Print wrapper to enforce exact styling for PDF */}
-                <div id="printable-certificate" className="bg-[#fdfbf7] p-8 md:p-12 border-8 border-double border-gov-gold relative overflow-hidden flex flex-col print:border-8 print:p-8 print:h-[285mm] print:w-[210mm] print:scale-95 print:origin-top print:flex print:items-center print:justify-center mx-auto">
+                <div id="printable-certificate" className="bg-[#fdfbf7] p-8 md:p-12 border-8 border-double border-gov-gold relative overflow-hidden flex flex-col mx-auto">
                   
                   {/* Subtle Background Watermark */}
                   <div className="absolute inset-0 opacity-5 flex items-center justify-center pointer-events-none">
