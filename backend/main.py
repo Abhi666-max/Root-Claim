@@ -108,8 +108,8 @@ def api_user_stats(user_id: str):
         return {"drafted": 0, "under_verification": 0, "secured": 0}
         
     try:
-        # Get all claims for the demo user
-        res = supabase.table("claims").select("status").execute()
+        # Get all claims strictly for this user
+        res = supabase.table("claims").select("status").eq("user_id", user_id).execute()
         claims = res.data
         
         drafted = len([c for c in claims if c["status"] == "Drafted"])

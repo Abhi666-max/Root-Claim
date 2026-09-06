@@ -19,10 +19,44 @@ import { toPng } from 'html-to-image'
 import { jsPDF } from 'jspdf'
 import { supabase } from '@/utils/supabase'
 import Logo from '@/components/Logo'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 export default function CitizenDashboard() {
   const router = useRouter()
-  const [citizenData, setCitizenData] = useState<{full_name: string, email: string, id: string} | null>(null)
+  const [citizenData, setCitizenData] = useState<{full_name: string, email: string, id: string, age?: string, gender?: string, mobile?: string} | null>(null)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  
+  useEffect(() => {
+    let isMounted = true
+    const fetchUser = async () => {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @next/next/no-img-element */
+"use client"
+
+import React, { useState, useEffect } from 'react'
+import { 
+  User, Download, 
+  CheckCircle, Clock, Home, FileText, 
+  AlertTriangle, UploadCloud, 
+  MessageSquare, Send, Menu, X,
+  Sparkles, ShieldAlert, Cpu, Link as LinkIcon, Globe, Activity, ShieldCheck,
+  Paperclip, Image as ImageIcon, LogOut
+} from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import axios from 'axios'
+import { toPng } from 'html-to-image'
+import { jsPDF } from 'jspdf'
+import { supabase } from '@/utils/supabase'
+import Logo from '@/components/Logo'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+
+export default function CitizenDashboard() {
+  const router = useRouter()
+  const [citizenData, setCitizenData] = useState<{full_name: string, email: string, id: string, age?: string, gender?: string, mobile?: string} | null>(null)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   
   useEffect(() => {
@@ -37,7 +71,10 @@ export default function CitizenDashboard() {
             const data = {
               full_name: user.user_metadata?.full_name || 'Citizen',
               email: user.email || '',
-              id: user.id
+              id: user.id,
+              age: user.user_metadata?.age || '',
+              gender: user.user_metadata?.gender || '',
+              mobile: user.user_metadata?.mobile || ''
             };
             setCitizenData(data)
             fetchMyClaims(data.id)
@@ -66,7 +103,7 @@ export default function CitizenDashboard() {
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
-  const [editProfileName, setEditProfileName] = useState('');
+  const [editProfileData, setEditProfileData] = useState({full_name: '', age: '', gender: '', mobile: ''});
 
   const handleLogoutConfirm = async () => {
     await supabase.auth.signOut()
@@ -414,7 +451,12 @@ export default function CitizenDashboard() {
           <div className="bg-white p-4 rounded mb-4 shadow-sm border border-slate-200">
             <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-bold">Logged in as</p>
             <div className="flex items-center gap-3 mb-3 hover:bg-slate-50 p-2 rounded-lg transition-colors cursor-pointer" onClick={() => {
-            setEditProfileName(citizenData?.full_name || '');
+            setEditProfileData({
+              full_name: citizenData?.full_name || '',
+              age: citizenData?.age || '',
+              gender: citizenData?.gender || '',
+              mobile: citizenData?.mobile || ''
+            });
             setShowProfileEdit(true);
           }}>
             <div className="w-10 h-10 rounded-full bg-gov-blue text-white flex items-center justify-center font-bold text-lg shadow-inner">
@@ -1097,13 +1139,21 @@ export default function CitizenDashboard() {
                         
                         {msg.content.includes("DISCLAIMER:") ? (
                           <>
-                            <div className="leading-relaxed whitespace-pre-wrap mb-4">{msg.content.split("DISCLAIMER:")[0]}</div>
-                            <div className="text-[10px] italic text-gray-500 bg-gray-50 border-t border-gray-100 p-2 rounded-b-sm font-serif">
-                              <strong>DISCLAIMER:</strong> {msg.content.split("DISCLAIMER:")[1]}
+                            <div className="leading-relaxed prose prose-sm max-w-none text-gray-800">
+                              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {msg.content.split("DISCLAIMER:")[0]}
+                              </ReactMarkdown>
                             </div>
+                            <p className="text-[10px] text-gray-500 mt-3 pt-3 border-t border-gray-200 italic font-medium">
+                              DISCLAIMER: {msg.content.split("DISCLAIMER:")[1]}
+                            </p>
                           </>
                         ) : (
-                          <div className="leading-relaxed whitespace-pre-wrap">{msg.content}</div>
+                          <div className="leading-relaxed prose prose-sm max-w-none text-gray-800">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                              {msg.content}
+                            </ReactMarkdown>
+                          </div>
                         )}
                         
                         {msg.sources && msg.sources.length > 0 && (
@@ -1471,41 +1521,87 @@ export default function CitizenDashboard() {
 
       {/* Profile Edit Modal */}
       {showProfileEdit && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl border-t-4 border-gov-gold relative">
-            <button onClick={() => setShowProfileEdit(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-900 transition-colors">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl border-t-4 border-gov-gold relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gov-gold/10 rounded-bl-full -z-10"></div>
+            <button onClick={() => setShowProfileEdit(false)} className="absolute top-5 right-5 text-gray-400 hover:text-gray-900 transition-colors bg-white/50 rounded-full p-1 backdrop-blur-sm">
               <X size={20} />
             </button>
-            <h3 className="text-xl font-bold text-gov-blue mb-2">Edit Profile</h3>
-            <p className="text-xs text-gray-500 mb-6 uppercase tracking-widest font-bold">Update your official certificate name</p>
+            <h3 className="text-2xl font-bold text-gov-blue mb-1 font-serif-official">Citizen Profile</h3>
+            <p className="text-[10px] text-gray-500 mb-6 uppercase tracking-[0.2em] font-bold">Update your official identity details</p>
             
-            <div className="mb-6">
-              <label className="block text-xs font-bold text-gov-blue uppercase tracking-widest mb-2">Full Name</label>
-              <input 
-                type="text" 
-                value={editProfileName}
-                onChange={(e) => setEditProfileName(e.target.value)}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded text-sm text-gov-blue font-bold focus:outline-none focus:ring-2 focus:ring-gov-gold/50"
-                placeholder="Enter your real name"
-              />
+            <div className="space-y-4 mb-8">
+              <div>
+                <label className="block text-[10px] font-bold text-gov-blue uppercase tracking-widest mb-1.5 ml-1">Full Legal Name</label>
+                <input 
+                  type="text" 
+                  value={editProfileData.full_name}
+                  onChange={(e) => setEditProfileData({...editProfileData, full_name: e.target.value})}
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gov-blue font-bold focus:outline-none focus:ring-2 focus:ring-gov-gold/50 transition-shadow"
+                  placeholder="Enter your real name"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-bold text-gov-blue uppercase tracking-widest mb-1.5 ml-1">Age</label>
+                  <input 
+                    type="number" 
+                    value={editProfileData.age}
+                    onChange={(e) => setEditProfileData({...editProfileData, age: e.target.value})}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gov-blue font-bold focus:outline-none focus:ring-2 focus:ring-gov-gold/50 transition-shadow"
+                    placeholder="e.g. 35"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-gov-blue uppercase tracking-widest mb-1.5 ml-1">Gender</label>
+                  <select 
+                    value={editProfileData.gender}
+                    onChange={(e) => setEditProfileData({...editProfileData, gender: e.target.value})}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gov-blue font-bold focus:outline-none focus:ring-2 focus:ring-gov-gold/50 transition-shadow appearance-none"
+                  >
+                    <option value="">Select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-gov-blue uppercase tracking-widest mb-1.5 ml-1">Mobile Number</label>
+                <input 
+                  type="tel" 
+                  value={editProfileData.mobile}
+                  onChange={(e) => setEditProfileData({...editProfileData, mobile: e.target.value})}
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gov-blue font-bold focus:outline-none focus:ring-2 focus:ring-gov-gold/50 transition-shadow"
+                  placeholder="+91 XXXXX XXXXX"
+                />
+              </div>
             </div>
 
             <div className="flex gap-4">
               <button 
                 onClick={async () => {
-                  if (citizenData && editProfileName.trim()) {
-                    setCitizenData({...citizenData, full_name: editProfileName});
+                  if (citizenData && editProfileData.full_name.trim()) {
+                    const newData = {...citizenData, ...editProfileData};
+                    setCitizenData(newData);
                     try {
-                      await supabase.auth.updateUser({ data: { full_name: editProfileName } });
+                      await supabase.auth.updateUser({ 
+                        data: { 
+                          full_name: editProfileData.full_name,
+                          age: editProfileData.age,
+                          gender: editProfileData.gender,
+                          mobile: editProfileData.mobile
+                        } 
+                      });
                     } catch (e) {
                       // ignore error
                     }
                   }
                   setShowProfileEdit(false);
                 }}
-                className="flex-1 py-3 text-white font-bold uppercase tracking-widest text-xs rounded bg-gov-blue hover:bg-[#081729] transition-colors shadow-md"
+                className="w-full py-3.5 text-white font-bold uppercase tracking-widest text-[11px] rounded-xl bg-gov-blue hover:bg-[#081729] hover:shadow-lg transition-all"
               >
-                Save Changes
+                Secure & Save Changes
               </button>
             </div>
           </div>
