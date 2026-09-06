@@ -15,6 +15,8 @@ import {
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
+import html2canvas from 'html2canvas'
+import jsPDF from 'jspdf'
 import { supabase } from '@/utils/supabase'
 import Logo from '@/components/Logo'
 
@@ -155,6 +157,7 @@ export default function CitizenDashboard() {
   // Modal States
   const [showSubmitModal, setShowSubmitModal] = useState(false)
   const [showCertificateModal, setShowCertificateModal] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
   const [showReportModal, setShowReportModal] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
@@ -1255,40 +1258,46 @@ export default function CitizenDashboard() {
                 
                 <div className="mt-4 flex justify-center bg-gray-50 p-4 border border-gray-200 print:hidden">
                   <button 
-                    onClick={() => {
-                      const cert = document.getElementById('printable-certificate');
-                      let dynamicStyle: HTMLStyleElement | null = null;
-                      
-                      if (cert) {
-                        const rect = cert.getBoundingClientRect();
-                        const w = Math.ceil(rect.width);
-                        const h = Math.ceil(rect.height);
+                    onClick={async () => {
+                      if (isDownloading) return;
+                      setIsDownloading(true);
+                      try {
+                        const cert = document.getElementById('printable-certificate');
+                        if (!cert) return;
                         
-                        dynamicStyle = document.createElement('style');
-                        dynamicStyle.innerHTML = `
-                          @media print {
-                            @page { size: ${w}px ${h}px !important; margin: 0 !important; }
-                            #printable-certificate { width: 100vw !important; height: 100vh !important; max-width: none !important; margin: 0 !important; transform: none !important; }
-                            #print-modal-wrapper { width: 100vw !important; height: 100vh !important; }
-                          }
-                        `;
-                        document.head.appendChild(dynamicStyle);
+                        const canvas = await html2canvas(cert, {
+                          scale: 3, // High resolution
+                          useCORS: true,
+                          logging: false,
+                          backgroundColor: '#fdfbf7'
+                        });
+                        
+                        const imgData = canvas.toDataURL('image/png', 1.0);
+                        
+                        const pdf = new jsPDF({
+                          orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
+                          unit: 'px',
+                          format: [canvas.width, canvas.height],
+                          hotfixes: ["px_scaling"]
+                        });
+                        
+                        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+                        
+                        const claimIdMatch = formattedClaim ? formattedClaim.match(/TK-[A-Za-z0-9]+/) : null;
+                        const claimId = claimIdMatch ? claimIdMatch[0] : 'Unknown';
+                        
+                        pdf.save(`Ministry_of_Ayush_IP_Certificate_${claimId}.pdf`);
+                      } catch (err) {
+                        console.error("PDF generation error: ", err);
+                        alert("Failed to generate PDF. Please try again.");
+                      } finally {
+                        setIsDownloading(false);
                       }
-
-                      const oldTitle = document.title;
-                      document.title = "Ministry_of_Ayush_IP_Certificate_of_Authorship";
-                      
-                      setTimeout(() => {
-                        window.print();
-                        document.title = oldTitle;
-                        if (dynamicStyle && dynamicStyle.parentNode) {
-                          dynamicStyle.parentNode.removeChild(dynamicStyle);
-                        }
-                      }, 100);
                     }}
-                    className="bg-gov-blue text-white px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-[#081729] flex items-center gap-2 shadow-md transition-all"
+                    disabled={isDownloading}
+                    className={`text-white px-8 py-3 text-xs font-bold uppercase tracking-widest flex items-center gap-2 shadow-md transition-all ${isDownloading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gov-blue hover:bg-[#081729]'}`}
                   >
-                    <Download size={16} /> Download PDF
+                    <Download size={16} /> {isDownloading ? 'GENERATING PDF...' : 'DOWNLOAD PDF'}
                   </button>
                 </div>
               </div>
