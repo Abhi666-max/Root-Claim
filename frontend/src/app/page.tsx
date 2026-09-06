@@ -286,10 +286,10 @@ export default function LandingPage() {
           <div>
             <h4 className="font-bold tracking-widest uppercase text-gov-blue mb-4 text-xs border-b border-gov-light pb-2 inline-block">Government & Legal</h4>
             <ul className="space-y-2 text-xs text-gray-600 font-semibold">
-              <li><a href="#" className="hover:text-gov-gold transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-gov-gold transition-colors">Terms of Service</a></li>
-              <li><a href="#" className="hover:text-gov-gold transition-colors">Copyright Act</a></li>
-              <li><a href="#" className="hover:text-gov-gold transition-colors">Right to Information (RTI)</a></li>
+              <li><Link href="/privacy-policy" className="hover:text-gov-gold transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/terms" className="hover:text-gov-gold transition-colors">Terms of Service</Link></li>
+              <li><Link href="/copyright" className="hover:text-gov-gold transition-colors">Copyright Act</Link></li>
+              <li><Link href="/rti" className="hover:text-gov-gold transition-colors">Right to Information (RTI)</Link></li>
             </ul>
           </div>
         </div>

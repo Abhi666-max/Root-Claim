@@ -219,7 +219,8 @@ export default function CitizenDashboard() {
     if (myClaims) {
       const under = myClaims.filter(c => c.status === 'Pending Review' || c.status?.toLowerCase().includes('pending')).length;
       const secured = myClaims.filter(c => c.status === 'Verified' || c.status === 'Blockchain Anchored').length;
-      setUserStats({ drafted: myClaims.length, under_verification: under, secured: secured });
+      const draftedCount = myClaims.length - under - secured;
+      setUserStats({ drafted: draftedCount >= 0 ? draftedCount : 0, under_verification: under, secured: secured });
     }
   }, [myClaims]);
 
@@ -982,12 +983,26 @@ export default function CitizenDashboard() {
                             </div>
                             <div className="text-right">
                               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Status</p>
-                              <span className="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest border border-yellow-200 animate-pulse">Under Investigation</span>
+                              {report.status === 'Resolved' ? (
+                                <span className="bg-green-100 text-green-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest border border-green-200">Action Taken</span>
+                              ) : (
+                                <span className="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest border border-yellow-200 animate-pulse">Under Investigation</span>
+                              )}
                             </div>
                           </div>
                           <div className="p-6">
                             <h4 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">Investigation Timeline</h4>
                             <div className="relative pl-6 border-l-2 border-gray-200 space-y-6">
+                              {report.status === 'Resolved' && (
+                                <div className="relative">
+                                  <span className="absolute -left-[31px] bg-green-500 w-4 h-4 rounded-full border-4 border-white"></span>
+                                  <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">
+                                    {new Date(report.action_time || report.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} (Resolved)
+                                  </p>
+                                  <p className="text-sm font-bold text-green-600">Action Taken by Ministry</p>
+                                  <p className="text-xs text-gray-500 mt-1">The Ministry of Ayush has reviewed the report and taken necessary legal action.</p>
+                                </div>
+                              )}
                               <div className="relative">
                                 <span className="absolute -left-[31px] bg-yellow-500 w-4 h-4 rounded-full border-4 border-white"></span>
                                 <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">
@@ -997,7 +1012,7 @@ export default function CitizenDashboard() {
                                 <p className="text-xs text-gray-500 mt-1">Cross-referencing foreign patent claims against TKDL database and user-provided context.</p>
                               </div>
                               <div className="relative">
-                                <span className="absolute -left-[31px] bg-green-500 w-4 h-4 rounded-full border-4 border-white"></span>
+                                <span className="absolute -left-[31px] bg-gov-blue w-4 h-4 rounded-full border-4 border-white"></span>
                                 <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">
                                   {reportTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                                 </p>

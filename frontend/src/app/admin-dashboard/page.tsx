@@ -59,15 +59,6 @@ export default function AdminDashboard() {
 
   const [actionedReports, setActionedReports] = useState<any[]>([]);
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('adm_actionedReports');
-      if (saved) {
-        try { setActionedReports(JSON.parse(saved)); } catch(e) {}
-      }
-    }
-  }, []);
-
   const [liveNodes, setLiveNodes] = useState(1284);
   const [threatCount, setThreatCount] = useState(14);
   const [claimsSecured, setClaimsSecured] = useState(84725);
@@ -126,7 +117,9 @@ export default function AdminDashboard() {
   const fetchReports = async () => {
     try {
       const res = await axios.get('https://root-claim.onrender.com/api/v1/reports');
-      setReports(res.data.reports || []);
+      const allReports = res.data.reports || [];
+      setReports(allReports.filter((r: any) => r.status !== 'Resolved'));
+      setActionedReports(allReports.filter((r: any) => r.status === 'Resolved'));
     } catch(e) {}
   };
 
@@ -167,14 +160,8 @@ export default function AdminDashboard() {
 
   const handleReviewReport = async (reportId: string) => {
     try {
-      const report = reports.find((r: any) => r.id === reportId);
-      if (report) {
-        const updatedActioned = [{...report, action_time: new Date().toISOString()}, ...actionedReports];
-        setActionedReports(updatedActioned);
-        if (typeof window !== 'undefined') localStorage.setItem('adm_actionedReports', JSON.stringify(updatedActioned));
-      }
       await axios.delete(`https://root-claim.onrender.com/api/v1/reports/${reportId}`);
-      fetchReports();
+      await fetchReports();
     } catch(e) {}
   };
 

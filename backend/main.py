@@ -141,6 +141,7 @@ def submit_report(request: ReportRequest):
             "target_url": request.target_url,
             "context": request.context,
             "risk_level": request.risk_level,
+            "status": "Pending",
             "timestamp": datetime.datetime.now().isoformat()
         }
         saved = save_report(report_data)
@@ -151,8 +152,12 @@ def submit_report(request: ReportRequest):
 @app.delete("/api/v1/reports/{report_id}")
 def delete_report(report_id: str):
     try:
+        import datetime
         reports = get_all_reports()
-        reports = [r for r in reports if str(r.get("id")) != report_id]
+        for r in reports:
+            if str(r.get("id")) == report_id:
+                r["status"] = "Resolved"
+                r["action_time"] = datetime.datetime.now().isoformat()
         with open(REPORTS_FILE, "w") as f:
             json.dump(reports, f, indent=4)
         return {"status": "success"}
