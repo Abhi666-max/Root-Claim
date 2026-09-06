@@ -178,7 +178,8 @@ export default function CitizenDashboard() {
   const [reportUrl, setReportUrl] = useState('')
   const [reportContext, setReportContext] = useState('')
   const [reportError, setReportError] = useState('')
-  const [hasReported, setHasReported] = useState(false)
+  const [showReportForm, setShowReportForm] = useState(false)
+  const [myReports, setMyReports] = useState<any[]>([])
 
   // Action Confirmation Modal
   const [confirmAction, setConfirmAction] = useState<{isOpen: boolean, type: 'enhance' | 'submit' | 'whistleblower' | null}>({isOpen: false, type: null})
@@ -201,6 +202,26 @@ export default function CitizenDashboard() {
     const alertInterval = setInterval(checkAlert, 2000)
     return () => clearInterval(alertInterval)
   }, [])
+
+  useEffect(() => {
+    if (myClaims) {
+      const under = myClaims.filter(c => c.status === 'Pending Review').length;
+      const secured = myClaims.filter(c => c.status === 'Verified').length;
+      setUserStats({ drafted: myClaims.length, under_verification: under, secured: secured });
+    }
+  }, [myClaims]);
+
+  const fetchMyReports = async () => {
+    try {
+      const res = await axios.get('https://root-claim.onrender.com/api/v1/reports');
+      const userReports = res.data.reports.filter((r: any) => r.user_id === (citizenData?.id || "UID-992-881"));
+      setMyReports(userReports.reverse());
+    } catch(e) {}
+  };
+
+  useEffect(() => {
+    fetchMyReports();
+  }, [citizenData]);
 
   const handleReportSubmit = async () => {
     // Basic validation to reject random gibberish (must contain spaces, be somewhat long)
@@ -226,7 +247,10 @@ export default function CitizenDashboard() {
         context: reportContext,
         risk_level: "High" // Default or we could let them choose
       });
-      setHasReported(true);
+      await fetchMyReports();
+      setShowReportForm(false);
+      setReportUrl('');
+      setReportContext('');
       setShowReportModal(true);
     } catch (e) {
       
@@ -922,56 +946,77 @@ export default function CitizenDashboard() {
                 </div>
               </div>
               <div className="p-8 flex-1 overflow-y-auto custom-scrollbar flex flex-col items-center">
-              {hasReported ? (
-                <div className="w-full max-w-4xl bg-white border-t-4 border-yellow-500 shadow-sm p-8 rounded-xl">
+              {!showReportForm ? (
+                <div className="w-full max-w-4xl bg-white border-t-4 border-gov-blue shadow-sm p-8 rounded-xl">
                   <div className="mb-8 border-b border-gray-100 pb-6 flex items-center justify-between">
                     <div>
                       <h3 className="font-serif-official font-bold text-2xl text-gov-blue mb-2 flex items-center gap-3">
-                        <ShieldAlert className="text-yellow-500" /> Report Status Tracking
+                        <ShieldAlert className="text-gov-gold" /> My Submitted Reports
                       </h3>
                       <p className="text-sm text-gray-600">Track the investigation status of your submitted bio-piracy reports.</p>
                     </div>
-                    <button onClick={() => setHasReported(false)} className="text-xs font-bold text-gov-blue border border-gov-blue px-4 py-2 hover:bg-gov-blue hover:text-white transition-colors">Submit Another Report</button>
+                    <button onClick={() => setShowReportForm(true)} className="text-xs font-bold text-gov-blue border border-gov-blue px-4 py-2 hover:bg-gov-blue hover:text-white transition-colors flex items-center gap-2"><ShieldAlert size={14} /> Submit New Report</button>
                   </div>
                   
-                  <div className="border border-gray-200 rounded">
-                    <div className="bg-gray-50 p-4 border-b border-gray-200 flex justify-between items-center">
-                      <div>
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Target</p>
-                        <p className="text-sm font-bold text-gov-blue">{reportUrl}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Status</p>
-                        <span className="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest border border-yellow-200 animate-pulse">Under Investigation</span>
-                      </div>
-                    </div>
-                    <div className="p-6">
-                      <h4 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">Investigation Timeline</h4>
-                      <div className="relative pl-6 border-l-2 border-gray-200 space-y-6">
-                        <div className="relative">
-                          <span className="absolute -left-[31px] bg-yellow-500 w-4 h-4 rounded-full border-4 border-white"></span>
-                          <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Just Now</p>
-                          <p className="text-sm font-bold text-gov-blue">Collision Radar Analysis Initiated</p>
-                          <p className="text-xs text-gray-500 mt-1">Cross-referencing foreign patent claims against TKDL database and user-provided context.</p>
+                  {myReports.length > 0 ? (
+                    <div className="space-y-6">
+                      {myReports.map((report, idx) => {
+                        const reportTime = new Date(report.timestamp);
+                        const initiatedTime = new Date(reportTime.getTime() + 15000); // 15s after receive
+                        return (
+                        <div key={idx} className="border border-gray-200 rounded overflow-hidden">
+                          <div className="bg-gray-50 p-4 border-b border-gray-200 flex justify-between items-center">
+                            <div>
+                              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Target Patent / URL</p>
+                              <p className="text-sm font-bold text-gov-blue">{report.target_url}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Status</p>
+                              <span className="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest border border-yellow-200 animate-pulse">Under Investigation</span>
+                            </div>
+                          </div>
+                          <div className="p-6">
+                            <h4 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">Investigation Timeline</h4>
+                            <div className="relative pl-6 border-l-2 border-gray-200 space-y-6">
+                              <div className="relative">
+                                <span className="absolute -left-[31px] bg-yellow-500 w-4 h-4 rounded-full border-4 border-white"></span>
+                                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">
+                                  {initiatedTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} (Analysis Active)
+                                </p>
+                                <p className="text-sm font-bold text-gov-blue">Collision Radar Analysis Initiated</p>
+                                <p className="text-xs text-gray-500 mt-1">Cross-referencing foreign patent claims against TKDL database and user-provided context.</p>
+                              </div>
+                              <div className="relative">
+                                <span className="absolute -left-[31px] bg-green-500 w-4 h-4 rounded-full border-4 border-white"></span>
+                                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">
+                                  {reportTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                </p>
+                                <p className="text-sm font-bold text-gov-blue">Report Received</p>
+                                <p className="text-xs text-gray-500 mt-1">Securely transmitted to Ministry of Ayush.</p>
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        <div className="relative">
-                          <span className="absolute -left-[31px] bg-green-500 w-4 h-4 rounded-full border-4 border-white"></span>
-                          <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Just Now</p>
-                          <p className="text-sm font-bold text-gov-blue">Report Received</p>
-                          <p className="text-xs text-gray-500 mt-1">Securely transmitted to Ministry of Ayush.</p>
-                        </div>
-                      </div>
+                      )})}
                     </div>
-                  </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <ShieldAlert size={48} className="mx-auto text-gray-300 mb-4" />
+                      <p className="text-gray-500 font-bold">No bio-piracy reports submitted yet.</p>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="w-full max-w-4xl bg-white border-t-4 border-red-600 shadow-sm p-8 rounded-xl">
                   
-                  <div className="mb-8 border-b border-gray-100 pb-6">
-                    <h3 className="font-serif-official font-bold text-2xl text-red-700 mb-2 flex items-center gap-3">
-                      <ShieldAlert /> Report Bio-Piracy
-                    </h3>
-                    <p className="text-sm text-gray-600">If you have found a foreign entity or corporation attempting to patent or illegally sell traditional Indian medicine, report it here. The Ministry will investigate using the Collision Radar.</p>
+                  <div className="mb-8 border-b border-gray-100 pb-6 flex justify-between items-start">
+                    <div>
+                      <h3 className="font-serif-official font-bold text-2xl text-red-700 mb-2 flex items-center gap-3">
+                        <ShieldAlert /> Report Bio-Piracy
+                      </h3>
+                      <p className="text-sm text-gray-600">If you have found a foreign entity or corporation attempting to patent or illegally sell traditional Indian medicine, report it here. The Ministry will investigate using the Collision Radar.</p>
+                    </div>
+                    <button onClick={() => setShowReportForm(false)} className="text-xs font-bold text-gray-500 hover:text-gray-700 border border-gray-200 px-3 py-1 rounded transition-colors bg-gray-50">Cancel</button>
                   </div>
 
                   <div className="space-y-6">
