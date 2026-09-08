@@ -22,19 +22,21 @@ Root-Claim addresses this systemic vulnerability by automating legal literacy, s
 ## 3. Core Modules and Technical Implementation
 
 ### 3.1 IP-SAKTI Sahayak (Dual-Jurisdiction RAG Agent)
-A sophisticated conversational agent designed to provide strictly cited guidance on IP laws without hallucination.
+A sophisticated conversational agent designed to provide strictly cited guidance on IP laws without hallucination. Recently updated to serve as a comprehensive interactive guide for the platform itself.
 *   **Architecture:** Implements a localized RAG pipeline. User queries are embedded and cross-referenced against a verified database of Indian and International statutes.
+*   **Platform Integration:** Fully aware of all Root-Claim features (AI Claim Drafter, Vault Submission, Threat Radar). Can guide citizens on how to navigate the portal, draft claims, or report bio-piracy.
 *   **Jurisdictional Isolation:** The system utilizes conditional prompt engineering to separate legal contexts.
     *   *National Mode:* Confines analysis exclusively to the Indian Patents Act 1970 (Section 3(p)) and the Biological Diversity Act 2002.
-    *   *International Mode:* Analyzes queries strictly through the frameworks of the Patent Cooperation Treaty (PCT), European Patent Office (EPO), and the Nagoya Protocol, preventing domestic legal interference in global strategy.
+    *   *International Mode:* Analyzes queries strictly through the frameworks of the Patent Cooperation Treaty (PCT), European Patent Office (EPO), and the Nagoya Protocol.
 
-### 3.2 Smart Draft formulation Engine
-An automated natural language processing (NLP) pipeline that translates conversational, vernacular descriptions of traditional remedies into formal, legally structured patent claims.
-*   **Implementation:** The engine intercepts unstructured text and utilizes a constrained Large Language Model (LLM) to identify botanical entities, standardize terminology, and generate a formalized document comprising: Title, Abstract, Taxonomic Botanical Ingredients, Method of Preparation, and specific Traditional Claims.
+### 3.2 Smart Draft Formulation Engine
+An automated NLP pipeline that translates conversational, vernacular descriptions of traditional remedies into formal, legally structured patent claims.
+*   **Implementation:** Intercepts unstructured text and utilizes a constrained LLM to standardize terminology, generating a formalized document comprising: Title, Abstract, Taxonomic Botanical Ingredients, Method of Preparation, and Traditional Claims.
 
-### 3.3 Deep Patent Collision Radar
-An automated surveillance module serving as an anti-bio-piracy defense mechanism.
-*   **Implementation:** The system simulates the ingestion of newly published international patent applications. It executes semantic cross-referencing against the verified Indian Traditional Knowledge Digital Library (TKDL) database. Algorithmic scoring identifies high-risk taxonomic overlaps, flagging potential bio-piracy attempts for immediate regulatory intervention.
+### 3.3 Deep Patent Collision Radar (Minister Command Center)
+An automated surveillance module serving as an anti-bio-piracy defense mechanism for the Ministry.
+*   **Implementation:** Simulates ingestion of newly published international patent applications. Executes semantic cross-referencing against the TKDL database. 
+*   **Threat Management Dashboard:** A streamlined UI allowing administrators to filter between *Active Threats* and *Resolved History*, and manage citizen-submitted claims via dedicated *Pending* and *Verified* queues.
 
 ### 3.4 Historical Manuscript Digitization (OCR)
 A computer vision module for the preservation and integration of decaying historical manuscripts.
@@ -42,7 +44,11 @@ A computer vision module for the preservation and integration of decaying histor
 
 ### 3.5 Immutable Proof-of-Origin (Blockchain Timestamping)
 A cryptographic verification system to establish incontrovertible Prior Art.
-*   **Implementation:** Upon finalization of a formulated claim, the system generates a SHA-256 cryptographic hash of the JSON payload. This digital fingerprint is simulated onto a decentralized ledger (Polygon), yielding a verifiable Block Number and Transaction Hash to legally establish temporal possession of the knowledge.
+*   **Implementation:** Upon Ministry verification of a formulated claim, the system generates a SHA-256 cryptographic hash of the JSON payload. This digital fingerprint is simulated onto a decentralized ledger (Polygon), yielding a verifiable Tx Hash to legally establish temporal possession of the knowledge.
+
+### 3.6 Legal & RTI Compliance Framework
+Dedicated integrations ensuring platform adherence to government mandates.
+*   **Implementation:** Readily accessible pages for the Right to Information (RTI) Act, Privacy Policy, Terms of Service, and Copyright protections, establishing trust and legal clarity for citizen users.
 
 ## 4. System Architecture and Technology Stack
 
@@ -51,19 +57,19 @@ The platform utilizes a highly optimized decoupled architecture to ensure low la
 ### 4.1 Client-Side (Frontend)
 *   **Framework:** Next.js 14 (App Router methodology).
 *   **Language:** TypeScript (Strict mode).
-*   **Interface:** Tailwind CSS.
+*   **Interface:** Tailwind CSS (Optimized for dark/light themes and dynamic responsive layouts).
 *   **Deployment:** Edge-network distributed hosting (Vercel).
 
 ### 4.2 Server-Side (Backend)
 *   **Framework:** FastAPI (Python 3.11+) operating via Uvicorn ASGI.
-*   **AI Inference:** Externalized to Groq Cloud APIs (LPU architecture) to minimize local memory overhead and maximize inference throughput.
+*   **AI Inference:** Externalized to Groq Cloud APIs (LPU architecture) for ultra-low latency.
     *   *LLM:* `qwen/qwen3.8-27b`
     *   *VLM:* `llama-3.2-90b-vision-preview`
 *   **Deployment:** Asynchronous web service (Render).
 
 ### 4.3 Database and Authentication
-*   **Platform:** Supabase (PostgreSQL).
-*   **Authentication:** Dual-role JSON Web Token (JWT) infrastructure with strict Role-Based Access Control (RBAC).
+*   **Platform:** Supabase (PostgreSQL with pgvector for RAG).
+*   **Authentication:** Dual-role architecture with strict Role-Based Access Control (RBAC) distinguishing Citizens and Ministry Administrators.
 
 ## 5. Repository Structure
 
