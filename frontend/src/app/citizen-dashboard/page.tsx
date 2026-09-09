@@ -329,10 +329,14 @@ export default function CitizenDashboard() {
     setConfirmAction({isOpen: false, type: null});
     setIsSubmitting(true);
     try {
+      const proofsText = proofFiles.length > 0 
+        ? `\n\n[ATTACHED PROOFS]:\n` + proofFiles.map(f => `- ${f.name}`).join('\n') 
+        : "";
+
       await axios.post('https://root-claim.onrender.com/api/v1/claims', {
         user_id: citizenData?.id || "UID-992-881",
         title: claimTitle.trim() || rawText.split('\n')[0].substring(0, 100) || "Untitled Knowledge",
-        raw_description: rawText,
+        raw_description: rawText + proofsText,
         ai_formatted_claim: formattedClaim || "",
         collision_score: radarResult ? radarResult.similarity_percentage : 0
       });
@@ -344,6 +348,7 @@ export default function CitizenDashboard() {
       setRawText('');
       setFormattedClaim(null);
       setRadarResult(null);
+      setProofFiles([]);
     } catch (error) {
       ;
       setErrorMsg("Failed to submit claim. Database connection might be down.");

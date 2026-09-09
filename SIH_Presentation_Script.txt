@@ -6,7 +6,7 @@ ROOT-CLAIM (IP-SAKTI) - SIH 2026 PRESENTATION SCRIPT
 ABHIJEET: 
 "Good morning, respected Judges. We are Team NexVeda. 
 Today, we are solving the critical problem of 'Bio-piracy'. For many years, foreign companies have stolen India’s traditional medicine knowledge—like Neem, Haldi, or tribal remedies—and patented them in the US or Europe to make huge profits. 
-To stop this, we created 'Root-Claim'. Root-Claim is an end-to-end digital ecosystem. It connects local farmers directly with the Ministry of Ayush. We use AI to guide the citizens, and Blockchain to protect their knowledge.
+To stop this, we created 'Root-Claim'. Root-Claim is an end-to-end digital ecosystem. It connects local farmers, tribal communities, Ayurvedic practitioners (Vaidyas), and researchers directly with the Ministry of Ayush. We use AI to guide the citizens, and Blockchain to protect their knowledge.
 Let me show you the Citizen Dashboard."
 
 [TAB 2: CITIZEN DASHBOARD -> OVERVIEW TAB]
