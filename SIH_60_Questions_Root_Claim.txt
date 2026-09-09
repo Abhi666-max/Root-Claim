@@ -1,0 +1,210 @@
+SIH 2026 - ROOT-CLAIM (IP-SAKTI SAHAYAK) - 60 EXPECTED Q&A
+By a 50-Year Experienced SIH Mentor/Judge
+
+=========================================
+CATEGORY 1: CORE PROBLEM & CONCEPT
+=========================================
+
+1. Q: What exactly is "bio-piracy" and how does your solution prevent it?
+A: Bio-piracy is when foreign companies or individuals take traditional knowledge (like using Neem for healing) and patent it in their own countries to make a profit without giving credit or benefits to the original community. Our solution prevents this by creating an immutable blockchain record of our traditional knowledge (prior-art) and using an AI Radar to constantly scan foreign patent filings to catch them if they try to steal it.
+
+2. Q: Why do we need a separate AI for this when people can just use ChatGPT?
+A: ChatGPT gives generic answers and is prone to "hallucinations" (making up fake laws). Our IP-SAKTI AI uses a strict RAG (Retrieval-Augmented Generation) architecture. It only answers based on verified government laws (like the Indian Patents Act 1970) and provides direct citations, ensuring 100% legal accuracy.
+
+3. Q: How is your system different from the existing TKDL (Traditional Knowledge Digital Library)?
+A: TKDL is basically a static database of translated ancient texts. Our platform is active and dynamic. We allow new grassroots knowledge to be submitted in real-time, instantly draft it into a legal format using AI, secure it on the blockchain, and we have an automated radar that actively hunts for IP theft, which TKDL doesn't do automatically.
+
+4. Q: Who are the primary end-users of this platform?
+A: There are two primary users: (1) Citizens, local farmers, and Ayurveda practitioners who submit their traditional knowledge and ask legal questions. (2) Government Officials (Ministry of Ayush Admins) who verify these submissions and monitor the global threat radar.
+
+5. Q: You mentioned "Dual-Jurisdiction RAG." Why separate Indian and International contexts?
+A: IP laws in India are very different from International laws. For example, India strictly prohibits patenting traditional knowledge under Section 3(p). But internationally, we use defensive strategies under WIPO. Separating them ensures the AI doesn't mix up domestic rules with global patent strategies.
+
+6. Q: Can a foreigner use this portal to steal our traditional knowledge?
+A: No. We have Role-Based Access Control (RBAC). The database of verified claims is securely locked and monitored by the Ministry. Citizens can only see their own submissions until the Ministry decides to make them public or share them defensively with international patent offices.
+
+7. Q: What happens if someone submits a completely fake or toxic remedy?
+A: Our Smart Draft Engine has strict guardrails. If a user inputs something toxic (like petrol) or nonsensical, the AI automatically rejects the formulation and refuses to draft it, stating that it lacks traditional botanical precedence. Also, every claim goes through a "Pending Review" phase where a human Ministry Expert verifies it.
+
+8. Q: Are you granting patents through this portal?
+A: No, we are not granting patents. We are establishing "Prior Art". By documenting the knowledge and putting it on the blockchain, we prove that this knowledge already exists in India. This legally blocks anyone else in the world from patenting it.
+
+9. Q: How does the "Smart Draft Engine" help a common citizen?
+A: A common farmer or Vaidya (practitioner) doesn't know legal jargon. They just know the recipe. They can type it in simple, broken English or Hindi. The Smart Draft Engine automatically organizes it into a professional, legally structured document (Title, Abstract, Ingredients, Method) ready for government review.
+
+10. Q: What is the role of the Ministry of Ayush in your workflow?
+A: The Ministry acts as the ultimate gatekeeper. They review the AI-drafted claims submitted by citizens, verify their authenticity, lock them onto the blockchain, and use the Command Center to monitor and take action against global bio-piracy threats.
+
+=========================================
+CATEGORY 2: AI & TECHNICAL ARCHITECTURE
+=========================================
+
+11. Q: You are using Groq APIs and Qwen/Llama models. What happens if Groq servers go down?
+A: Our architecture is decoupled. If Groq goes down, we can easily swap the API endpoint to another provider like OpenAI, Anthropic, or a locally hosted open-source LLM, because we use standard API interfaces. The core logic resides in our FastAPI backend, not in the LLM provider.
+
+12. Q: Why did you choose Next.js for the frontend and FastAPI for the backend?
+A: Next.js provides Server-Side Rendering (SSR) for blazing-fast load times and great SEO, while FastAPI is incredibly fast for handling asynchronous AI tasks and Python-based machine learning scripts like our Vector DB integrations.
+
+13. Q: How does your "Deep Patent Collision Radar" actually work?
+A: We convert the text of incoming international patents and our verified traditional knowledge into "vector embeddings" (mathematical representations of text). We then use Cosine Similarity in our Supabase pgvector database to compare them. If the mathematical similarity crosses a threshold (e.g., 50%), it triggers a red alert.
+
+14. Q: What vector database are you using for your RAG implementation?
+A: We are using Supabase, which has a built-in PostgreSQL extension called `pgvector`. This allows us to store our user data and our high-dimensional AI vectors in the same secure database.
+
+15. Q: How are you handling the translation of vernacular languages (Hindi/Sanskrit) to English?
+A: Our LLM (Qwen 2.5) has strong multilingual capabilities. We prompt the model to natively understand Hindi/Sanskrit inputs and output the structured legal draft in English, preserving the exact botanical meaning.
+
+16. Q: How does your Manuscript OCR deal with damaged ancient texts?
+A: Traditional OCR fails on ancient manuscripts. That's why we use a Vision-Language Model (Llama-3.2-90B-Vision). It doesn't just "read" the pixels; it understands the context of the image, allowing it to accurately extract text even from degraded or complex handwritten Sanskrit/Hindi manuscripts.
+
+17. Q: What is the latency of your AI response, and how are you ensuring a fast user experience?
+A: By using Groq's LPU (Language Processing Unit) infrastructure, our AI inference is lightning fast, generating hundreds of tokens per second. The entire RAG pipeline resolves in under 2-3 seconds.
+
+18. Q: Why use an LLM for formatting drafts instead of standard code logic?
+A: Standard code cannot understand natural language nuance. If a user writes, "Boil neem leaves and mix with turmeric powder for cuts," an LLM understands the intent, identifies "Neem" and "Turmeric" as botanical ingredients, and structures the procedure intelligently. Code cannot do that.
+
+19. Q: How do you plan to handle the heavy computational load if 100,000 citizens use it simultaneously?
+A: Our Next.js frontend is deployed on Vercel's Edge Network, which auto-scales infinitely. Our FastAPI backend can be containerized using Docker and deployed on a Kubernetes cluster to scale horizontally based on traffic. AI processing is offloaded to highly scalable cloud APIs.
+
+20. Q: Explain the deployment architecture. Where is the data stored?
+A: The frontend is on Vercel, the backend is on Render, and our database is on Supabase (AWS backend). All data is stored in secure PostgreSQL tables with strict Row-Level Security (RLS) ensuring data isolation.
+
+=========================================
+CATEGORY 3: RAG, HALLUCINATIONS & DATA
+=========================================
+
+21. Q: AI models are notorious for hallucinations. How are you preventing this in legal matters?
+A: We use a strict "Zero-Hallucination Guardrail" via our RAG system. The AI is explicitly prompted: "Answer ONLY using the provided Context Block. If the answer is not in the context, say 'I don't know'." This mathematically restricts the AI from inventing fake laws.
+
+22. Q: What happens if the RAG system cannot find the answer in the provided documents?
+A: The chatbot will politely inform the user that no specific legal context is available for their query in the official database, rather than guessing or making up a fake legal section.
+
+23. Q: How are you ensuring the legal documents fed into your RAG are up-to-date?
+A: The RAG vector database acts as an independent knowledge layer. Whenever the government passes a new amendment or law, the admin simply uploads the new PDF, and the backend automatically chunks, embeds, and updates the vector database. The AI instantly becomes "smarter" without retraining.
+
+24. Q: Explain your "Source-Cited Output Guardrails".
+A: Whenever the AI answers a legal question, it is programmed to append the source of its information (e.g., "Source: Biological Diversity Act 2002, Section 3"). This allows practitioners to double-check the exact law.
+
+25. Q: What is "Hybrid RAG" and why did you mention it in your presentation?
+A: Hybrid RAG combines traditional keyword search (BM25) with semantic vector search. This ensures that if a user searches for an exact legal section like "Section 3(p)", the system finds the exact match, while also understanding the meaning of vague questions.
+
+26. Q: How do you handle Ayurvedic terminology (like 'Vata', 'Pitta') so the AI doesn't misinterpret them?
+A: By using a domain-adapted system prompt, we explicitly instruct the AI to act as an Ayurvedic expert. The LLMs we chose have deep training data on Ayurveda, allowing them to contextually map these terms correctly.
+
+27. Q: Where are you getting your initial dataset to seed the Supabase database?
+A: We created a `seed_tkdl.py` script that populates the database with simulated, accurate representations of the TKDL, Indian Patents Act, and WIPO treaties for demonstration purposes. In production, the Ministry will connect their actual TKDL databases.
+
+28. Q: Is your AI model fine-tuned?
+A: Currently, we rely on advanced Prompt Engineering and RAG, which is highly effective and cheaper to maintain. In the future, we plan to fine-tune open-source models exclusively on AYUSH corpora for even better accuracy.
+
+29. Q: How do you calculate the "Collision Score" when comparing patents?
+A: We generate vector embeddings for both the verified traditional knowledge claim and the incoming foreign patent. We calculate the Cosine Distance between these vectors. A smaller distance translates to a higher similarity percentage (Collision Score).
+
+30. Q: What if a foreign patent is written in German? Can your radar detect it?
+A: Yes. Modern embedding models are multilingual. They place words with the same meaning (e.g., "Turmeric" in English and "Kurkuma" in German) in the same mathematical space. The radar will still detect a high collision score regardless of the language.
+
+=========================================
+CATEGORY 4: BLOCKCHAIN & CRYPTOGRAPHY
+=========================================
+
+31. Q: Why use Blockchain? Why not just store the timestamp in a normal SQL database?
+A: A normal database can be hacked, edited, or manipulated by an insider. Blockchain is decentralized and immutable. Once a record is anchored on the blockchain, it is mathematically impossible to change the timestamp or the data, providing absolute cryptographic proof in an international court.
+
+32. Q: You are using Polygon. Why Polygon and not Ethereum?
+A: Polygon is a Layer-2 scaling solution for Ethereum. It provides the same robust security as Ethereum but with significantly lower gas fees and much faster transaction speeds, making it economically viable for a government portal handling thousands of records.
+
+33. Q: Are you storing the entire patent text on the blockchain?
+A: No, storing heavy text on a blockchain is very expensive. We store the actual data securely in our Supabase PostgreSQL database. We take the data, generate a unique SHA-256 Hash (a digital fingerprint), and store ONLY that hash on the blockchain. 
+
+34. Q: How does this hash prove anything if the text isn't there?
+A: If someone questions the authenticity of our record, we take our database text and run it through the SHA-256 algorithm again. If it matches the hash on the blockchain, it proves the document existed exactly as it is on that specific date and hasn't been altered by a single comma.
+
+35. Q: How does this blockchain timestamp serve as "Prior Art" internationally?
+A: Under WIPO guidelines, prior art is any evidence that your invention was already known. A blockchain timestamp provides undeniable, cryptographic evidence of the exact date and time the knowledge was recorded, shutting down any foreign entity claiming they invented it first.
+
+36. Q: Who pays the gas fees for anchoring these records on Polygon?
+A: In production, the Ministry of Ayush would maintain a specific enterprise wallet funded to cover the micro-transaction gas fees on Polygon, ensuring the citizen doesn't pay anything.
+
+37. Q: What happens if the Ministry rejects a claim? Is it still put on the blockchain?
+A: No. The blockchain anchor is only triggered when the Ministry expert clicks "Verify and Lock". Rejected or pending claims stay in the traditional database until they are resolved.
+
+38. Q: Can a user delete their submission from the blockchain if they change their mind?
+A: No. The nature of blockchain is immutable. However, we only put the hash on the blockchain. If a user wants to delete their data, we can delete the actual text from our SQL database (to comply with privacy laws), but the hash will forever remain on the blockchain as a dead link.
+
+39. Q: Does your blockchain integration comply with India's current laws?
+A: Yes. While cryptocurrency trading has strict regulations in India, using blockchain technology as a distributed ledger for enterprise data integrity and e-governance is highly encouraged by the Government of India (e.g., the National Blockchain Strategy by MeitY).
+
+40. Q: How can a judge at the EPO/USPTO actually verify your blockchain transaction?
+A: We provide the Transaction Hash. The judge can go to any public Polygon block explorer (like PolygonScan), enter the hash, and independently verify the exact timestamp and payload without needing access to our system.
+
+=========================================
+CATEGORY 5: LEGAL, POLICY & COMPLIANCE
+=========================================
+
+41. Q: According to the Indian Patents Act, Section 3(p), traditional knowledge cannot be patented. So what are you drafting?
+A: We are not drafting patents to file in India. We are drafting "Defensive Prior-Art Disclosures" formatted in a standard patent structure. By publishing it in this structured format, international patent examiners can easily read it and reject foreign patents that try to copy it.
+
+42. Q: How does your solution comply with the Biological Diversity Act 2002?
+A: Our system requires users to declare the geographical origin of the biological resources. This creates a digital trail that helps the National Biodiversity Authority (NBA) ensure Access and Benefit Sharing (ABS) if commercialized later.
+
+43. Q: Can an AYUSH startup use your platform to file an actual patent?
+A: If the startup has created a genuine *novel* formulation (not just traditional knowledge), our chatbot will classify it as a "Patent-or-Proprietary Medicine" and guide them on how to officially file it, but our portal itself is primarily for defense and guidance.
+
+44. Q: If the Ministry approves a claim on your portal, does it legally bind the Indian Patent Office?
+A: No. Our portal serves as an official repository of the Ministry of Ayush. The Indian Patent Office (IPO) will use our platform's verified database as a reference tool during their examination process to reject erroneous patents.
+
+45. Q: How does the "Nagoya Protocol" fit into your international strategy?
+A: The Nagoya Protocol mandates fair benefit-sharing of genetic resources. Our platform digitally traces who submitted the knowledge (the specific tribe or farmer). If an international company wants to use it, our records provide the legal foundation to enforce benefit-sharing back to the original creators.
+
+46. Q: What legal weight does your "Immutable Proof" hold under the Indian Evidence Act?
+A: Under Section 65B of the Indian Evidence Act, electronic records are admissible. Combining this with a decentralized cryptographic timestamp (blockchain) significantly strengthens the evidentiary value, as it proves non-tampering beyond a reasonable doubt.
+
+47. Q: How do you handle data privacy? Are you storing personal details of the rural practitioners?
+A: Yes, but we use strict data masking. Personal details are securely kept in the Supabase database and are NOT shared internationally. Only the botanical formulation details are used for the collision radar and prior-art defense. We have dedicated Privacy Policy and Terms of Service pages implemented.
+
+48. Q: What is the procedure if your Collision Radar detects a biopiracy attempt by a US company?
+A: The Ministry Dashboard alerts the Admin. The Admin reviews the overlap. If confirmed, the Ministry can use the generated report, along with the blockchain timestamp, to file a formal "Pre-grant Opposition" or "Third-Party Observation" at the USPTO.
+
+49. Q: Do you have a privacy policy and terms of service implemented in your app?
+A: Yes, we have built a complete Legal & RTI Compliance Framework with dedicated pages for Privacy Policy, Terms of Service, Copyright Act, and Right to Information (RTI) to ensure total transparency.
+
+50. Q: How does your platform handle "Right to Information" (RTI) queries?
+A: We have a dedicated RTI portal linked in the footer. Citizens can learn about the transparency mandates, and since our system digitizes records efficiently, Ministry officials can easily pull data to respond to formal RTI requests regarding TK defense.
+
+=========================================
+CATEGORY 6: FEASIBILITY, SCALABILITY, BUSINESS & SECURITY
+=========================================
+
+51. Q: What is the estimated cost to run this platform for the government per month?
+A: It is highly cost-effective. Serverless hosting on Vercel/Render scales to zero when not used. Supabase database costs are minimal ($25/month for pro). Groq APIs are currently very cheap/free. Polygon transaction fees are fractions of a cent. Total maintenance would be under $100-$200/month for moderate usage.
+
+52. Q: How secure is your platform against cyber attacks, like DDoS or SQL injections?
+A: We use Supabase, which automatically sanitizes all inputs to prevent SQL injection. We utilize Next.js API routes with CORS policies, and Vercel's built-in Edge network protects against DDoS attacks.
+
+53. Q: You mentioned Role-Based Access Control (RBAC). How does it work?
+A: We use JSON Web Tokens (JWT) mapped to Supabase Row Level Security (RLS) policies. If a user logs in as a "Citizen", the database physically blocks them from accessing the Ministry Command Center or viewing other people's pending claims.
+
+54. Q: What is the biggest bottleneck in your current prototype?
+A: Currently, processing massive PDFs (like a 500-page patent document) through the VLM for OCR takes heavy memory. To solve this in production, we will implement asynchronous background task queues (like Celery/Redis) so the UI doesn't freeze during heavy processing.
+
+55. Q: If the Ministry of Ayush adopts this tomorrow, what is your 6-month roadmap?
+A: Months 1-2: Security audits and integration with the actual TKDL database. Months 3-4: Pilot testing with select Ayurvedic universities and practitioners. Months 5-6: Official launch, scaling infrastructure, and enabling the live WIPO API feed for the collision radar.
+
+56. Q: How will a farmer in a remote village without high-speed internet access your portal?
+A: The core application is highly lightweight. However, we plan to implement a WhatsApp Bot integration in the future. The farmer can just send a voice note on WhatsApp, and our backend will transcribe it, run the AI drafting, and submit it automatically.
+
+57. Q: What happens if a bad actor floods your system with thousands of fake traditional recipes?
+A: We have implemented strict JWT authentication. In production, we will tie accounts to Aadhaar or Practitioner IDs. We can also implement rate-limiting on the API to prevent spam, and since human verification is required before blockchain anchoring, no junk data will pollute the blockchain.
+
+58. Q: Could this system be expanded to other ministries?
+A: Absolutely. The core architecture (RAG + AI Formatter + Blockchain + Threat Radar) is domain-agnostic. The Ministry of Culture could use it to protect traditional art forms, or the Ministry of Agriculture could use it for indigenous seed varieties.
+
+59. Q: How are you maintaining the secrecy of "trade secrets" before they are verified?
+A: All citizen submissions are stored in an encrypted state in the database. Until the Ministry officially verifies and publishes them as prior art, they remain completely confidential and are excluded from public search indexes.
+
+60. Q: Finally, what makes your team "NexVeda" the right team to build this solution?
+A: We have a deep understanding of both cutting-edge technology (RAG, Next.js, Blockchain) and the domain problem (Ayurveda IP laws, TKDL limitations). We haven't just built a toy; we've built an enterprise-grade, end-to-end ecosystem that connects the grassroots citizen directly to global IP defense.
+
+=========================================
+END OF QUESTIONS
+BEST OF LUCK FOR SIH 2026 PRESENTATION!

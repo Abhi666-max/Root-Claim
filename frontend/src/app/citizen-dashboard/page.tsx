@@ -912,7 +912,7 @@ export default function CitizenDashboard() {
                             </p>
                           </td>
                           <td className="p-5 pr-8 text-right">
-                            {claim.status === 'Blockchain Anchored' ? (
+                            {['Blockchain Anchored', 'Verified', 'Approved', 'Anchored'].includes(claim.status) ? (
                               <button 
                                 onClick={() => {
                                   setActiveCertClaim(claim);

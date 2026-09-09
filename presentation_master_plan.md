@@ -1,0 +1,106 @@
+# Root-Claim (IP-SAKTI) - SIH Presentation Master Plan
+
+## 1. Presentation Setup & Strategy
+
+**The "Simultaneous" Strategy:**
+Having 3 tabs open is the perfect strategy. It prevents wasting time logging in and out. 
+- **Tab 1:** Landing Page (For the intro)
+- **Tab 2:** Citizen Dashboard (Logged in as Citizen)
+- **Tab 3:** Ministry Dashboard (Logged in as Admin)
+
+**Pre-requisites (Do this before presenting):**
+1. **Pre-verified Claim:** Have at least 1 patent already verified and anchored in the Citizen's "My Digital Vault". This ensures you can show the Certificate immediately if anything goes wrong during the live demo.
+2. **Cheat-Sheet Text File:** Open Notepad on your laptop with the exact text you will copy-paste for the "Submit Knowledge" demo. **Do not type live.** Typing live takes too much time and kills the momentum.
+3. **The Data:** You don't need complex Sanskrit Shlokas. Use a simple, raw village remedy. 
+   - *Example Text to keep in Notepad:* "My grandfather used to take leaves of the Patha plant (Cissampelos pareira), dry them in the shade, crush them into powder, and mix it with warm water. Drinking this twice a day helps in painlessly removing kidney stones."
+
+## 2. Team Division (The Roles)
+
+- **Dost 1 (The AI & Legal Expert):** Only handles the IP-SAKTI Chatbot. Explains RAG, Groq, and Vector databases.
+- **You (The Citizen / Innovator):** Handles the Landing page and Citizen Dashboard (Submitting knowledge, getting the certificate, reporting biopiracy).
+- **Dost 2 (The Ministry / Defender):** Handles the Ministry Dashboard (Command Center, TKDL DB, Collision Radar, Blockchain Anchoring).
+
+---
+
+## 3. The Choreography (Step-by-Step Flow)
+
+### Phase 1: The Hook & Problem Statement (Time: 1 Min)
+**Who:** You
+**Screen:** Tab 1 (Landing Page)
+**Action:**
+- Start on the Landing Page.
+- Explain the problem: "Foreign companies are stealing India's traditional knowledge (like Turmeric and Neem) and patenting it abroad. This is Bio-piracy."
+- Introduce Root-Claim: "We built an end-to-end ecosystem connecting grassroots citizens with the Ministry of Ayush to proactively defend our intellectual property using AI and Blockchain."
+
+### Phase 2: IP-SAKTI Chatbot - The Legal Brain (Time: 1.5 Mins)
+**Who:** Dost 1
+**Screen:** Tab 2 (Citizen Dashboard) -> Click on "IP-SAKTI Sahayak" tab.
+**Action:**
+- Explain the Tech Stack: "Behind this is a Dual-Jurisdiction RAG pipeline powered by Groq's ultra-fast LPU and Qwen LLMs. We use Supabase pgvector to store legal documents."
+- Demo: Type a question like *"Can I patent a mixture of haldi and honey in India?"*
+- Highlight: Point out that it answers using the **Indian Patents Act Section 3(p)** and provides **citations**. Emphasize that because of RAG, it **does not hallucinate** (zero fake laws).
+
+### Phase 3: The Live Submission - "Citizen to Ministry Ping-Pong" (Time: 2.5 Mins)
+*This is the core of your presentation. You and Dost 2 will talk simultaneously.*
+
+**Step A (Citizen Submits):**
+**Who:** You
+**Screen:** Tab 2 (Citizen Dashboard) -> "Submit Knowledge"
+**Action:**
+- "A farmer or Vaidya doesn't know legal jargon. They just know their recipe."
+- Copy-paste your raw remedy (the kidney stone one) from Notepad into the description box.
+- Click "Generate Smart Draft".
+- **Tech to explain:** "Our AI intercepts this raw text, identifies the botanical entities, and formats it into a professional patent-style claim (Abstract, Method, Ingredients)."
+- Click "Submit to Ministry".
+
+**Step B (Ministry Receives & Verifies):**
+**Who:** Dost 2
+**Screen:** Switch to Tab 3 (Ministry Dashboard) -> "Citizen Submissions" -> "Pending"
+**Action:**
+- "As soon as the citizen submits, it lands securely in the Ministry's Command Center via our FastAPI backend and Supabase database."
+- Open the newly submitted claim.
+- Explain the UI: "The admin can review the AI-generated formulation details. If it's valid, the Ministry takes action."
+- Click "Verify Claim", then click **"Lock on Blockchain"**.
+- **Tech to explain:** "This is the most crucial step. We don't just store it in a database. We generate a SHA-256 cryptographic hash of this knowledge and anchor it on the **Polygon Blockchain**. This creates an immutable timestamp—undeniable Proof of Origin (Prior Art) for international courts."
+
+**Step C (Citizen Gets Certificate):**
+**Who:** You
+**Screen:** Switch back to Tab 2 (Citizen Dashboard) -> "My Digital Vault"
+**Action:**
+- "Back on the Citizen side, the knowledge is now verified."
+- Click on the verified claim and open the **Certificate**.
+- Point out the Transaction Hash on the certificate. "The citizen now has cryptographic proof that their knowledge is recognized and protected."
+
+### Phase 4: Proactive Defense - Global Threat Radar (Time: 1.5 Mins)
+**Who:** Dost 2
+**Screen:** Tab 3 (Ministry Dashboard) -> "Global Threat Radar"
+**Action:**
+- "Now that we have protected the knowledge, how do we catch thieves? We built the Deep Patent Collision Radar."
+- **Tech to explain:** "We simulate incoming international patents from WIPO/USPTO. Our system converts them into vector embeddings and compares them against our verified database using **Cosine Similarity**."
+- Show the Radar UI. Point out a red alert (e.g., 85% match).
+- "If a foreign patent matches our traditional knowledge, the radar flags it immediately, allowing the Ministry to file a pre-grant opposition and stop the bio-piracy before it happens."
+
+### Phase 5: Citizen Reporting & Conclusion (Time: 1 Min)
+**Who:** You & Dost 2
+**Screen:** Tab 2 (Citizen Dashboard) -> "Report Bio-Piracy", then Tab 3 (Ministry Dashboard) -> "Threat Reports".
+**Action:**
+- **You:** "Defense is a community effort. If a citizen spots a fake Ayurvedic product online, they can report it directly via the 'Report Bio-Piracy' tab."
+- **Dost 2:** "These reports instantly appear in the Ministry's 'Threat Reports' tab for investigation."
+- **Conclusion:** "By combining RAG AI for guidance, Blockchain for immutable proof, and Vector Search for threat detection, Root-Claim isn't just an app; it's a digital fortress for India's traditional knowledge. Thank you."
+
+---
+
+## 4. Key Questions Answered for Your Setup
+
+1. **Unique vs Existing Data for Demo?**
+   Use completely **UNIQUE** data for the live "Submit Knowledge" demo (like the kidney stone example above). If you use duplicate data, the pre-check will block it, and you won't be able to show the Blockchain/Ministry verification process. Just *mention* verbally that "If the data already exists, our pre-check blocks it," but do a unique one live.
+
+2. **Verses and Shlokas?**
+   Skip them. You don't need them. Just say "Traditional Knowledge encompasses oral traditions, tribal recipes, and undocumented local practices." Your demo using a raw English description of a village remedy is much more impactful because it shows how the AI helps common people, not just Sanskrit scholars.
+
+3. **Database & Tech Flow (Mental Map for you):**
+   - **Frontend:** Next.js (Hosted on Vercel). The UI where you click buttons.
+   - **Backend:** FastAPI (Hosted on Render). The middleman that talks to the AI and Database.
+   - **AI/LLM:** Groq Cloud (Runs Qwen/Llama models). Handles formatting and Chatbot answers.
+   - **Database:** Supabase PostgreSQL. This is where EVERYTHING is stored. Passwords, user profiles, submitted claims, threat reports, and the high-dimensional vectors for the Radar.
+   - **Blockchain:** Polygon Network. We ONLY send a small hash string here, not the whole document.
