@@ -761,9 +761,17 @@ export default function AdminDashboard() {
                                             href="#" 
                                             onClick={(e) => {
                                               e.preventDefault();
-                                              const isImg = fileName.toLowerCase().endsWith('.png') || fileName.toLowerCase().endsWith('.jpg') || fileName.toLowerCase().endsWith('.jpeg');
-                                              const url = isImg ? 'https://via.placeholder.com/600x400.png?text=Verified+Manuscript+Proof' : 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
-                                              window.open(url, '_blank');
+                                              const base64Data = localStorage.getItem(`demo_proof_${fileName}`);
+                                              if (base64Data) {
+                                                fetch(base64Data)
+                                                  .then(res => res.blob())
+                                                  .then(blob => {
+                                                    const blobUrl = window.URL.createObjectURL(blob);
+                                                    window.open(blobUrl, '_blank');
+                                                  });
+                                              } else {
+                                                alert(`Secure Proof: ${fileName}\n\n(Demo Mode: File not found in local cache. Please upload the file in the Citizen Tab first.)`);
+                                              }
                                             }}
                                             className="text-gov-blue hover:text-blue-800 font-bold underline font-mono text-xs flex items-center gap-1 cursor-pointer transition-colors"
                                           >

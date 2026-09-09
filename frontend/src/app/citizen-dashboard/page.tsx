@@ -366,6 +366,18 @@ export default function CitizenDashboard() {
     const files = Array.from(event.target.files || []);
     if (files.length === 0) return;
     setProofFiles(prev => [...prev, ...files]);
+    
+    // Save to localStorage for demo purposes so Admin tab can open the exact file
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if(reader.result) {
+          localStorage.setItem(`demo_proof_${file.name}`, reader.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
     setErrorMsg(null);
   }
   
