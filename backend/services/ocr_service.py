@@ -44,7 +44,7 @@ def extract_and_structure_text(image_bytes: bytes) -> dict:
                     ],
                 }
             ],
-            model="qwen/qwen3.8-27b",
+            model="llama3-8b-8192",
             temperature=0.1,
             max_tokens=800,
             response_format={"type": "json_object"}

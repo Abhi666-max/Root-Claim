@@ -32,7 +32,7 @@ def run_collision_radar(claim_text: str) -> dict:
         )
         kw_response = groq_client.chat.completions.create(
             messages=[{"role": "user", "content": keyword_prompt}],
-            model="qwen/qwen3.8-27b",
+            model="llama3-8b-8192",
             temperature=0.0,
             max_tokens=60,
         )
@@ -76,7 +76,7 @@ def run_collision_radar(claim_text: str) -> dict:
             )
             score_response = groq_client.chat.completions.create(
                 messages=[{"role": "user", "content": scoring_prompt}],
-                model="qwen/qwen3.8-27b",
+                model="llama3-8b-8192",
                 temperature=0.0,
                 max_tokens=10,
             )

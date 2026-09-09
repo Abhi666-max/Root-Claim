@@ -33,7 +33,7 @@ def generate_smart_draft(raw_text: str) -> str:
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": raw_text}
             ],
-            model="llama-3.1-70b-versatile",
+            model="llama3-8b-8192",
             temperature=0.2, # Low temperature for strict, formal output
             max_tokens=800,
         )
@@ -126,7 +126,7 @@ def query_ip_sakti(query: str, retrieved_context: str = "", jurisdiction: str = 
     try:
         chat_completion = groq_client.chat.completions.create(
             messages=messages,
-            model="llama-3.1-70b-versatile",
+            model="llama3-8b-8192",
             temperature=0.1,
             max_tokens=800,
         )
@@ -140,7 +140,7 @@ def query_ip_sakti(query: str, retrieved_context: str = "", jurisdiction: str = 
             
             fallback = groq_client.chat.completions.create(
                 messages=messages,
-                model="llama-3.1-70b-versatile",
+                model="llama3-8b-8192",
                 temperature=0.1,
                 max_tokens=800,
             )
