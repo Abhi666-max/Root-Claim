@@ -43,11 +43,11 @@ Lekin kya hoga agar koi aisi formulation submit kare jo already protected hai, j
 Jab main 'Run Patent Pre-check' pe click karta hu, toh ye sirf keyword search nahi karta. Hamara backend is text ko AI ke through mathematical embeddings mein convert karta hai, aur Supabase pgvector use karke Master Database ke sath 'Vector Similarity Search' karta hai. 
 Aap dekh sakte hain, yahan match bohot high hai. Hamara system automatically sirf un claims ka submit button disable karta hai jinka similarity match 90% ya usse upar ho. Agar match 70% se 89% ke beech hota, toh submit button red color ki warning zaroor dikhata, par citizen fir bhi submit kar paata as a borderline case. Lekin 90%+ hone par ye automatically block kar deta hai taaki Ministry tak spam aur duplicates na pahuche.
 
-Toh chaliye ek unique, undocumented tribal formulation try karte hain kidney stones ke liye.
+Toh chaliye ek unique, undocumented tribal formulation try karte hain insect bites ke liye.
 [DEMO ACTION 2 - UNIQUE SUBMISSION:
-- Title: Pashanbhed Root Extract for Kidney Stones
-- Key Ingredients: Pashanbhed (Bergenia ligulata), Gokshura, Warm Water
-- Raw Description: Crush the dried roots of Pashanbhed into fine powder. Boil 1 spoon of powder with Gokshura leaves in 2 cups of water until it reduces to half. Drink twice a day.
+- Title: Agnikarni Tribal Leaf Paste for Severe Insect Bites
+- Key Ingredients: Agnikarni Leaves, Black Pepper, Warm Desi Ghee
+- Raw Description: Crush the fresh leaves of Agnikarni. Mix it with 2 pinches of crushed black pepper and warm desi ghee. Apply directly on the insect bite to instantly stop venom spread.
 - Upload Proofs: Upload any random image (e.g. leaf.jpg or dummy_manuscript.pdf)
 -> Click 'Enhance with AI']
 Ek kisaan ko legal terms nahi aate. Toh wo simply 'Enhance with AI' pe click karega. Hamara frontend is raw data ko REST API ke through backend bhejta hai. Backend Groq AI model use karke is raw text ko ek professional, legally structured patent draft mein convert kar deta hai.

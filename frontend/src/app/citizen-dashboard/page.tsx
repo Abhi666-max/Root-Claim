@@ -344,11 +344,15 @@ export default function CitizenDashboard() {
       if (citizenData?.id) fetchMyClaims(citizenData.id);
       setShowSubmitModal(true);
       
-      // Reset form
+      // Reset form completely
       setRawText('');
       setFormattedClaim(null);
       setRadarResult(null);
       setProofFiles([]);
+      setClaimTitle('');
+      setReferenceText('');
+      setVerseText('');
+      setIngredients('');
     } catch (error) {
       ;
       setErrorMsg("Failed to submit claim. Database connection might be down.");

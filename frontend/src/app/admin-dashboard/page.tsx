@@ -745,9 +745,40 @@ export default function AdminDashboard() {
                         {/* Formulation Details */}
                         <div>
                           <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-3">Formulation Details</h4>
-                          <p className="text-sm text-gray-800 leading-relaxed bg-gray-50 p-6 border border-gray-200 rounded-lg shadow-inner whitespace-pre-wrap">
-                            {activeClaim.raw_description}
-                          </p>
+                          <div className="text-sm text-gray-800 leading-relaxed bg-gray-50 p-6 border border-gray-200 rounded-lg shadow-inner whitespace-pre-wrap">
+                            {activeClaim.raw_description.includes('[ATTACHED PROOFS]:') ? (
+                              <>
+                                <p>{activeClaim.raw_description.split('[ATTACHED PROOFS]:')[0]}</p>
+                                <div className="mt-4 pt-4 border-t border-gray-200">
+                                  <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">[ATTACHED PROOFS]</p>
+                                  <ul className="space-y-1">
+                                    {activeClaim.raw_description.split('[ATTACHED PROOFS]:')[1].split('\n').filter(Boolean).map((line: string, idx: number) => {
+                                      const fileName = line.replace('- ', '').trim();
+                                      if(!fileName) return null;
+                                      return (
+                                        <li key={idx}>
+                                          <a 
+                                            href="#" 
+                                            onClick={(e) => {
+                                              e.preventDefault();
+                                              const isImg = fileName.toLowerCase().endsWith('.png') || fileName.toLowerCase().endsWith('.jpg') || fileName.toLowerCase().endsWith('.jpeg');
+                                              const url = isImg ? 'https://via.placeholder.com/600x400.png?text=Verified+Manuscript+Proof' : 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+                                              window.open(url, '_blank');
+                                            }}
+                                            className="text-gov-blue hover:text-blue-800 font-bold underline font-mono text-xs flex items-center gap-1 cursor-pointer transition-colors"
+                                          >
+                                            📎 {fileName}
+                                          </a>
+                                        </li>
+                                      )
+                                    })}
+                                  </ul>
+                                </div>
+                              </>
+                            ) : (
+                              <p>{activeClaim.raw_description}</p>
+                            )}
+                          </div>
                         </div>
 
                         {/* AI COLLISION RADAR (The core tech) */}
