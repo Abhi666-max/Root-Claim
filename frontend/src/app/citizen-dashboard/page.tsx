@@ -837,15 +837,21 @@ export default function CitizenDashboard() {
                   <div className="pt-4 mt-2 border-t border-gray-100">
                     <button 
                       onClick={() => setConfirmAction({isOpen: true, type: 'submit'})}
-                      disabled={!radarResult || formattedClaim?.startsWith('REJECTED:') || isSubmitting || radarResult?.risk_level === 'HIGH'}
-                      className="w-full bg-gradient-to-r from-green-600 to-emerald-700 text-white py-4 text-xs font-bold tracking-widest uppercase hover:shadow-xl hover:scale-[1.01] transition-all duration-300 flex justify-center items-center gap-2 shadow-md disabled:opacity-50 disabled:hover:scale-100 border border-green-800 relative overflow-hidden"
+                      disabled={!radarResult || formattedClaim?.startsWith('REJECTED:') || isSubmitting || (radarResult && radarResult.similarity_percentage >= 90)}
+                      className={`w-full py-4 text-xs font-bold tracking-widest uppercase hover:shadow-xl hover:scale-[1.01] transition-all duration-300 flex justify-center items-center gap-2 shadow-md disabled:opacity-50 disabled:hover:scale-100 border relative overflow-hidden text-white ${
+                        radarResult && radarResult.similarity_percentage >= 70 && radarResult.similarity_percentage < 90
+                          ? 'bg-gradient-to-r from-orange-600 to-red-700 border-red-800'
+                          : 'bg-gradient-to-r from-green-600 to-emerald-700 border-green-800'
+                      }`}
                       title={!radarResult ? "Please run Patent Pre-Check first" : formattedClaim?.startsWith('REJECTED:') ? "Claim was rejected" : ""}
                     >
                       {isSubmitting && <div className="absolute inset-0 bg-white/20 animate-pulse"></div>}
-                      <ShieldCheck size={18} className="relative z-10" /> 
+                      {(!radarResult || radarResult.similarity_percentage < 90) ? <ShieldCheck size={18} className="relative z-10" /> : <ShieldAlert size={18} className="relative z-10" />}
                       <span className="relative z-10">
                         {!radarResult ? 'Complete Radar Check First' 
+                        : (radarResult.similarity_percentage >= 90) ? `Blocked: ${radarResult.similarity_percentage}% Match Found`
                         : isSubmitting ? 'Anchoring to Polygon Blockchain...' 
+                        : (radarResult.similarity_percentage >= 70) ? `Warning: ${radarResult.similarity_percentage}% Match - Submit Anyway`
                         : 'Submit & Anchor to Digital Vault'}
                       </span>
                     </button>

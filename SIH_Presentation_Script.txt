@@ -1,98 +1,104 @@
 ROOT-CLAIM (IP-SAKTI) - SIH 2026 PRESENTATION SCRIPT
-(Detailed Version: Explaining Behind-the-Scenes Tech in Simple English)
+(Detailed Version: Explaining Behind-the-Scenes Tech in Simple Hinglish)
 
 [TAB 1: OPEN ON LANDING PAGE]
 
 ABHIJEET: 
-"Good morning, respected Judges. We are Team NexVeda. 
-Today, we are solving the critical problem of 'Bio-piracy'. For many years, foreign companies have stolen India’s traditional medicine knowledge—like Neem, Haldi, or tribal remedies—and patented them in the US or Europe to make huge profits. 
-To stop this, we created 'Root-Claim'. Root-Claim is an end-to-end digital ecosystem. It connects local farmers, tribal communities, Ayurvedic practitioners (Vaidyas), and researchers directly with the Ministry of Ayush. We use AI to guide the citizens, and Blockchain to protect their knowledge.
-Let me show you the Citizen Dashboard."
+"Thank you Samruddhi. Ab main aapko Root-Claim ka live demo dikhata hu. Hum Citizen Dashboard se start karenge."
 
 [TAB 2: CITIZEN DASHBOARD -> OVERVIEW TAB]
 
 ABHIJEET:
-"This is the Citizen Control Center. Here in the Overview tab, we have two main sections. 
-First, 'My Personal Contributions', where a citizen can track exactly how many claims they have drafted, how many are 'Under Verification' by the Ministry, and how many are successfully 'Secured Vault Items'.
-Second, we have the 'Ministry Security Grid'. This shows the live status of our sovereign IP protection modules. As you can see, our IP-SAKTI Chatbot is 'Online', the Submission Engine is 'Ready', and the Polygon Vault is perfectly 'Synced' to the blockchain. We also have a live broadcast alert system right here if the Ministry needs to send urgent updates to all citizens.
-But IP laws are very complex. A common farmer cannot understand them. To solve this, I invite Azahar to show the brain of our system."
+"Ye hamara Citizen Control Center hai. Yaha Overview tab mein do main sections hain. 
+Pehla hai 'My Personal Contributions', jahan ek citizen track kar sakta hai ki usne kitne claims draft kiye hain, kitne Ministry ke paas 'Under Verification' hain, aur kitne successfully 'Secured Vault Items' ban chuke hain.
+Dusra hai 'Ministry Security Grid'. Ye hamare IP protection modules ka live status dikhata hai. Jaisa aap dekh sakte hain, hamara IP-SAKTI Chatbot 'Online' hai, Submission Engine 'Ready' hai, aur Polygon Vault blockchain ke sath perfectly 'Synced' hai. Yahan ek live broadcast alert system bhi hai jisse Ministry sabhi citizens ko urgent updates bhej sakti hai.
+Lekin IP laws bohot complex hote hain jo ek aam kisaan ko samajh nahi aate. Is problem ko solve karne ke liye, ab Azahar aage ka system explain karenge."
 
 [STAY ON TAB 2: CITIZEN DASHBOARD -> IP-SAKTI SAHAYAK TAB]
 
 AZAHAR: 
-"Thank you, Abhijeet. 
-Judges, a local practitioner cannot hire a patent lawyer. So, we built 'IP-SAKTI'. It is an AI Chatbot powered by Groq's lightning-fast LPU APIs and Qwen Large Language Models. 
-Behind the scenes, we use an architecture called RAG (Retrieval-Augmented Generation). Our FastAPI backend connects to our Supabase database, which uses an extension called `pgvector` to store Indian and International laws as mathematical vectors. 
-This means our AI never hallucinates or guesses. It only reads from real legal documents.
+"Judges, ek local farmer ya vaidya patent lawyer hire nahi kar sakta. Isliye humne 'IP-SAKTI' banaya hai. Ye ek AI Chatbot hai jo Groq ki lightning-fast API aur Qwen model pe chalta hai. 
+Behind the scenes, hum RAG (Retrieval-Augmented Generation) architecture use karte hain. Hamara FastAPI backend Supabase database se connect hota hai, jisme `pgvector` extension use karke humne Indian aur International laws ko mathematical vectors mein store kiya hai. 
+Iska matlab hamara AI kabhi hallucinate ya guess nahi karta. Wo sirf real legal documents padh ke answer deta hai.
 [Azahar types: 'Can I patent a mixture of haldi and honey in India?']
-When we ask this, the Next.js frontend sends a REST API request to our FastAPI backend. The backend searches the vector database, finds the exact law, and the AI generates the answer. 
-As you can see, the AI instantly says 'No', and it provides the exact citation: 'Section 3(p) of the Indian Patents Act'. It is a perfect, hallucination-free legal guide."
+Jab hum ye question puchte hain, toh Next.js frontend hamare FastAPI backend ko REST API request bhejta hai. Backend vector database mein search karke exact law nikalta hai, aur AI uske basis pe answer generate karta hai. 
+Aap dekh sakte hain, AI ne instantly 'No' bol diya, aur exact proof bhi diya: 'Section 3(p) of the Indian Patents Act'. Ye ek perfect, hallucination-free legal guide hai."
 
 [STAY ON TAB 2: CITIZEN DASHBOARD -> SUBMIT KNOWLEDGE TAB]
 
 ABHIJEET: 
-"Now, how does a citizen actually submit and protect their recipe? 
-I am on the 'Submit Knowledge' tab. If you look at the form, we ask for very simple things:
-- 'Claim Title': The name of the remedy.
-- 'Reference Text & Verse': If the recipe is from an ancient book like Charaka Samhita, they can mention the exact Shloka here.
-- 'Key Ingredients': The basic plants used.
-- And finally, the 'Raw Description', where they just type how to make it in simple English or Hindi.
+"Ab sawal ye hai ki ek citizen apni traditional formulation ko submit aur protect kaise karega? 
+Main abhi 'Submit Knowledge' tab pe hu. Yahan humne form ko bohot simple rakha hai:
+- 'Claim Title': Remedy ka naam.
+- 'Reference Text & Verse': Agar ye kisi ancient book jaise Charaka Samhita se hai, toh wo exact Shloka dal sakte hain.
+- 'Key Ingredients': Konsi plants use hui hain.
+- 'Raw Description': Yahan wo normal English ya Hindi mein likh sakte hain ki isko banate kaise hain.
+- Aur finally, 'Upload Proofs', jahan wo purane manuscripts ya patton ki photos upload kar sakte hain as an evidence.
 
-But wait, what if someone tries to submit a very common recipe that is already protected, like Haldi for wounds? Let me show you. 
-[Abhijeet types 'Turmeric paste for wound healing' and clicks 'Run Patent Pre-check']
-When I click 'Run Patent Pre-check', our backend compares this with the Master DB. As you can see, the system instantly blocks it and says 'This is already present'. This prevents duplicates and stops spam from reaching the Ministry.
+Lekin kya hoga agar koi aisi formulation submit kare jo already protected hai, jaise wounds ke liye Haldi? Main aapko dikhata hu.
+[DEMO ACTION 1 - DUPLICATE CHECK: 
+- Title: Turmeric paste for wound healing
+- Raw Description: Mix haldi (turmeric) with water to make a paste and apply on cuts.
+-> Click 'Run Patent Pre-check']
+Jab main 'Run Patent Pre-check' pe click karta hu, toh ye sirf keyword search nahi karta. Hamara backend is text ko AI ke through mathematical embeddings mein convert karta hai, aur Supabase pgvector use karke Master Database ke sath 'Vector Similarity Search' karta hai. 
+Aap dekh sakte hain, yahan match bohot high hai. Hamara system automatically sirf un claims ka submit button disable karta hai jinka similarity match 90% ya usse upar ho. Agar match 70% se 89% ke beech hota, toh submit button red color ki warning zaroor dikhata, par citizen fir bhi submit kar paata as a borderline case. Lekin 90%+ hone par ye automatically block kar deta hai taaki Ministry tak spam aur duplicates na pahuche.
 
-So, let's try a unique, undocumented tribal recipe for kidney stones. 
-[Abhijeet fills the form with the kidney stone remedy and clicks 'Enhance with AI']
-A farmer doesn't know legal words. So he just clicks 'Enhance with AI'. Our frontend sends this raw data via a REST API to our FastAPI backend. The backend uses the Groq AI model to automatically format this raw text into a professional, legally structured patent draft.
-Now, I click 'Run Patent Pre-check' again. This time, because it is unique, it passes. 
-So, I will click Submit to send this valid claim to the Ministry for approval."
+Toh chaliye ek unique, undocumented tribal formulation try karte hain kidney stones ke liye.
+[DEMO ACTION 2 - UNIQUE SUBMISSION:
+- Title: Pashanbhed Root Extract for Kidney Stones
+- Key Ingredients: Pashanbhed (Bergenia ligulata), Gokshura, Warm Water
+- Raw Description: Crush the dried roots of Pashanbhed into fine powder. Boil 1 spoon of powder with Gokshura leaves in 2 cups of water until it reduces to half. Drink twice a day.
+- Upload Proofs: Upload any random image (e.g. leaf.jpg or dummy_manuscript.pdf)
+-> Click 'Enhance with AI']
+Ek kisaan ko legal terms nahi aate. Toh wo simply 'Enhance with AI' pe click karega. Hamara frontend is raw data ko REST API ke through backend bhejta hai. Backend Groq AI model use karke is raw text ko ek professional, legally structured patent draft mein convert kar deta hai.
+Ab main wapas 'Run Patent Pre-check' pe click karunga. Is baar, kyuki ye claim unique hai, toh ye pass ho jayega. 
+Ab main is valid claim ko Ministry approval ke liye submit karunga."
 [Abhijeet clicks Submit to Ministry]
 
 [TAB 3: MINISTRY DASHBOARD -> OVERVIEW & TKDL MASTER DB]
 
 SAURABH: 
-"Hello Judges. As soon as Abhijeet clicked submit, the data traveled through our REST API and was securely saved in our Supabase PostgreSQL database. I am now logged into the Ministry Command Center.
-First, look at the 'Master DB' tab. This is our secure Traditional Knowledge Library. It holds all the old, verified knowledge of India. 
-But let's look at Abhijeet's new submission. I will go to the 'Citizen Submissions' tab."
+"Jaise hi Abhijeet ne submit pe click kiya, data REST API ke through hamare Supabase PostgreSQL database mein securely save ho gaya. Ab main Ministry Command Center mein logged in hu.
+Pehle 'Master DB' tab dekhte hain. Ye hamari secure Traditional Knowledge Library hai jisme India ki sari purani aur verified knowledge secured hai. 
+Lekin hum Abhijeet ki new submission dekhte hain. Main 'Citizen Submissions' tab mein jaunga."
 
 [STAY ON TAB 3: MINISTRY DASHBOARD -> CITIZEN SUBMISSIONS (PENDING)]
 
 SAURABH:
-"I open the 'Pending' queue. I can see the AI-generated draft sent by the citizen. Everything looks botanically and legally correct. So, as an Admin, I will verify it.
+"Main 'Pending' queue open karta hu. Yahan main raw description dekh sakta hu, aur uske theek neeche, citizen ne jo 'Proofs' (jaise manuscripts) attach kiye the, unhe review kar sakta hu. Sath hi main AI-generated draft ko bhi check kar sakta hu. Sab kuch botanically aur legally correct lag raha hai. Toh as an Admin, main isko verify karunga.
 [Saurabh clicks 'Verify Claim', then clicks 'Lock on Blockchain']
-Judges, this is the most crucial step of our project. We do not just save this in a normal SQL database, because a database can be hacked or altered. 
-When I click this button, our backend takes the entire document and generates a 'SHA-256 Hash'—which is a unique digital fingerprint. We then make an API call to the Polygon Blockchain and store ONLY this fingerprint there. 
-This provides an 'Immutable Timestamp'. It proves mathematically that this knowledge existed in India on this exact date and time. It becomes undeniable Proof of Origin (Prior Art) for international courts."
+Judges, ye hamare project ka sabse crucial step hai. Hum is data ko sirf ek normal SQL database mein save nahi karte, kyuki database hack ya alter ho sakta hai. 
+Jab main is button pe click karta hu, toh hamara backend is pure document ka ek 'SHA-256 Hash' generate karta hai—jo ek unique digital fingerprint hai. Fir hum Polygon Blockchain ko API call karte hain aur sirf ye fingerprint wahan store kar dete hain. 
+Isse hume ek 'Immutable Timestamp' milta hai. Ye mathematically prove karta hai ki ye knowledge India mein is exact date aur time pe exist karti thi. Ye international courts ke samne hamara undeniable Proof of Origin (Prior Art) ban jata hai."
 
 [TAB 2: SWITCH BACK TO CITIZEN DASHBOARD -> MY DIGITAL VAULT]
 
 ABHIJEET: 
-"Back on the citizen's side, let's look at 'My Digital Vault'. Because Saurabh verified it, the status has changed to 'Verified'. 
+"Ab citizen dashboard pe wapas aate hain aur 'My Digital Vault' dekhte hain. Kyuki Saurabh ne verify kar diya hai, toh status 'Verified' ho gaya hai.
 [Abhijeet clicks the 'View Certificate' button]
-As soon as the blockchain lock is complete, the processing finishes, and I get this official digital certificate. If you look closely, you can see the Ministry of Ayush seal and the Blockchain Registration ID (Transaction Hash). I now have cryptographic proof that my knowledge is officially protected."
+Jaise hi blockchain lock complete hota hai, mujhe ye official digital certificate mil jata hai. Agar aap dhyan se dekhein, toh isme Ministry of Ayush ka seal aur Blockchain Registration ID (Transaction Hash) likha hua hai. Ab mere paas ye cryptographic proof hai ki meri knowledge officially protect ho chuki hai."
 
 [TAB 3: SWITCH TO MINISTRY DASHBOARD -> GLOBAL THREAT RADAR]
 
 SAURABH: 
-"So, we have protected the knowledge. But how do we catch foreign companies trying to steal it? For that, we built the 'Global Threat Radar'. 
+"Toh knowledge ko humne protect toh kar liya. Lekin hum un foreign companies ko kaise pakdenge jo isey churane ki koshish kar rahi hain? Iske liye humne 'Global Threat Radar' banaya hai. 
 [Saurabh clicks on Global Threat Radar]
-Behind the scenes, we use datasets from Hugging Face that contain real, published US patent applications. 
-Our system takes these foreign patents and our verified Indian knowledge, and converts both of them into 'Vector Embeddings'. Then, our Supabase database calculates the 'Cosine Similarity' between them.
-Look at this red alert on the screen. It shows an 85% match. Our mathematical radar caught a foreign US patent trying to copy our traditional knowledge. 
-Because we caught it early, the Ministry of Ayush can easily file a pre-grant opposition and cancel the foreign patent before it gets approved."
+Behind the scenes, hum Hugging Face se actual US patent applications ka dataset use karte hain. 
+Hamara system in foreign patents ko, aur hamari verified Indian knowledge ko, 'Vector Embeddings' mein convert karta hai. Fir hamara Supabase database inke beech 'Cosine Similarity' calculate karta hai.
+Aap screen pe is red alert ko dekhiye. Ye 85% match dikha raha hai. Hamare mathematical radar ne ek foreign US patent pakda hai jo hamari traditional knowledge ko copy karne ki koshish kar raha tha. 
+Kyuki humne isko jaldi pakad liya, ab Ministry of Ayush easily ek pre-grant opposition file karke us foreign patent ko approve hone se pehle hi cancel karwa sakti hai."
 
 [TAB 2: CITIZEN DASHBOARD -> REPORT BIO-PIRACY]
 
 ABHIJEET: 
-"Finally, defense is a community effort. If a normal citizen sees a fake Ayurvedic product online or a suspicious foreign patent, they can come to the 'Report Bio-Piracy' tab.
+"Finally, apne desh ki knowledge ko protect karna ek community effort hai. Agar ek normal citizen koi fake Ayurvedic product online dekhta hai ya koi suspicious foreign patent dekhta hai, toh wo 'Report Bio-Piracy' tab pe aa sakta hai.
 [Abhijeet shows the report form]
-They just need to provide two things: The 'Foreign Patent Number or Product URL', and a short context on 'Why is this Bio-Piracy?' (for example, stating that this formulation has been used in India for centuries). They click 'Submit Red-Flag Report', and the threat is transmitted."
+Unhe bas do cheezein provide karni hain: Pehla 'Foreign Patent Number ya Product URL', aur dusra 'Why is this Bio-Piracy?' (jisme wo short context de sakte hain ki ye formulation India mein sadiyon se use ho rahi hai). Wo bas 'Submit Red-Flag Report' pe click karenge, aur threat Ministry ke paas chala jayega."
 
 [TAB 3: MINISTRY DASHBOARD -> THREAT REPORTS]
 
 SAURABH: 
-"And that report instantly lands here in the Ministry's 'Threat Reports' tab via our database, ready for official investigation. 
-In conclusion, we have built a highly scalable architecture. We use Next.js for the frontend, FastAPI for the backend, Supabase for the database, Groq for ultra-fast AI, and Polygon Blockchain for unbreakable security. 
-Root-Claim is India’s ultimate digital shield against bio-piracy. 
-Thank you. We are open for questions."
+"Aur wo report instantly database ke through yaha Ministry ke 'Threat Reports' tab mein aa jati hai, jahan hum uski official investigation start kar sakte hain. 
+In conclusion, humne ek highly scalable architecture banaya hai. Hum frontend ke liye Next.js, backend ke liye FastAPI, database ke liye Supabase, ultra-fast AI ke liye Groq, aur unbreakable security ke liye Polygon Blockchain use karte hain. 
+Root-Claim bio-piracy ke khilaf India ki ultimate digital shield hai. 
+Thank you. Ab agar aapke koi questions hain toh aap puch sakte hain."
